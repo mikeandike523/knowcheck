@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+    #question, #nextButton, #answerSection {
+        font-size: 24px; /* Unified font size */
+        font-weight: bold; /* Make text bold */
+        color: black; /* Set text color to black */
+    }
+    #emailButton, #nextButton {
+        font-size: 20px; /* Larger button */
+        background-color: yellow;
+        color: red;
+        padding: 10px; /* Padding for larger touch area */
+        display: none; /* Initially hidden */
+    }
+</style>
+<script src="formatError.js"></script>
+</head>
+<body>
+<h1>Mentally Digest Inpatient Criteria by Ensmarten Learning</h1>
+<div id="question"></div>
+<div id="answerSection">
+    <textarea id="answer" placeholder="Enter your criteria" rows="4" cols="50"></textarea>
+    <button id="submitButton" onclick="submitAnswer()">Submit Answer</button>
+</div>
+<p>Score for Question: <span id="questionScore">0</span></p>
+<p>Total Score: <span id="score">0</span></p>
+<div id="answerDetails" style="margin-top: 20px;"></div>
+<div id="criteriaList" style="margin-top: 20px;"></div> <!-- Criteria will be shown only after answering -->
+<button id="emailButton" onclick="sendEmail()">GIVE ME SOME CREDIT FOR ALL THIS</button><BR><br>
+<button id="nextButton" onclick="loadNextQuestion()">Next Question</button>
+
+<script>
+const diagnoses = [
+  {
+    "Number": 1,
+    "Name": "COPD with Acute Exacerbation",
+    "Criteria": [
+      "Persistent dyspnea requiring 2 doses of SABAs before admission and at least 1 criteria point: SaO2 < 90% and the patient's baseline or PaO2 < 50mmHg, Accessory muscle usage, tripodding, paradoxical chest wall movement or acute or progressive central cyanosis",
+      "High risk for adverse events supported by 1 or more clinical risk factors: FEV1 < 50%, Chronic Respiratory Failure w/ home O2, intubation w/in 1-yr, cor pulmonale, pneumonia or acute or chronic respiratory failure, severe psychiatric illness or immunodeficiency",
+      "Requiring ventilatory support (invasive or non-invasive)"
+    ]
+  },
+  {
+    "Number": 2,
+    "Name": "Pneumonia",
+    "Criteria": [
+      "Documented diagnosis of Pneumonia, confirmed by imaging, and has at least 1 intervention of: IV antibiotics, PO antibiotics + IV fluids > 100ml/h and/or supplemental oxygen requirement",
+      "1 or more: SaO2 <90% and below patient's baseline, PaO2 < 56 and below baseline, PCO2 45-54 + pH 7.31-7.35 or has at least 1 risk factor: COPD, acute and/or chronic heart failure"
+    ]
+  },
+  {
+    "Number": 3,
+    "Name": "AKI (Acute Kidney Injury)",
+    "Criteria": [
+      "Serum creatinine level > 3x baseline and or > 1.5x baseline & > 4mg/dL following administration of intravenous fluids",
+      "Serum creatinine > 2x baseline and: new onset dialysis, or diuretic therapy > 2 doses/24hrs, or immunosuppressive therapy",
+      "Plasma exchange, or IV corticosteroids, or Renal biopsy"
+    ]
+  },
+  {
+    "Number": 4,
+    "Name": "Developed AKI Post Admission",
+    "Criteria": [
+      "Diagnosis of AKI (documented etiology if able), with 1 or more findings of: Oliguria < 0.5 mL/kg/h, Serum creatinine > 1.5x baseline, Serum creatinine > 3.0mg/dL increase in 48hrs, or new onset dialysis",
+      "At least 1 intervention of: volume expansion, diuretic x2 dose/24hrs or new onset dialysis"
+    ]
+  },
+  {
+    "Number": 5,
+    "Name": "Acute Pancreatitis",
+    "Criteria": [
+      "2 or more findings: Pancreatic abdominal pain, Amylase or lipase > 3x ULN, Pancreatitis confirmed by imaging",
+      "1 risk factor: HCT >44% after aggressive fluid resuscitation, mental status change such as GCS 9-14, pancreatic duct obstruction, pleural effusion on imaging, pulmonary infiltrates on imaging",
+      "Both interventions: Pain unresponsive to 2 or more days of NSAIDs, IV fluid resuscitation up to 2 days"
+    ]
+  },
+  {
+    "Number": 6,
+    "Name": "Atrial Fibrillation",
+    "Criteria": [
+      "Persistent atrial fibrillation confirmed on ECG that remains uncontrolled (rate exceeds 110)",
+      "The initiation of one of the following anti-arrhythmic agents: amiodarone, disopyramide, dofetilide, sotalol, dronedarone, mexiletine, or quinidine",
+      "Repeat or failed cardioversion necessary"
+    ]
+  },
+  {
+    "Number": 7,
+    "Name": "Hypocalcemia",
+    "Criteria": [
+      "Acquired after admission AND < 7.5 mg/dL AND < baseline",
+      "5.0-7.4 mg/d, persistent symptoms (carpopedal spasm, flaccid paralysis, muscle weakness, paresthesia, perioral numbness, or tetany)",
+      "Calcium replacement"
+    ]
+  },
+  {
+    "Number": 8,
+    "Name": "Hypercalcemia",
+    "Criteria": [
+      "Ca level of 12.1-13.9 with persistent symptoms (abdominal pain, mental status changes, Glasgow Coma Scale (GCS) 9-14, nausea, nephrolithiasis, or vomiting)",
+      "Intervention of either Bisphosphonate, Corticosteroid, or Saline hydration (> 100ml/hr)"
+    ]
+  },
+  {
+    "Number": 9,
+    "Name": "Hypokalemia",
+    "Criteria": [
+      "Diagnosis of hypokalemia along with a K+ level < 2.5 and without electrocardiogram changes with treatment including K+ repletion (IV or PO)"
+    ]
+  },
+  {
+    "Number": 10,
+    "Name": "Hyperkalemia",
+    "Criteria": [
+      "K+ level exceeds 6",
+      "Treatment provided: Kayexalate, Calcium chloride, Calcium gluconate or Diuretic",
+      "K+ level exceeds 5.4 with associated ECG changes, including AV dissociation, loss of P wave, multifocal PVCs, ventricular fibrillation, ventricular tachycardia or widening QRS"
+    ]
+  },
+  {
+    "Number": 11,
+    "Name": "UTI",
+    "Criteria": [
+      "Hypotension or any hemodynamic persistence/instability/lability",
+      "Altered mental status that is severe and persistent",
+      "Persistence or worsening of clinical finding (e.g., fever, pain, dehydration, vomiting) despite observation care",
+      "Pregnancy with suspected pyelonephritis",
+      "Kidney transplant recipient with suspected pyelonephritis",
+      "Significant uropathy (e.g., obstruction including stones, moderate to severe vesicoureteral reflux)",
+      "Suspected infection of an indwelling prosthetic device, stent, implant, or graft",
+      "Bladder emptying impaired (e.g., bladder outlet obstruction)",
+      "Renal or perinephric abscess",
+      "Acute kidney injury (stage 2 or 3)",
+      "Need for ongoing IV hydration support (e.g., inability to maintain oral hydration) or symptomatic medication despite initial care"
+    ]
+  },
+  {
+    "Number": 12,
+    "Name": "COPD",
+    "Criteria": [
+      "Persistent, multiple, or profound hemodynamic or respiratory abnormalities",
+      "New need for positive pressure or high flow oxygen, intubation and mechanical ventilation",
+      "Clinical signs of respiratory fatigue (e.g., use of respiratory accessory muscles)",
+      "Altered mental status (agitation, confusion, or depressed sensorium)",
+      "Sats < 90% despite inspired oxygen (FiO2) greater than 40%",
+      "New-onset room-air hypoxemia (SpO2 <90% that persists despite initial care)",
+      "Moderate or worse hypercarbia PaCO2 > 45 that persists despite initial care",
+      "Tachypnea, with rate of >24 that persists despite initial care"
+    ]
+  },
+  {
+    "Number": 13,
+    "Name": "Chest Pain",
+    "Criteria": [
+      "Unstable angina is no longer 'chest pain'",
+      "Use a condition diagnosis if possible",
+      "Abnormal labs or ECG suggest a diagnostic condition"
+    ]
+  },
+ {
+  "Number": 14,
+  "Name": "Back Pain",
+  "Criteria": [
+    "Acute, severe, and focal neurological deficits with need for emergent surgery"
+  ]
+},
+{
+  "Number": 15,
+  "Name": "Abdominal Pain",
+  "Criteria": [
+    "Signs or symptoms of peritonitis",
+    "Lab or study findings suggestive of severe disease", 
+    "Worsening signs or symptoms despite ED and OBS treatment"
+  ]
+},
+{
+  "Number": 16,
+  "Name": "Headache",
+  "Criteria": [
+    "ED unable to rule out severe disease in ER",
+    "Ataxia, nystagmus, or syncope present"
+  ]
+},
+{
+  "Number": 17,
+  "Name": "Nausea/Vomiting",
+  "Criteria": [
+    "Signs and symptoms of shock despite ED treatment"
+  ]
+},
+{
+  "Number": 18,
+  "Name": "Dizziness",
+  "Criteria": [
+    "Always requires a different primary diagnosis such as a seizure, CVA or other focal neurological condition"
+  ]
+},
+{
+  "Number": 19,
+  "Name": "Syncope",
+  "Criteria": [
+    ">85 years old",
+    "Cardiac or focal neurological findings",
+    "Two or more findings suggestive of significant disease"
+  ]
+},
+{
+  "Number": 20,
+  "Name": "Gait Dysfunction",
+  "Criteria": [
+    "Admission status requires a significant other diagnosis which then becomes the primary diagnosis"
+  ]
+},
+{
+  "Number": 21,
+  "Name": "TIA",
+  "Criteria": [
+    "Focal Neuro Findings",
+    "Hemodynamic Instability", 
+    "Imminent Vascular Intervention"
+  ]
+}
+        // Include other diagnoses here, continuing in the same pattern...
+    ];
+
+let currentScore = 0;
+let currentIndex = Math.floor(Math.random() * diagnoses.length);
+updateQuestion();
+
+function updateQuestion() {
+    document.getElementById('question').innerText = 'What are the INPATIENT criteria for: ' + diagnoses[currentIndex].Name + '?';
+    document.getElementById('answerSection').style.display = 'block';
+    document.getElementById('nextButton').style.display = 'none';
+    document.getElementById('submitButton').disabled = false; // Enable submit button at the start of each question
+}
+
+async function submitAnswer() {
+    document.getElementById('submitButton').disabled = true; // Disable submit button to prevent multiple submissions
+    document.getElementById('answerDetails').innerHTML = "<strong>WAIT FOR IT...</strong>"; // Show waiting message
+    const userAnswer = document.getElementById('answer').value; // Capture user input
+    const diagnosisName = diagnoses[currentIndex].Name;
+    const correctCriteria = diagnoses[currentIndex].Criteria; // Keep it as an array
+    const response = await analyzeAnswer(userAnswer, diagnosisName, correctCriteria.join(", "));
+    const score = response.score;
+    const explanation = response.explanation;
+
+    // Generate bullet list HTML for criteria
+    let criteriaListHtml = "<ul>";
+    correctCriteria.forEach(crit => {
+        criteriaListHtml += `<li>${crit}</li>`; // Make sure all HTML elements are properly closed
+    });
+    criteriaListHtml += "</ul>";
+
+    currentScore += score;
+    document.getElementById('score').innerText = currentScore;
+    document.getElementById('questionScore').innerText = score;
+    document.getElementById('answerDetails').innerHTML = `
+        <strong>Diagnosis:</strong> ${diagnosisName}<br>
+        <strong>User's Response:</strong> ${userAnswer}<br> <!-- Display user's response -->
+        <strong>Explanation:</strong> ${explanation}<br>
+        <strong>Points Awarded:</strong> ${score}<br>
+        <strong>Correct Criteria:</strong>${criteriaListHtml}`;
+    document.getElementById('answerSection').style.display = 'none'; // Hide the answer section
+    document.getElementById('nextButton').style.display = 'block'; // Show the "Next Question" button
+    checkForEmailButton();
+}
+
+
+function formatCriteria(criteria) {
+    let criteriaHtml = '<ul>';
+    criteria.forEach(crit => {
+        criteriaHtml += `<li>${crit}</li>`;
+    });
+    criteriaHtml += '</ul>';
+    return criteriaHtml;
+}
+
+function loadNextQuestion() {
+    currentIndex = Math.floor(Math.random() * diagnoses.length); // Get a new random index
+    updateQuestion(); // Update the question
+    document.getElementById('answer').value = ''; // Clear the textarea
+    document.getElementById('answerDetails').innerHTML = ''; // Clear the answer details
+}
+
+const functionUrl = "https://us-central1-knowcheck.cloudfunctions.net/analyzeAnswer"
+
+async function analyzeAnswerFunction({ textContent, diagnosisName, correctCriteria }) {
+    const response = await fetch(functionUrl, {
+        method: "POST",
+        mode: "cors",
+        headers: {
+            
+            "Content-Type": "application/json"  // Specifies the type of content being sent from the client
+        },
+        body: JSON.stringify({
+            textContent,
+            diagnosisName,
+            correctCriteria
+        })
+    })
+    const responseText = await response.text()
+    if (!response.ok) {
+        throw new Error(response.text)
+    }
+    return JSON.parse(responseText)
+}
+
+async function analyzeAnswer(userAnswer, diagnosisName, correctCriteria) {
+    try {
+        const result = await analyzeAnswerFunction({ textContent: userAnswer, diagnosisName: diagnosisName, correctCriteria: correctCriteria });
+        return result
+    } catch (error) {
+        console.error('Error:', error);
+        return { score: 0, explanation: 'Error processing your answer.' };
+    }
+}
+
+
+
+    function checkForEmailButton() {
+    if (currentScore >= 10) {
+        document.getElementById('emailButton').style.display = 'block'; // Added the missing quote here
+    }
+}
+
+
+function sendEmail() {
+    const email = "sohnenae@gmail.com";
+    const subject = encodeURIComponent("I got " + currentScore + " points");
+    const body = encodeURIComponent("I got " + currentScore + " points - and the secret code is \"UNIMAGINATIVE SECRET CODE\"");
+    window.open(`mailto:${email}?subject=${subject}&body=${body}`);
+}
+</script>
+</body>
+</html>
