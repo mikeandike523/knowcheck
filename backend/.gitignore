@@ -69,3 +69,5 @@ external-credentials
 credentials.json
 
 node_modules
+
+admin-credentials.json

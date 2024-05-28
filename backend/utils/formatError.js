@@ -1,3 +1,5 @@
+// !! copy-to-frontend
+
 function formatError(e){
     const visited = new Set()
     const recursion=(e1)=>{
@@ -37,4 +39,6 @@ function formatError(e){
     return recursion(e)
 }
 
-module.exports=formatError
+if(typeof window==="undefined" && typeof module!== "undefined"){
+    module.exports=formatError
+}

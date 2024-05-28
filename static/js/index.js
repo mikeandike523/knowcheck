@@ -72,7 +72,8 @@ async function loadNextQuestion() {
 }
 
 async function firebaseFetch(functionName, args) {
-    const functionUrl = `https://us-central1-knowcheck.cloudfunctions.net/${functionName}`
+    // const functionUrl = `https://us-central1-knowcheck.cloudfunctions.net/${functionName}`
+    const functionUrl = `http://127.0.0.1:5001/knowcheck-7fe53/us-central1/${functionName}`
 
     const response = await fetch(functionUrl, {
         method: "POST",

@@ -2,7 +2,7 @@
 // const admin = require('firebase-admin');
 // const serviceAccount = require('./admin-credentials.json');
 import admin from 'firebase-admin';
-import serviceAccount from "./admin-credentials.js";
+
 
 import path from 'path';
 import fs from 'fs';
@@ -12,6 +12,8 @@ const portablePath = import.meta.url.slice("file://".length)
 const osSpecificPath = process.platform == "win32" ? portablePath.slice(1).replace(/\//g,"\\") : portablePath
 const __filename = osSpecificPath
 const __dirname = path.dirname(__filename)
+
+const serviceAccount = JSON.parse(fs.readFileSync(path.join(__dirname,"..","admin-credentials.json")))
 
 const inpatientCriteria = JSON.parse(fs.readFileSync(path.join(__dirname,"subjects","inpatient-criteria.json")))
 
