@@ -1,6 +1,6 @@
 const inpatientCriteria = require("./routes/inpatientCriteria.js");
 
-module.exports.analyzeAnswer = inpatientCriteria.analyzeAnswer
-module.exports.getCorrectCriteria = inpatientCriteria.getCorrectCriteria
-module.exports.getNumQuestions = inpatientCriteria.getNumQuestions
-module.exports.getCriteriaName = inpatientCriteria.getCriteriaName
+exports.analyzeAnswer = inpatientCriteria.analyzeAnswer
+exports.getCorrectCriteria = inpatientCriteria.getCorrectCriteria
+exports.getNumQuestions = inpatientCriteria.getNumQuestions
+exports.getCriteriaName = inpatientCriteria.getCriteriaName
