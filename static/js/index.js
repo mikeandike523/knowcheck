@@ -1,5 +1,6 @@
 // A question should be loaded when the page first loads
 // The "defer" keyword use to include this script will ensure that this
+
 // is run after the DOM content is loaded
 loadNextQuestion()
 
@@ -17,7 +18,7 @@ async function submitAnswer() {
     document.getElementById('answerDetails').innerHTML = "<strong>WAIT FOR IT...</strong>"; // Show waiting message
     const userAnswer = document.getElementById('answer').value; // Capture user input
     const correctCriteria = await firebaseFetch("getCorrectCriteria", {
-        diagnosisNumber: currentDiagnosisNumber
+        questionNumber: currentDiagnosisNumber
     })
     const response = await analyzeAnswer(userAnswer)
     const score = response.score;
@@ -75,29 +76,12 @@ async function firebaseFetch(functionName, args) {
     // const functionUrl = `https://us-central1-knowcheck.cloudfunctions.net/${functionName}`
     const functionUrl = `http://127.0.0.1:5001/knowcheck-7fe53/us-central1/${functionName}`
 
-    const response = await fetch(functionUrl, {
-        method: "POST",
-        mode: "cors",
-        headers: {
-
-            "Content-Type": "application/json"  // Specifies the type of content being sent from the client
-        },
-        body: JSON.stringify(args ?? {})
-    })
-    const responseText = await response.text()
-    if (!response.ok) {
-        throw new Error(response.text)
-    }
-    try {
-        return JSON.parse(responseText)
-    } catch (e) {
-        throw new Error("Could not parse response text as JSON:\n" + responseText)
-    }
+    return await new SmartFetch(functionUrl).post(args);
 }
 
 async function analyzeAnswer(userAnswer) {
     try {
-        const result = await firebaseFetch("analyzeAnswer", { textContent: userAnswer, diagnosisNumber: currentDiagnosisNumber });
+        const result = await firebaseFetch("analyzeAnswer", { answer: userAnswer, questionNumber: currentDiagnosisNumber });
         return result
     } catch (error) {
         console.error('Error:', error);

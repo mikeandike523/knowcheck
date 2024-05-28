@@ -1,99 +1,216 @@
-const functions = require('firebase-functions/v2');
-const axios = require('axios');
+const functions = require("firebase-functions/v2");
 
-const formatError = require("../../utils/formatError.js")
-const simulateRPC = require("../../utils/simulateRPC.js")
-const SmartFetch = require("../../utils/SmartFetch.js")
+const formatError = require("../../utils/formatError.js");
+const simulateRPC = require("../../utils/simulateRPC.js");
+const SmartFetch = require("../../utils/SmartFetch.js");
 
 const openAIKey = process.env.OPENAI_API_KEY;
 
-// Todo: Establish a limited service account for PoLP
-// Note, in firebase, to do this narrowing, we always need to initially use admin, and then instantly switch into service account
-// However this is normal and a few milliseconds of admin being used is not considered a significant security risk
-const admin = require('firebase-admin');
+const admin = require("firebase-admin");
 
-// Idk why firebase needs such a pattern, but it is what it is
-// Hopefully google will streamline this in the future
-admin.initializeApp()
+admin.initializeApp();
 
-
-// It appears the instantiation of a database is done at the module level and not function level
-// This makes me think that it might be a form of managed connection pool
 const db = admin.firestore();
 
+async function getNumQuestions() {
+  const querySnapshot = await db.collection("inpatient-criteria").get();
+  if (querySnapshot.size === 0) {
+    throw 'No documents in the "inpatient-criteria" collection';
+  }
+  return querySnapshot.size;
+}
 
-module.exports.getNumQuestions = functions.https.onRequest({cors:true},(request,response)=>{
-    simulateRPC(request,response,async (args)=>{
-        //todo
-        return null
-    })
-})
+async function getCriteriaDocument(id) {
+  const document = await db.collection("inpatient-criteria").doc(id).get();
+  if (!document.exists) {
+    throw `No document in the "inpatient-criteria" collection with id ${id}`;
+  }
+  return document.data();
+}
 
-module.exports.getCriteriaName = functions.https.onRequest({cors:true},(request,response)=>{
-    simulateRPC(request,response,async (args)=>{
-        //todo
-        return null
-    })
-})
+async function getCriteriaName(questionNumber) {
+  const criteriaDocument = await getCriteriaDocument(questionNumber.toString());
 
-module.exports.getCorrectCriteria = functions.https.onRequest({cors:true},(request,response)=>{
-    simulateRPC(request,response,async (args)=>{
-        //todo
-        return null
-    })
-})
+  if (!criteriaDocument.Name) {
+    throw 'No "Name" field in the criteria document';
+  }
 
-module.exports.analyzeAnswer = functions.https.onRequest({cors:true},(request,response)=>{
-    simulateRPC(request,response,async (args)=>{
-        //todo
-        return null
-    })
-})
+  if (typeof criteriaDocument.Name !== "string") {
+    throw 'The "Name" field in the criteria document is not a string';
+  }
 
+  return criteriaDocument.Name;
+}
 
+async function getCorrectCriteria(questionNumber) {
+  const criteriaList = await getCriteriaDocument(questionNumber.toString()).Criteria;
+  if (!criteriaList) {
+    throw 'No "Criteria" field in the criteria document';
+  }
+  if (typeof criteriaList !== "object" || !Array.isArray(criteriaList)) {
+    throw 'The "Criteria" field in the criteria document is not an array';
+  }
+  return criteriaList;
+}
 
-// module.exports.analyzeAnswer = functions.https.onRequest({ cors: true }, (request, response) => {
+module.exports.getNumQuestions = functions.https.onRequest(
+  { cors: true },
+  (request, response) => {
+    simulateRPC(request, response, async (args) => {
+      return getNumQuestions();
+    });
+  }
+);
 
-//     const data = request.body;
-//     const textContent = data.textContent; // User's provided criteria
-//     const diagnosisName = data.diagnosisName; // Name of the diagnosis
-//     const correctCriteria = data.correctCriteria; // Actual criteria for the diagnosis
+module.exports.getCriteriaName = functions.https.onRequest(
+  { cors: true },
+  (request, response) => {
+    simulateRPC(request, response, async (args) => {
+      return getCriteriaName(args.Number);
+    });
+  }
+);
 
-//     // Construct a detailed prompt for OpenAI
-//     const prompt = `Evaluate the accuracy of the submitted criteria for the diagnosis '${diagnosisName}'. User's input: '${textContent}'. Expected criteria: '${correctCriteria}'. Provide a numerical rating from 0 to 10 on how accurate the submission is, enclosed in double brackets like [[10]], and include a detailed explanation.`;
+module.exports.getCorrectCriteria = functions.https.onRequest(
+  { cors: true },
+  (request, response) => {
+    simulateRPC(request, response, async (args) => {
+      return getCorrectCriteria(args.Number);
+    });
+  }
+);
 
-//     axios.post(
-//         'https://api.openai.com/v1/chat/completions',
-//         {
-//             model: 'gpt-4-32k',
-//             messages: [
-//                 {
-//                     role: 'system',
-//                     content: 'You are an assistant that evaluates medical criteria submissions. Provide a numerical rating enclosed in double brackets and detailed feedback.',
-//                 },
-//                 {
-//                     role: 'user',
-//                     content: prompt,
-//                 },
-//             ],
-//             max_tokens: 300, // Increased token count for detailed feedback
-//         },
-//         {
-//             headers: {
-//                 'Authorization': `Bearer ${openAIKey}`,
-//                 'Content-Type': 'application/json',
-//             },
-//         }
-//     ).then(apiResponse => {
-//         const aiText = apiResponse.data.choices[0].message.content;
-//         const ratingMatch = aiText.match(/\[\[\s*(\d+)\s*\]\]/); // Regex to extract score enclosed in [[ ]]
-//         const rating = ratingMatch ? parseInt(ratingMatch[1], 10) : 0; // Convert to integer
-//         response.json({
-//             explanation: aiText.replace(/\[\[\s*\d+\s*\]\]/, ''), // Removing the score from the explanation for clarity
-//             score: rating
-//         });
-//     }).catch(error => {
-//         response.status(500).json(formatError(error.response.data))
-//     });
+const contextPrompt = `
+You are an assistant that evaluates user submissions in a dynamic quiz web app.
+This quiz presents users with a name of a diagnosis, and they must respond with a list of criteria for that diagnosis.
 
-// });
+The criteria for the diagnosis will be drawn from our custom database by name,
+but you should also use your general knowledge of medicine to inform your response.
+
+You will provide the user a score from 0 to 10, where 0 is a catch-all for malformed input,
+1 represents an extremely poor understanding
+5 represents an average understanding,
+and 10 represents an extremely high understanding.
+
+You will also provide a detailed explanation of why you gave that score.
+
+Your response should follow this format:
+
+Score: <SCORE>
+
+Explanation:
+<EXPLANATION>
+`;
+
+module.exports.analyzeAnswer = functions.https.onRequest(
+  { cors: true },
+  (request, response) => {
+    simulateRPC(request, response, async (args) => {
+      const questionNumber = args.questionNumber;
+      const answer = args.answer;
+
+      //placeholders
+      const criteriaName = await getCriteriaName(questionNumber);
+      const correctCriteria = await getCorrectCriteria(questionNumber);
+
+      const instancePrompt = `
+Please evaluate the users reponse:
+
+Diagnosis Name: ${criteriaName}
+
+User Response: ${answer}
+
+Correct Criteria:
+
+${correctCriteria
+  .map((criteria, index) => `Criteria #${index + 1}\n${criteria}`)
+  .join("\n\n")}
+`;
+
+      try {
+        const gptResponse = await new SmartFetch(
+          "https://api.openai.com/v1/chat/completions"
+        )
+          .bearer(openAIKey)
+          .post({
+            model: "gpt-4-32k",
+            messages: [
+              {
+                role: "system",
+                content: contextPrompt,
+              },
+              {
+                role: "user",
+                content: instancePrompt,
+              },
+            ],
+            max_tokens: 300, // Increased token count for detailed feedback
+          });
+
+        const gptResponseText = gptResponse.data.choices[0].message.content
+          .replace(/\r\n/g, "\n")
+          .trim();
+
+        let lines = gptResponseText.split("\n");
+
+        if (lines.length < 1) {
+          throw `OpenAI response is too short:\n${gptResponseText}`;
+        }
+
+        const firstLine = lines[0].trim();
+        const scoreRegex = /^Score:\s+(\d+)$/;
+        if (!scoreRegex.test(firstLine)) {
+          throw `OpenAI response does not start with a score:\n${gptResponseText}`;
+        }
+        const scoreMatchObject = scoreRegex.exec(firstLine);
+        if (!scoreMatchObject) {
+          throw `Regex parsing failure in OpenAI response:\n${gptResponseText}`;
+        }
+        const firstGroup = scoreMatchObject[1];
+        const score = parseInt(firstGroup);
+
+        lines.pop();
+
+        if (lines.length < 1) {
+          throw `OpenAI response is too short:\n${gptResponseText}`;
+        }
+
+        while (lines.length >= 1) {
+          if (lines[0].trim().length === 0) {
+            lines.shift();
+          }
+        }
+
+        if (lines.length < 1) {
+          throw `OpenAI response is too short:\n${gptResponseText}`;
+        }
+
+        if (!/^Explanation:$/.test(lines[0].trim())) {
+          throw `Cannot find explanation section in OpenAI response:\n${gptResponseText}`;
+        }
+
+        lines.shift();
+
+        if (lines.length < 1) {
+          throw `OpenAI response is too short:\n${gptResponseText}`;
+        }
+
+        const explanation = lines.join("\n");
+
+        return {
+          score,
+          explanation,
+        };
+      } catch (e) {
+        return {
+          score: 0,
+          explanation: `There was an error retrieving or processing the OpenAI response:\n${JSON.stringify(
+            formatError(e),
+            null,
+            2
+          )}`,
+        };
+      }
+    });
+  }
+);
