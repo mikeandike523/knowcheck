@@ -23,5 +23,12 @@ def main():
     dest_directory = "static/js/utils"
     copy_js_files(src_directory, dest_directory)
 
+    dest_dir_2 = "backend/functions/utils"
+
+    if os.path.exists(dest_dir_2):
+        shutil.rmtree(dest_dir_2)
+
+    shutil.copytree(src_directory, dest_dir_2)
+
 if __name__ == "__main__":
     main()
