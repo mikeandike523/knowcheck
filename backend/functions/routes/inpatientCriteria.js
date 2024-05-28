@@ -6,6 +6,7 @@ const SmartFetch = require("../../utils/SmartFetch.js");
 
 const openAIKey = process.env.OPENAI_API_KEY;
 
+
 const admin = require("firebase-admin");
 
 admin.initializeApp();
@@ -43,7 +44,7 @@ async function getCriteriaName(questionNumber) {
 }
 
 async function getCorrectCriteria(questionNumber) {
-  const criteriaList = await getCriteriaDocument(questionNumber.toString()).Criteria;
+  const criteriaList = (await getCriteriaDocument(questionNumber.toString())).Criteria;
   if (!criteriaList) {
     throw 'No "Criteria" field in the criteria document';
   }
@@ -66,7 +67,7 @@ module.exports.getCriteriaName = functions.https.onRequest(
   { cors: true },
   (request, response) => {
     simulateRPC(request, response, async (args) => {
-      return getCriteriaName(args.Number);
+      return getCriteriaName(args.questionNumber);
     });
   }
 );
@@ -75,16 +76,17 @@ module.exports.getCorrectCriteria = functions.https.onRequest(
   { cors: true },
   (request, response) => {
     simulateRPC(request, response, async (args) => {
-      return getCorrectCriteria(args.Number);
+      return getCorrectCriteria(args.questionNumber);
     });
   }
 );
 
 const contextPrompt = `
 You are an assistant that evaluates user submissions in a dynamic quiz web app.
-This quiz presents users with a name of a diagnosis, and they must respond with a list of criteria for that diagnosis.
+This quiz presents users with a name of a diagnosis, and they must respond with a list of criteria 
+that indicate whether a patient should be an taken in as an inpatient under that diagnosis.
 
-The criteria for the diagnosis will be drawn from our custom database by name,
+The criteria for the diagnosis and inpatient stay will be drawn from our custom database by name,
 but you should also use your general knowledge of medicine to inform your response.
 
 You will provide the user a score from 0 to 10, where 0 is a catch-all for malformed input,
@@ -94,12 +96,16 @@ and 10 represents an extremely high understanding.
 
 You will also provide a detailed explanation of why you gave that score.
 
+
+
 Your response should follow this format:
 
 Score: <SCORE>
 
 Explanation:
+
 <EXPLANATION>
+
 `;
 
 module.exports.analyzeAnswer = functions.https.onRequest(
@@ -128,7 +134,7 @@ ${correctCriteria
 `;
 
       try {
-        const gptResponse = await new SmartFetch(
+        const gptResponse = await (new SmartFetch(
           "https://api.openai.com/v1/chat/completions"
         )
           .bearer(openAIKey)
@@ -145,62 +151,30 @@ ${correctCriteria
               },
             ],
             max_tokens: 300, // Increased token count for detailed feedback
-          });
+          }));
 
-        const gptResponseText = gptResponse.data.choices[0].message.content
+        const gptResponseText = gptResponse.choices[0].message.content
           .replace(/\r\n/g, "\n")
           .trim();
 
-        let lines = gptResponseText.split("\n");
+        const contentRegex = /Score: (\d+)\s*\nExplanation:\n(.*?)$/is
 
-        if (lines.length < 1) {
-          throw `OpenAI response is too short:\n${gptResponseText}`;
+        if(!contentRegex.test(gptResponseText)){
+          throw `GPT Response in incorrect format:\n\n${gptResponseText}`
         }
 
-        const firstLine = lines[0].trim();
-        const scoreRegex = /^Score:\s+(\d+)$/;
-        if (!scoreRegex.test(firstLine)) {
-          throw `OpenAI response does not start with a score:\n${gptResponseText}`;
-        }
-        const scoreMatchObject = scoreRegex.exec(firstLine);
-        if (!scoreMatchObject) {
-          throw `Regex parsing failure in OpenAI response:\n${gptResponseText}`;
-        }
-        const firstGroup = scoreMatchObject[1];
-        const score = parseInt(firstGroup);
+        const matchObject = contentRegex.exec(gptResponseText)
 
-        lines.pop();
+        const score = parseInt(matchObject[1])
 
-        if (lines.length < 1) {
-          throw `OpenAI response is too short:\n${gptResponseText}`;
-        }
-
-        while (lines.length >= 1) {
-          if (lines[0].trim().length === 0) {
-            lines.shift();
-          }
-        }
-
-        if (lines.length < 1) {
-          throw `OpenAI response is too short:\n${gptResponseText}`;
-        }
-
-        if (!/^Explanation:$/.test(lines[0].trim())) {
-          throw `Cannot find explanation section in OpenAI response:\n${gptResponseText}`;
-        }
-
-        lines.shift();
-
-        if (lines.length < 1) {
-          throw `OpenAI response is too short:\n${gptResponseText}`;
-        }
-
-        const explanation = lines.join("\n");
+        const explanation = matchObject[2].trim()
 
         return {
           score,
-          explanation,
-        };
+          explanation
+        }
+
+        
       } catch (e) {
         return {
           score: 0,

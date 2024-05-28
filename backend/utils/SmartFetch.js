@@ -56,7 +56,7 @@ class InvalidJSONError extends Error {
 class SmartFetch{
     constructor(baseUrl){
         this.baseUrl = baseUrl;
-        this.bearer = undefined;
+        this.token = undefined;
     }
     route(path){
         this.baseUrl = `${this.baseUrl}${path}`
@@ -64,7 +64,7 @@ class SmartFetch{
     }
 
     bearer(token){
-        this.bearer = token;
+        this.token = token;
         return this;
     }
 
@@ -84,7 +84,7 @@ class SmartFetch{
             method,
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": this.bearer? `Bearer ${this.bearer}` : undefined,
+                "Authorization": this.token? `Bearer ${this.token}` : undefined,
             },
             body: (method.toUpperCase()!=="GET" && method.toUpperCase()!=="DELETE") ? JSON.stringify(args ?? {}) : undefined
         })

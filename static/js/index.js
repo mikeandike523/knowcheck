@@ -6,6 +6,8 @@ loadNextQuestion()
 
 let currentDiagnosisNumber = null;
 
+let currentScore = 0;
+
 function updateQuestion(criteriaName) {
     document.getElementById('question').innerText = 'What are the INPATIENT criteria for: ' + criteriaName + '?';
     document.getElementById('answerSection').style.display = 'block';
@@ -14,6 +16,9 @@ function updateQuestion(criteriaName) {
 }
 
 async function submitAnswer() {
+    const diagnosisName = await firebaseFetch("getCriteriaName", {
+        questionNumber: currentDiagnosisNumber
+    })
     document.getElementById('submitButton').disabled = true; // Disable submit button to prevent multiple submissions
     document.getElementById('answerDetails').innerHTML = "<strong>WAIT FOR IT...</strong>"; // Show waiting message
     const userAnswer = document.getElementById('answer').value; // Capture user input
