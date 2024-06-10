@@ -3,4 +3,4 @@
 git config core.autocrlf false
 git config core.eol lf
 
-sudo chmod +x backend/fblogin
+bash linkutils.sh

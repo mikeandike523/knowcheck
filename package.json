@@ -6,6 +6,10 @@
   "author": "Michael Sohnen <michaelsohnenacademic@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "copyjsutils": "python3 copyjsutils.py"
+    "linkutils": "bash linkutils.sh"
+  },
+  "dependencies": {
+    "firebase": "^10.12.2",
+    "firebase-cli": "^1.2.0"
   }
 }
