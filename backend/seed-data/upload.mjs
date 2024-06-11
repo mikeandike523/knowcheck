@@ -1,38 +1,27 @@
-// seed.js
-// const admin = require('firebase-admin');
-// const serviceAccount = require('./admin-credentials.json');
-import admin from 'firebase-admin';
+import admin from "firebase-admin";
 
+import path from "path";
+import fs from "fs";
 
-import path from 'path';
-import fs from 'fs';
+const portablePath = import.meta.url.slice("file://".length);
+const osSpecificPath =
+  process.platform == "win32"
+    ? portablePath.slice(1).replace(/\//g, "\\")
+    : portablePath;
+const __filename = osSpecificPath;
+const __dirname = path.dirname(__filename);
 
-
-const portablePath = import.meta.url.slice("file://".length)
-const osSpecificPath = process.platform == "win32" ? portablePath.slice(1).replace(/\//g,"\\") : portablePath
-const __filename = osSpecificPath
-const __dirname = path.dirname(__filename)
-
-const serviceAccount = JSON.parse(fs.readFileSync(path.join(__dirname,"..","admin-credentials.json")))
-
-const inpatientCriteria = JSON.parse(fs.readFileSync(path.join(__dirname,"subjects","inpatient-criteria.json")))
+const serviceAccount = JSON.parse(
+  fs.readFileSync(path.join(__dirname, "..", "service-account-key.json"))
+);
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+  credential: admin.credential.cert(serviceAccount),
 });
 
 const db = admin.firestore();
 
-// Example command to check connection
-//db.collection('test').doc('testDoc').set({ testField: 'testValue' })
-//  .then(() => {
- //   console.log('Connected to Firestore and document created successfully.');
-//  })
- // .catch((error) => {
- //  console.error('Error connecting to Firestore or creating document:', error);
- // });
-
- async function clearCollection(collectionName){
+async function clearCollection(collectionName) {
   const collectionRef = db.collection(collectionName);
   const snapshot = await collectionRef.get();
 
@@ -42,20 +31,51 @@ const db = admin.firestore();
   }
 
   const batch = db.batch();
-  snapshot.forEach(doc => {
+  snapshot.forEach((doc) => {
     batch.delete(doc.ref);
   });
 
   await batch.commit();
   console.log(`Cleared all documents in collection: ${collectionName}`);
- }
+}
 
- async function main(){
+async function main() {
+  // Step 1: List the subjects and their corresponding files
 
-  await clearCollection("inpatient-criteria")
-  for(const criteria of inpatientCriteria){
-    await db.collection("inpatient-criteria").doc(criteria.Number.toString()).set(criteria)
+  await clearCollection("questions");
+  await clearCollection("subjects");
+
+  const subjectsDir = path.join(__dirname, "subjects");
+  const dataFiles = fs
+    .readdirSync(subjectsDir)
+    .filter((file) => file.endsWith(".js"));
+
+  for (const dataFile of dataFiles) {
+    const subjectData = (await import(path.join(subjectsDir, dataFile))).default;
+    console.log(`Processing subject: ${dataFile}`);
+    console.log(subjectData)
+    const subjectId = path.basename(dataFile, ".js");
+    const subjectName = subjectData.name;
+    const subjectBlurb = subjectData.blurb;
+    const subjectContextPrompt = subjectData.contextPrompt;
+    const subjectUserPromptTemplate = subjectData.userPromptTemplate;
+    await db.collection("subjects").doc(subjectId).set({
+      name: subjectName,
+      blurb: subjectBlurb,
+      contextPrompt: subjectContextPrompt,
+      userPromptTemplate: subjectUserPromptTemplate,
+    });
+
+    for (const question of subjectData.questions) {
+      const questionBody = question.body;
+      const questionSupportingInfo = question.supportingInfo;
+      await db.collection("questions").doc().set({
+        subjectId: subjectId,
+        body: questionBody,
+        supportingInfo: questionSupportingInfo,
+      });
+    }
   }
- }
+}
 
- await main()
+await main();

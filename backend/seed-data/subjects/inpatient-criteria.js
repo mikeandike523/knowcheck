@@ -191,7 +191,7 @@ module.exports = {
       ],
     },
   ],
-  contextPromptTemplate: `
+  contextPrompt: `
   You are tasked with grading user responses for a dynamic quiz app, testing practicioner ability
   to identify criteria used to inform decisions about the intake of an inpatient under a given diagnosis
 

@@ -67,7 +67,10 @@ node_modules/
 
 external-credentials
 credentials.json
+app-credentials.json
 
 node_modules
 
 admin-credentials.json
+
+service-account-key.json

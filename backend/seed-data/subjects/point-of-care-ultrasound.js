@@ -1,7 +1,7 @@
 module.exports={
     name: "Point-of-Care Ultrasound (POCUS)",
     blurb:`
-    Test your knowledge of Point-of-Care ultrasound (POCUS) theory adn technique
+    Test your knowledge of Point-of-Care ultrasound (POCUS) theory adn techniquE
     `,
     // For dev testing only
     // Were designed by gpt-4o
@@ -12,7 +12,7 @@ module.exports={
             body: `
             Describe the importance of the FAST exam in trauma patients.
             `,
-            supportingInformation: [
+            supportingInfo: [
                 "The FAST exam (Focused Assessment with Sonography for Trauma) is crucial for quickly identifying free fluid in the abdomen, pelvis, and pericardium.",
                 "It helps in the rapid assessment of trauma patients to detect internal bleeding and guide further management."
             ]
@@ -21,7 +21,7 @@ module.exports={
             body: `
             Explain how to perform a basic cardiac ultrasound using the parasternal long axis view.
             `,
-            supportingInformation: [
+            supportingInfo: [
                 "The parasternal long axis view is obtained by placing the probe at the left sternal border, usually in the 3rd or 4th intercostal space.",
                 "This view allows for the assessment of left ventricular function, mitral valve, and aortic root."
             ]
@@ -30,7 +30,7 @@ module.exports={
             body: `
             What are the common findings on a lung ultrasound in a patient with pneumothorax?
             `,
-            supportingInformation: [
+            supportingInfo: [
                 "Common findings include the absence of lung sliding and the presence of a 'lung point,' which is the transition point between sliding lung and non-sliding lung areas.",
                 "A 'barcode sign' or 'stratosphere sign' on M-mode imaging is also indicative of pneumothorax."
             ]
@@ -39,7 +39,7 @@ module.exports={
             body: `
             How is ultrasound used to guide central venous catheter placement?
             `,
-            supportingInformation: [
+            supportingInfo: [
                 "Ultrasound is used to visualize the target vein, typically the internal jugular or subclavian vein, to avoid complications.",
                 "Real-time guidance improves success rates and reduces the risk of complications such as arterial puncture or pneumothorax."
             ]
@@ -48,7 +48,7 @@ module.exports={
             body: `
             Describe the sonographic appearance of gallstones.
             `,
-            supportingInformation: [
+            supportingInfo: [
                 "Gallstones appear as echogenic foci within the gallbladder that cast posterior acoustic shadowing.",
                 "They are typically mobile and can change position with patient movement."
             ]
@@ -57,7 +57,7 @@ module.exports={
             body: `
             What are the key features of a positive DVT study using ultrasound?
             `,
-            supportingInformation: [
+            supportingInfo: [
                 "A positive DVT (Deep Vein Thrombosis) study shows a non-compressible vein with or without visible thrombus.",
                 "Absence of normal respiratory variation in venous diameter can also be indicative of DVT."
             ]
@@ -66,7 +66,7 @@ module.exports={
             body: `
             Explain the utility of the RUSH exam in emergency medicine.
             `,
-            supportingInformation: [
+            supportingInfo: [
                 "The RUSH exam (Rapid Ultrasound in Shock and Hypotension) is used to quickly evaluate the cause of shock by examining the heart, inferior vena cava, peritoneal cavity, and lungs.",
                 "It helps in diagnosing conditions like cardiac tamponade, pneumothorax, and hypovolemia."
             ]
@@ -75,7 +75,7 @@ module.exports={
             body: `
             How can ultrasound be used in the diagnosis of appendicitis?
             `,
-            supportingInformation: [
+            supportingInfo: [
                 "Ultrasound can identify an enlarged appendix with a diameter greater than 6mm, wall thickening, and lack of compressibility.",
                 "Additional signs include periappendiceal fluid and increased blood flow on Doppler imaging."
             ]
@@ -84,7 +84,7 @@ module.exports={
             body: `
             What are the indications for using ultrasound in the evaluation of renal colic?
             `,
-            supportingInformation: [
+            supportingInfo: [
                 "Ultrasound is used to detect hydronephrosis, which is a sign of obstructive uropathy often caused by renal calculi.",
                 "It can also identify stones in the kidney, ureter, and bladder."
             ]
@@ -93,7 +93,7 @@ module.exports={
             body: `
             Describe how to obtain the subxiphoid view of the heart in a POCUS exam.
             `,
-            supportingInformation: [
+            supportingInfo: [
                 "The subxiphoid view is obtained by placing the probe just below the xiphoid process, angled towards the patient's left shoulder.",
                 "This view provides a good assessment of the pericardium and can help identify pericardial effusion."
             ]
@@ -102,7 +102,7 @@ module.exports={
             body: `
             Describe 2 commonly used diagnostic techniques that were enabled by recent innovations in point-of-care ultrasound (POCUS) that would have been impractical with other approaches, and describe their societal impact.
             `,
-            supportingInformation: [
+            supportingInfo: [
                 "Focused Assessment with Sonography for Trauma (FAST) exam: This technique allows for the rapid assessment of trauma patients to identify internal bleeding, which can significantly reduce mortality and morbidity by enabling timely intervention.",
                 "Lung ultrasound for pneumothorax detection: Portable ultrasound devices enable quick and accurate detection of pneumothorax at the bedside, which is crucial in emergency settings where timely diagnosis can prevent complications and improve patient outcomes.",
                 "Cardiac ultrasound for emergency cardiac assessment: Point-of-care cardiac ultrasound can quickly assess cardiac function and detect conditions like pericardial effusion or cardiac tamponade, facilitating immediate management in critical situations.",
@@ -112,7 +112,7 @@ module.exports={
         }
         
     ],
-    contextPromptTemplate: `
+    contextPrompt: `
     You are tasked with grading user responses for a dynamic quiz app, testing practicioner mastery of
     point-of-care ultrasound (POCUS) theory and techniques
   
