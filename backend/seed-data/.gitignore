@@ -1,2 +1,4 @@
 node_modules
-subjects
+
+# Ignore "subjects" only if there is a need to release the source code publically
+# subjects
