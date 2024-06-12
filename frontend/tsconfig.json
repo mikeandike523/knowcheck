@@ -22,6 +22,9 @@
 
     /* Other */
     "jsxImportSource": "@emotion/react", // allow the emotion css prop in html elements
+    "paths":{
+      "@/*": ["./src/*"] // Single pattern for absoltue imports
+    }
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
