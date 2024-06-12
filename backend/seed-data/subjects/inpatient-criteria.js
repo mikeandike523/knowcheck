@@ -3,6 +3,7 @@ module.exports = {
   blurb: `
   Test your decision-making for the intake of an inpatient under specific diagnoses, based on well known criteria.
   `,
+  unlisted: false,
   questions: [
     {
       body:

@@ -3,6 +3,7 @@ module.exports={
     blurb:`
     Test your knowledge of Point-of-Care ultrasound (POCUS) theory adn techniquE
     `,
+    unlisted: false,
     // For dev testing only
     // Were designed by gpt-4o
     // Not accurate or final
