@@ -190,9 +190,60 @@ async function createRPCHandler(callback,routeName=""){
     })
 }
 
+// Old roll-your-own version
+// /**
+//  * 
+//  * @param {*} db - A Firstore DB reference
+//  * @param {*} route - The requested route / firebase function
+//  * @param {*} error - 1. An RPCError object
+//  *                                           
+//  *                       OR
+//  * 
+//  *                    2. A (sync) callback that when given a ticket number constructs the error
+//  *                            (which in some cases may involve
+//  *                            simply passing a refrence to an existing error object) 
+//  * 
+//  * @returns {Promise<RPCError>} A reference to the original error (potentially generated from a callback)
+//  */
+// async function fileError(db, route, error) {
+//     // Step 1: Generate a unique ticket number (15 digits numeric string)
+//     const generateTicketNumber = () => {
+//         let ticketNumber = '';
+//         for (let i = 0; i < 15; i++) {
+//             ticketNumber += Math.floor(Math.random() * 10).toString();
+//         }
+//         return ticketNumber;
+//     };
+
+//     const ticketNumber = generateTicketNumber();
+
+//     // Step 2: Construct the error if it's a function, otherwise assume it's an RPCError
+//     const constructError = typeof error === 'function' ? error(ticketNumber) : error;
+
+//     // Step 3: Ensure the error is wrapped in an RPCError
+//     const rpcError = RPCError.wrap(constructError);
+
+//     // Step 4: Convert the error to JSON
+//     const errorData = rpcError.toJSON();
+
+//     // Step 5: Add the route and ticket number to the error data
+//     errorData.route = route;
+//     errorData.ticketNumber = ticketNumber;
+
+//     // Step 6: Add the error document to the errorTickets collection
+//     const errorCollection = db.collection('errorTickets');
+//     await errorCollection.doc(ticketNumber).set(errorData);
+
+//     // Step 7: Return the original error for "rethrow"
+//     // I.e. "fileError" is kinda like middleware
+//     return rpcError
+// }
+
+// Better version using firebase logging service
+
 /**
  * 
- * @param {*} db - A Firstore DB reference
+ * @param {*} db - A Firestore DB reference
  * @param {*} route - The requested route / firebase function
  * @param {*} error - 1. An RPCError object
  *                                           
@@ -200,7 +251,7 @@ async function createRPCHandler(callback,routeName=""){
  * 
  *                    2. A (sync) callback that when given a ticket number constructs the error
  *                            (which in some cases may involve
- *                            simply passing a refrence to an existing error object) 
+ *                            simply passing a reference to an existing error object) 
  * 
  * @returns {Promise<RPCError>} A reference to the original error (potentially generated from a callback)
  */
@@ -208,8 +259,9 @@ async function fileError(db, route, error) {
     // Step 1: Generate a unique ticket number (15 digits numeric string)
     const generateTicketNumber = () => {
         let ticketNumber = '';
-        for (let i = 0; i < 15; i++) {
-            ticketNumber += Math.floor(Math.random() * 10).toString();
+        const digits = '0123456789';
+        for (let i = 0; i < TICKET_NUMBER_LENGTH; i++) {
+            ticketNumber += digits.charAt(Math.floor(Math.random() * digits.length));
         }
         return ticketNumber;
     };
@@ -229,14 +281,18 @@ async function fileError(db, route, error) {
     errorData.route = route;
     errorData.ticketNumber = ticketNumber;
 
-    // Step 6: Add the error document to the errorTickets collection
-    const errorCollection = db.collection('errorTickets');
-    await errorCollection.doc(ticketNumber).set(errorData);
+    // Step 6: Log the error to Firebase Logging
+    const metadata = {
+        resource: { type: 'global' },
+    };
+
+    const entry = log.entry(metadata, errorData);
+    await log.write(entry);
 
     // Step 7: Return the original error for "rethrow"
-    // I.e. "fileError" is kinda like middleware
-    return rpcError
+    return rpcError;
 }
+
 
 module.exports.RPCError = RPCError
 module.exports.simulateRPC = simulateRPC
