@@ -9,6 +9,8 @@
     "linkutils": "bash linkutils.sh"
   },
   "dependencies": {
+    "@fontsource/roboto": "^5.0.13",
+    "@fontsource/roboto-mono": "^5.0.18",
     "common-prefix": "^1.1.0",
     "firebase": "^10.12.2",
     "firebase-cli": "^1.2.0"
