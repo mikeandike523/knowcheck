@@ -1,35 +1,53 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import './App.css';
 
-function App() {
-  const [count, setCount] = useState(0)
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Suspense, lazy } from 'react';
+
+// Function to create route with error handling
+const createPargeRoute = (relpath: string) => {
+  // Step 1: Translate bracket syntax for slugs to the BrowserRouter syntax (colon)
+  const path = relpath.replace(/\[(\w+)\]/g, ':$1');
+
+  // Step 2: Async import the component assuming the default export is a valid React component
+  const Component = lazy(async () => {
+    try {
+      return await import(/* @vite-ignore */ `./pages/${relpath}`);
+    } catch (error) {
+      try {
+        return await import(/* @vite-ignore */ `./pages/${relpath}/index`  );
+      } catch (indexError) {
+        return () => <div>Page Not Found</div>;
+      }
+    }
+  });
+
+  // Step 3: Render using React.Suspense
+  return {
+    browserRouterPath: path,
+    component: (
+      <Suspense fallback={<div>Loading...</div>}>
+        <Component />
+      </Suspense>
+    ),
+  };
+};
+
+const App: React.FC = () => {
+  // Manually define the routes for now
+  const routes = ['index', 'about']; // Add more paths as needed
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={createPargeRoute("/index").component} />
+        {routes.map((route) => {
+          const { component, browserRouterPath } = createPargeRoute(route);
+          return <Route key={browserRouterPath} path={browserRouterPath} element={component} />;
+        })}
+        <Route path="*" element={<div>Page Not Found</div>} />
+      </Routes>
+    </BrowserRouter>
+  );
+};
 
-export default App
+export default App;
