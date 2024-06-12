@@ -1,7 +1,7 @@
 const functions = require("firebase-functions/v2");
 
 const formatError = require("../utils/formatError.js");
-const simulateRPC = require("../utils/simulateRPC.js");
+const simulateRPC = require("../utils/rpc.js");
 const SmartFetch = require("../utils/SmartFetch.js");
 
 const openAIKey = process.env.OPENAI_API_KEY;

@@ -630,6 +630,11 @@ combined-stream@~0.0.4, combined-stream@~0.0.5:
   dependencies:
     delayed-stream "0.0.5"
 
+common-prefix@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/common-prefix/-/common-prefix-1.1.0.tgz#e3a5ea7fafaefc7eb84e760523e1afb985f90f00"
+  integrity sha512-9HAWgTP6U7K4G94u3J/oETIczTkzqZGn/cVFHDKVh/iFtZPBxuJ/qT+8Q5Np1XSXMZsRgnrpes7SrWOTJxFtaw==
+
 concat-map@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"

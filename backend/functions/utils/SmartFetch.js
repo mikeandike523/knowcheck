@@ -3,9 +3,7 @@
 // Takes an value, including types such as `Error` or recursive types,
 // and safely converts it to its nearest useful plain object representation
 
-if(typeof window==="undefined" && typeof module!== "undefined"){
-    const formatError = require("./formatError.js")
-}
+const formatError = require("./formatError.js")
 
 class FetchError extends Error {
     constructor(url, method, statusCode, statusText, text){
@@ -115,6 +113,4 @@ class SmartFetch{
 
 }
 
-if(typeof window==="undefined" && typeof module !== "undefined"){
-    module.exports = SmartFetch;
-}
+module.exports = SmartFetch;

@@ -38,7 +38,3 @@ function formatError(e){
     }
     return recursion(e)
 }
-
-if(typeof window==="undefined" && typeof module!== "undefined"){
-    module.exports=formatError
-}
