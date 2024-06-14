@@ -6,17 +6,21 @@ import path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react({
-    jsxImportSource: "@emotion/react",
-  }), mkcert(), rewriteAll()],
+  plugins: [
+    react({
+      jsxImportSource: "@emotion/react",
+    }),
+    mkcert(),
+    rewriteAll(),
+  ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src'),
+      "@": path.resolve(__dirname, "src"),
     },
   },
-  server: {
-    fs: {
-      allow:['../node_modules/@fontsource',"src"]
-    }
-  }
-})
+  // server: {
+  //   fs: {
+  //     allow: ["node_modules/@fontsource", "src"],
+  //   },
+  // },
+});

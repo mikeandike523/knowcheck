@@ -1,5 +1,5 @@
-const dedent = require("./dedent.js")
+const dedent = require("./dedent.js");
 
-module.exports = function(text){
-    return dedent(text).trim()
-}
+module.exports = function (text) {
+  return dedent(text).trim();
+};

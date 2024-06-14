@@ -12,7 +12,7 @@ const __filename = osSpecificPath;
 const __dirname = path.dirname(__filename);
 
 const serviceAccount = JSON.parse(
-  fs.readFileSync(path.join(__dirname, "..", "service-account-key.json"))
+  fs.readFileSync(path.join(__dirname, "..", "service-account-key.json")),
 );
 
 admin.initializeApp({
@@ -51,9 +51,10 @@ async function main() {
     .filter((file) => file.endsWith(".js"));
 
   for (const dataFile of dataFiles) {
-    const subjectData = (await import(path.join(subjectsDir, dataFile))).default;
+    const subjectData = (await import(path.join(subjectsDir, dataFile)))
+      .default;
     console.log(`Processing subject: ${dataFile}`);
-    console.log(subjectData)
+    console.log(subjectData);
     const subjectId = path.basename(dataFile, ".js");
     const subjectName = subjectData.name;
     const subjectBlurb = subjectData.blurb;

@@ -1,14 +1,11 @@
 {
-	"folders": [
-		{
-			"path": "."
-		}
-	],
-	"settings": {
-
-			"files.eol":"\n",
-			"terminal.integrated.defaultProfile.windows": "Git Bash",
-			
-
-	}
+  "folders": [
+    {
+      "path": ".",
+    },
+  ],
+  "settings": {
+    "files.eol": "\n",
+    "terminal.integrated.defaultProfile.windows": "Git Bash",
+  },
 }

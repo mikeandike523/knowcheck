@@ -2,17 +2,10 @@
   "name": "knowcheck",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "https://github.com/DormantOne/knowcheck",
+  "repository": "https://github.com/mikeandike523/knowcheck.git",
   "author": "Michael Sohnen <michaelsohnenacademic@gmail.com>",
   "license": "MIT",
-  "scripts": {
-    "linkutils": "bash linkutils.sh"
-  },
-  "dependencies": {
-    "@fontsource/roboto": "^5.0.13",
-    "@fontsource/roboto-mono": "^5.0.18",
-    "common-prefix": "^1.1.0",
-    "firebase": "^10.12.2",
-    "firebase-cli": "^1.2.0"
+  "devDependencies": {
+    "prettier": "^3.3.2"
   }
 }
