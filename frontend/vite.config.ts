@@ -5,7 +5,7 @@ import rewriteAll from "vite-plugin-rewrite-all";
 import path from "path";
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
     react({
       jsxImportSource: "@emotion/react",
@@ -18,9 +18,10 @@ export default defineConfig({
       "@": path.resolve(__dirname, "src"),
     },
   },
-  // server: {
-  //   fs: {
-  //     allow: ["node_modules/@fontsource", "src"],
-  //   },
-  // },
-});
+  define: {
+    "process.env.RPC_URL":
+      mode === "production"
+        ? process.env.RPC_URL_PROD ?? ""
+        : process.env.RPC_URL_DEV ?? "",
+  },
+}));

@@ -285,11 +285,27 @@ export const asMapping = {
       <samp ref={ref} {...props} />
     ),
   ),
-  i: forwardRef(
+  italic: forwardRef(
     (props: HTMLAttributes<HTMLElement>, ref: ForwardedRef<HTMLElement>) => (
       <i ref={ref} {...props} />
     ),
   ),
+  bold: forwardRef(
+    (props: HTMLAttributes<HTMLElement>, ref: ForwardedRef<HTMLElement>) => (
+      <b ref={ref} {...props} />
+    ),
+  ),
+  strong: forwardRef(
+    (props: HTMLAttributes<HTMLElement>, ref: ForwardedRef<HTMLElement>) => (
+      <strong ref={ref} {...props} />
+    ),
+  ),
+  hr: forwardRef(
+    (
+      props: HTMLAttributes<HTMLHRElement>,
+      ref: ForwardedRef<HTMLHRElement>,
+    ) => <hr ref={ref} {...props} />,
+  )
 } as const;
 
 export type AsPropsType = {

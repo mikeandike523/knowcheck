@@ -1,7 +1,7 @@
 import { css } from "@emotion/react";
 
 import theme from "@/themes/main";
-import { H1, I, H2 } from "@/fwk/html";
+import { H1, Italic, H2, Hr } from "@/fwk/html";
 
 export default function Index() {
   return (
@@ -17,8 +17,9 @@ export default function Index() {
       `}
     >
       <H1 fontSize={theme.fontSize.jumbotron}>Know/Check{"\u{2122}"}</H1>
-      <I>By Wired Hyena LLC</I>
+      <Italic>By Wired Hyena LLC</Italic>
       <H2>The World's Leading AI-Powered Quiz Platform</H2>
+      <Hr />
     </div>
   );
 }

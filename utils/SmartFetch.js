@@ -53,11 +53,11 @@ class InvalidJSONError extends Error {
 
 class SmartFetch {
   constructor(baseUrl) {
-    this.baseUrl = baseUrl;
+    this.baseUrl = baseUrl.replace(/\/$/, "");
     this.token = undefined;
   }
   route(path) {
-    this.baseUrl = `${this.baseUrl}${path}`;
+    this.baseUrl = `${this.baseUrl}/${path}`;
     return this;
   }
 
@@ -120,4 +120,7 @@ class SmartFetch {
   }
 }
 
-module.exports = SmartFetch;
+module.exports.SmartFetch = SmartFetch;
+module.exports.FetchError = FetchError;
+module.exports.InvalidJSONError = InvalidJSONError;
+
