@@ -4,6 +4,15 @@ import mkcert from "vite-plugin-mkcert";
 import rewriteAll from "vite-plugin-rewrite-all";
 import path from "path";
 
+import React from 'react'
+
+import prerenderComponent from './src/lib/prerenderComponent'
+import Spinner from './src/components/SpinnerOverlay'
+
+const spinnerText = prerenderComponent(React.createElement(Spinner))
+
+console.log(spinnerText)
+
 const RPC_URL_PROD="http://localhost:5001/knowcheck-4cbab/us-central1"
 const RPC_URL_DEV="https://us-central1-knowcheck-4cbab.cloudfunctions.net"
 

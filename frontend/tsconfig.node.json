@@ -6,7 +6,16 @@
     "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "lib": ["ESNext"]
+    "lib": ["ESNext"],
+    "jsx": "react-jsx",
+    "paths":{
+      "@/*": ["./src/*"]
+    }
   },
-  "include": ["vite.config.ts"]
+  "include": [
+    "vite.config.ts",
+    "./src/lib/prerenderComponent.tsx",
+    "./src/components/SpinnerOverlay.tsx",
+    "./src/fwk/html.tsx"
+  ]
 }
