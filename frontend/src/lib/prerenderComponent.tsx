@@ -1,8 +1,27 @@
-import {ReactNode} from 'react'
-import * as ReactDOMServer from 'react-dom/server'
+import { ReactNode } from 'react';
 
-/** Renders a given component to HTML */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function prerenderComponent(element: ReactNode){
-    return ReactDOMServer.renderToStaticMarkup(element)
+import { CacheProvider } from '@emotion/react'
+import { renderToString } from 'react-dom/server'
+import createEmotionServer from '@emotion/server/create-instance'
+import createCache from '@emotion/cache'
+
+const key = 'custom'
+const cache = createCache({ key })
+const { extractCriticalToChunks, constructStyleTagsFromChunks } = createEmotionServer(cache)
+
+
+export default function prerenderComponent(element: ReactNode) {
+  const html = renderToString(
+    <CacheProvider value={cache}>
+      {element}
+    </CacheProvider>
+  )
+  
+  const chunks = extractCriticalToChunks(html)
+  const styles = constructStyleTagsFromChunks(chunks)
+  
+  return {
+    html,
+    styles,
+  }
 }

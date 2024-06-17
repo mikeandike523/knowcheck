@@ -26,7 +26,7 @@
 
 import { css, keyframes } from "@emotion/react";
 
-import { Div } from "@/fwk/html";
+import { Div } from "../fwk/html";
 
 export default function Spinner() {
   const spinAnimation = keyframes`
@@ -55,9 +55,9 @@ export default function Spinner() {
         css={css`
           z-index: 1;
           position: relative;
-          animation: spin 1s linear infinite;
-          width: 5rem;
-          height: 5rem;
+          animation: ${spinAnimation} 1s linear infinite;
+          width: clamp(15%, 5rem, 10rem);
+          aspect-ratio: 1 / 1;
           border-radius: 50%;
           background: conic-gradient(
             from 0deg,
@@ -98,8 +98,6 @@ export default function Spinner() {
             border: 12px solid black;
             background: white;
           }
-
-          ${spinAnimation}
         `}
       ></Div>
     </Div>

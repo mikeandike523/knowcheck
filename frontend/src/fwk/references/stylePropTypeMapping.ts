@@ -65,6 +65,14 @@ export const stylePropTypeMapping = {
   wordBreak: "normal | break-all | keep-all | break-word",
   wordWrap: "normal | break-word | inherit | initial | unset",
   clipPath: "string",
+  gap: "string | number",
+  background: "string",
+  gridTemplateColumns: "string",
+  gridTemplateRows: "string",
+  gridTemplateAreas: "string",
+  gridAutoFlow: "row | column | row-dense | column-dense",
+  gridAutoColumns: "string",
+  gridAutoRows: "string",
 } as const;
 
-export default stylePropTypeMapping;
+export default stylePropTypeMapping
