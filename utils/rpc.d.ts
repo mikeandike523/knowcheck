@@ -1,3 +1,11 @@
+export type RPCErrorData = {
+  status: number;
+  logMessage: string;
+  cause?: any;
+  userFacingMessage?: string;
+  name: 'RPCError';
+}
+
 declare class RPCError extends Error {
   logMessage: string;
   status: number;
@@ -41,10 +49,10 @@ declare class RPCError extends Error {
   };
   toString(): string;
   static is(obj: any): obj is RPCError;
-  static isLike(obj: any): boolean;
+  static isLike(obj: any): obj is RPCErrorData;
   static wrap(obj: any, status?: number): RPCError;
 }
 
-export {
+exports = {
     RPCError,
 }

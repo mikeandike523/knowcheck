@@ -1,7 +1,16 @@
-const formatError = require("./formatError.js");
-const dedentTrim = require("./dedentTrime.js");
-const indent = require("./indent.js");
-const { fillTemplate, escapeForTemplate } = require("./string-templating.js");
+import * as fe from "./formatError.js";
+const formatError = fe.default;
+import * as dt from "./dedentTrim.js";
+const dedentTrim = dt.default;
+
+console.log(dedentTrim)
+
+
+import * as idnt from "./indent.js";
+const indent = idnt.default;
+import * as st from "./string-templating.js"
+const fillTemplate = st.fillTemplate;
+const escapeForTemplate = st.escapeForTemplate;
 
 class RPCError extends Error {
   static buildMessage({
@@ -179,6 +188,8 @@ class TypicalRPCErrors {
 }
 
 
-module.exports.RPCError = RPCError;
-module.exports.TyipcalUserFacingErrorMessages = TyipcalUserFacingErrorMessages;
-module.exports.TypicalRPCErrors = TypicalRPCErrors;
+export {
+  RPCError,
+  TypicalRPCErrors,
+  TyipcalUserFacingErrorMessages
+}

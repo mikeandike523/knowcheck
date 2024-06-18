@@ -5,6 +5,11 @@ export const values = {
 }
 
 export const theme = {
+  components:{
+    LoadingOverlay: {
+      opacityTransitionTime: "0.5s",
+    }
+  },
   colors: {...values.colors },
   fontSize: {
     jumbotron: "64px",

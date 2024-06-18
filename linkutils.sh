@@ -1,7 +1,13 @@
 #!/bin/bash
 
-rm -f backend/utils
-rm -f frontend/utils
+dn="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 
-ln -s "$(pwd)/utils" "$(pwd)/backend/utils"
-ln -s "$(pwd)/utils" "$(pwd)/frontend/src/utils"
+rm -rf backend/utils
+rm -rf backend/src/utils
+
+rm -f backend/utils
+rm -f frontend/src/utils
+
+
+ln -s "$dn/utils" "$dn/backend/utils"
+ln -s "$dn/utils" "$dn/frontend/src/utils"

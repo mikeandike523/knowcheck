@@ -35,4 +35,4 @@ function formatError(e) {
   return recursion(e);
 }
 
-module.exports = formatError;
+export default formatError;

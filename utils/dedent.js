@@ -1,5 +1,12 @@
-const commonPrefix = require("common-prefix");
-
+function commonPrefix(strings) {
+  const minLength = Math.min(...strings.map((s) => s.length));
+  for (let i = 0; i < minLength; i++) {
+    if (strings[0][i]!== strings[1][i]) {
+      return strings[0].slice(0, i);
+    }
+  }
+  return strings[0].slice(0, minLength);
+}
 function captureLeadingWhitespace(line) {
   const leadingWhitespace = line.match(/^\s*/)[0];
   return {
@@ -18,6 +25,10 @@ function captureLeadingWhitespace(line) {
  * @param {string} text - the text to dedent
  */
 function dedent(text) {
+  if(Array.isArray(text)) {
+    text=text.join("")
+  }
+  console.log(text)
   const normalized = text.replace(/\r\n/g, "\n");
   const lines = normalized.split("\n");
   const nonBlankOrAllWhitespaceLines = lines.filter(
@@ -49,4 +60,4 @@ function dedent(text) {
   return dedentedLines.join("\n");
 }
 
-module.exports = dedent;
+export default dedent

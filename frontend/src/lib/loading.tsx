@@ -25,6 +25,7 @@ export function useLoadingTask<TData>(): LoadingTask<TData> {
         setIdle: () => setState("idle"),
         setLoading: () => setState("loading"),
         setError: (error) => {
+            setState("error");
             setError(error);
         },
         setSuccess: (data) => {
@@ -34,7 +35,7 @@ export function useLoadingTask<TData>(): LoadingTask<TData> {
     }
 }
 
-export interface LoadingBarrierProps<TData> extends DivProps {
+export interface LoadingTaskElementSwitchProps<TData> extends DivProps {
     task: LoadingTask<TData>;
     idleElement?: ReactNode;
     loadingElement?: ReactNode;
@@ -48,7 +49,7 @@ export interface LoadingBarrierProps<TData> extends DivProps {
     resetButtonSelection?: LoadingState[]
 }
 
-function LoadingBarrierStateElementSelection<TData>({
+function LoadingTaskElementSwitchStateElementSelection<TData>({
     item,
     idleElement,
     loadingElement,
@@ -60,7 +61,7 @@ function LoadingBarrierStateElementSelection<TData>({
     errorSelection,
     successSelection,
     resetButtonSelection,
-}:Omit<LoadingBarrierProps<TData>,'task'>&{
+}:Omit<LoadingTaskElementSwitchProps<TData>,'task'>&{
     item: LoadingState | "resetButton"
 }) {
     const elementMap = {
@@ -86,13 +87,13 @@ function LoadingBarrierStateElementSelection<TData>({
     </Fragment>
 }
 
-export function LoadingBarrier<TData>({task,...rest}:LoadingBarrierProps<TData>){
+export function LoadingTaskElementSwitch<TData>({task,...rest}:LoadingTaskElementSwitchProps<TData>){
     const taskState = task.state;
     return <Div key="LoadingBarrierRot" {...rest}>
-        {taskState === "idle" && <LoadingBarrierStateElementSelection key={taskState} item="idle" {...rest} />}
-        {taskState === "loading" && <LoadingBarrierStateElementSelection key={taskState} item="loading" {...rest} />}
-        {taskState === "error" && <LoadingBarrierStateElementSelection key={taskState} item="error" {...rest} />}
-        {taskState === "success" && <LoadingBarrierStateElementSelection key={taskState} item="success" {...rest} />}
-        <LoadingBarrierStateElementSelection key={"resetButton"} item="resetButton" {...rest} />
+        {taskState === "idle" && <LoadingTaskElementSwitchStateElementSelection key={taskState} item="idle" {...rest} />}
+        {taskState === "loading" && <LoadingTaskElementSwitchStateElementSelection key={taskState} item="loading" {...rest} />}
+        {taskState === "error" && <LoadingTaskElementSwitchStateElementSelection key={taskState} item="error" {...rest} />}
+        {taskState === "success" && <LoadingTaskElementSwitchStateElementSelection key={taskState} item="success" {...rest} />}
+        <LoadingTaskElementSwitchStateElementSelection key={"resetButton"} item="resetButton" {...rest} />
     </Div>
 }

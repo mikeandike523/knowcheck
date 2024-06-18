@@ -1,54 +1,62 @@
-import { useEffect } from 'react'
+import { useEffect } from "react";
 
-import {SmartFetch} from '@/utils/SmartFetch';
-import {RPCError } from '@/utils/rpc';
-import appConfig from '@/appConfig';
-import { DependencyList } from 'react';
-import { useLoadingTask } from './loading';
+import * as sf from "@/utils/SmartFetch";
+import * as rpc from "@/utils/rpc";
+import appConfig from "@/appConfig";
+import { DependencyList } from "react";
+import { useLoadingTask } from "./loading";
+
+const RPCError = rpc.RPCError;
+const SmartFetch = sf.SmartFetch;
 
 /**
  * The list of JSON compatible JS primitive types
  */
-export type SerializablePrimitive = string | number | boolean | null
+export type SerializablePrimitive = string | number | boolean | null;
 
 /**
  * An object or array, that may be arbitrarily nested, and is fully JSON serializable
  */
-export type SerializableObject = {
-    [key: string|number]: SerializablePrimitive | SerializableObject
-} | SerializablePrimitive[] | SerializableObject[]
-
-
+export type SerializableObject =
+  | SerializablePrimitive
+  | {
+      [key: string | number]: SerializablePrimitive | SerializableObject;
+    }
+  | SerializablePrimitive[]
+  | SerializableObject[];
 
 /**
- * 
+ *
  * Creates a function that can be used to call a particular RPC route (firebase function)
- * 
+ *
  * @param route - The route name (firebase function)
- * @returns 
+ * @returns
  */
-export function useRPCRoute<TArgs extends SerializableObject, TReturn extends SerializableObject>(route: string) {
-    const sf = new SmartFetch(appConfig().RPC_URL).route(route);
-    return async function route(args: TArgs): Promise<TReturn> {
-        try {
-            return await sf.post(args);
-        } catch (e) {
-            if (RPCError.isLike(e)) {
-                throw RPCError.wrap(e)
-            } else {
-                throw new RPCError({
-                    status: 400,
-                    userFacingMessage: 'Something went wrong in your browser.',
-                    logMessage: 'Client error',
-                    cause: e,
-                });
-            }
-        }
+export function useRPCRoute<
+  TArgs extends SerializableObject,
+  TReturn extends SerializableObject,
+>(route: string) {
+  const sf = new SmartFetch(appConfig().RPC_URL).route(route);
+  return async function route(args: TArgs): Promise<TReturn> {
+    try {
+      return await sf.post(args);
+    } catch (e) {
+      if (RPCError.isLike(e)) {
+        throw RPCError.wrap(e);
+      } else {
+        throw new RPCError({
+          status: 400,
+          userFacingMessage: "Something went wrong in your browser.",
+          logMessage: "Client error",
+          cause: e,
+        });
+      }
     }
+  };
 }
 
 /**
- * 
+ *
  * @param route - The name of the RPC route (firebase function)
  * @param args - The arguments to pass to the RPC route (JSON primitive, object, or array)
  * @param additionalDeps - Any additional dependencies,
@@ -56,18 +64,23 @@ export function useRPCRoute<TArgs extends SerializableObject, TReturn extends Se
  *                         there is a time-bound operation where
  *                         `args` does not change value but the
  *                         fetch must be repeated
- * @returns 
+ * @returns
  */
-export function useAPIData<TArgs extends SerializableObject, TReturn extends SerializableObject>(route: string,args: TArgs,additionalDeps: DependencyList = []) {
-    const loadingTask = useLoadingTask<TReturn>();
-    const rpcRoute = useRPCRoute<TArgs, TReturn>(route);
-    useEffect(()=>{
-        loadingTask.setLoading();
-        rpcRoute(args).then(data=>{
-            loadingTask.setSuccess(data);
-        }).catch(e=>{
-            loadingTask.setError(e);
-        })
-    },[JSON.stringify(args),...additionalDeps]);
-    return loadingTask
+export function useAPIData<
+  TArgs extends SerializableObject,
+  TReturn extends SerializableObject,
+>(route: string, args: TArgs, additionalDeps: DependencyList = []) {
+  const loadingTask = useLoadingTask<TReturn>();
+  const rpcRoute = useRPCRoute<TArgs, TReturn>(route);
+  useEffect(() => {
+    loadingTask.setLoading();
+    rpcRoute(args)
+      .then((data) => {
+        loadingTask.setSuccess(data);
+      })
+      .catch((e) => {
+        loadingTask.setError(e);
+      });
+  }, [JSON.stringify(args), ...additionalDeps]);
+  return loadingTask;
 }
