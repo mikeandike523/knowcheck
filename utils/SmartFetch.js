@@ -3,7 +3,8 @@
 // Takes an value, including types such as `Error` or recursive types,
 // and safely converts it to its nearest useful plain object representation
 
-const formatError = require("./formatError.js");
+import * as fe from "./formatError.js";
+const formatError = fe.default;
 
 class FetchError extends Error {
   constructor(url, method, statusCode, statusText, text) {
@@ -120,7 +121,9 @@ class SmartFetch {
   }
 }
 
-module.exports.SmartFetch = SmartFetch;
-module.exports.FetchError = FetchError;
-module.exports.InvalidJSONError = InvalidJSONError;
+export {
+  SmartFetch,
+  FetchError,
+  InvalidJSONError,
+}
 

@@ -1,13 +1,13 @@
-const {RPCError} = require("./RPCError");
-const functions = require("firebase-functions/v2");
-const {log} = require("firebase-functions/v2/logger")
+import {RPCError} from './rpc.js'
+import functions from "firebase-functions/v2"
+import {logger} from "firebase-functions/v2";
 
 /**
  * @param {*} route - The requested route / firebase function
  * @param {*} error - 1. An RPCError object
  *
  *                       OR
- *
+ * 
  *                    2. A (sync) callback that when given a ticket number constructs the error
  *                            (which in some cases may involve
  *                            simply passing a reference to an existing error object)
@@ -46,8 +46,8 @@ async function fileError(route, error) {
       resource: { type: "global" },
     };
   
-    const entry = log.entry(metadata, errorData);
-    await log.write(entry);
+    const entry = logger.entry(metadata, errorData);
+    await logger.write(entry);
   
     // Step 7: Return the original error for "rethrow"
     return rpcError;
@@ -81,7 +81,8 @@ async function simulateRPC(request, response, callback, routeName = "") {
   
   
 
-module.exports.simulateRPC = simulateRPC;
-module.exports.createRPCHandler = createRPCHandler;
-module.exports.fileError = fileError;
-  
+export {
+  simulateRPC,
+  createRPCHandler,
+  fileError,
+}

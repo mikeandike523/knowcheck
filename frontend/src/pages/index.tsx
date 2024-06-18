@@ -1,7 +1,11 @@
 import theme from "@/themes/main";
 import { H1, H2, Div } from "@/fwk/html";
 
+import { useAPIData } from "@/lib/rpc-client";
+import LoadingOverlay from "@/components/LoadingOverlay";
+
 export default function Index() {
+  const listSubjectsTask = useAPIData<null,string[]>("listSubjects",null);
   return (
     <Div
       width="100%"
@@ -85,6 +89,9 @@ export default function Index() {
         >
           Categories
         </H1>
+        <LoadingOverlay task={listSubjectsTask}>
+        {JSON.stringify(listSubjectsTask.data??[],null,2)}
+        </LoadingOverlay>
       </Div>
     </Div>
   );

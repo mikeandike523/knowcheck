@@ -8,9 +8,10 @@
  * As well as a list of supporting information unique to the question at hand
  */
 
-const { createRPCHandler, TypicalRPCErrors } = require("./utils/rpc.js");
+import {TypicalRPCErrors } from "../utils/rpc.js"
+import {createRPCHandler } from "../utils/rpc-server.js"
 
-const admin = require("firebase-admin");
+import admin from 'firebase-admin'
 
 admin.initializeApp();
 
@@ -33,8 +34,9 @@ const db = admin.firestore();
  * `args` is expected to be an empty object since on the client side, if an api call takes no arguments,
  * `undefined` is coalesced to empty object `{}` using the nullish coalescing operator `??`
  */
-module.exports.listSubjects = createRPCHandler(async (args) => {
+export const listSubjects = createRPCHandler(async (args) => {
   // todo
+  return []
 });
 
 /**
@@ -55,7 +57,7 @@ module.exports.listSubjects = createRPCHandler(async (args) => {
  *   unlisted: boolean
  * }
  */
-module.exports.getSubjectConfig = createRPCHandler(async (args) => {
+export const getSubjectConfig = createRPCHandler(async (args) => {
   const subjectId = args.id;
   const subjectConfig = await db.collection("subjects").doc(subjectId).get();
   if (!subjectConfig.exists) {
