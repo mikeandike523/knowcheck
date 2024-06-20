@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "svg-designer": "../svg-designer"
+  }
+}

@@ -4,8 +4,11 @@ import { H1, H2, Div } from "@/fwk/html";
 import { useAPIData } from "@/lib/rpc-client";
 import LoadingOverlay from "@/components/LoadingOverlay";
 
+import DynamicSVG from "svg-designer/lib/react/DynamicSVG";
+import SVGBuilder from "svg-designer/lib/SVGBuilder";
+
 export default function Index() {
-  const listSubjectsTask = useAPIData<null,string[]>("listSubjects",null);
+  const listSubjectsTask = useAPIData<null, string[]>("listSubjects", null);
   return (
     <Div
       width="100%"
@@ -37,24 +40,72 @@ export default function Index() {
             gap={theme.gutters.md}
             alignItems="center"
             justifyContent="flex-start"
-            background={theme.card.background}
-            padding={theme.gutters.xxl}
+            position="relative"
           >
-            <H1
-              color={theme.colors.brand}
-              fontSize={theme.fontSize.jumbotron}
-              margin={0}
-              padding={0}
+            <Div
+              position="absolute"
+              top={0}
+              left={0}
+              right={0}
+              bottom={0}
+              display="grid"
+              gridTemplateRows="1fr auto"
+              gridTemplateColumns="1fr auto"
+              filter="drop-shadow(0px 0px 8px rgba(0,0,0,0.75))"
             >
-              Know/Check{"\u{2122}"}
-            </H1>
+              <Div background={theme.card.background}></Div>
+              <Div background={theme.card.background}></Div>
+              <Div background={theme.card.background}></Div>
+              <Div
+                width="32px"
+                height="32px"
+              >
+                <DynamicSVG
+                style={{
+                  filter: "drop-shadow(0px 0px 4px rgba(0,0,0,0.75))"
+                }}
+                  cssVars={{
+                    "--fgcolor": theme.card.background,
+                    "--bgcolor": "transparent"
+                  }}
+                  text={new SVGBuilder(32, 32)
+                    .artist("none",0, "var(--bgcolor)")
+                    .rectangle(0,0,32,32)
+                    .commit()
+                    .artist("none", 0, "var(--fgcolor)")
+                    .lineSequence(
+                      [
+            
+                        [0, 32],
+                        [0, 0],
+                        [32, 0],
+
+
+                      ],
+                      false
+                    )
+                    .commit()
+                    .compile(true)}
+                />
+      
+              </Div>
+            </Div>
+
+            <H1
+            position="relative"
+                color={theme.colors.brand}
+                fontSize={theme.fontSize.jumbotron}
+                margin={0}
+                padding={0}
+              >
+                Know/Check{"\u{2122}"}
+              </H1>
           </Div>
           <Div
             display="flex"
             flexDirection="column"
             alignItems="center"
             justifyContent="center"
-            padding={theme.gutters.xxl}
           >
             <H2
               color={theme.navbar.text.primary}
@@ -90,7 +141,7 @@ export default function Index() {
           Categories
         </H1>
         <LoadingOverlay task={listSubjectsTask}>
-        {JSON.stringify(listSubjectsTask.data??[],null,2)}
+          {JSON.stringify(listSubjectsTask.data ?? [], null, 2)}
         </LoadingOverlay>
       </Div>
     </Div>

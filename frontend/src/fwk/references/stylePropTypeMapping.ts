@@ -73,7 +73,11 @@ export const stylePropTypeMapping = {
   gridAutoFlow: "row | column | row-dense | column-dense",
   gridAutoColumns: "string",
   gridAutoRows: "string",
-  pointerEvents: "none | auto | all | inherit | initial | unset"
+  pointerEvents: "none | auto | all | inherit | initial | unset",
+  mask: "string",
+  maskImage: "string",
+  maskPosition: "string",
+  filter: "string"
 } as const
 
 export default stylePropTypeMapping
