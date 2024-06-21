@@ -1,10 +1,30 @@
 export const values = {
   colors: {
     brand: "hsla(10, 79%, 51%, 1)"
-  }
+  },
+  gutters: {
+    sm: "4px",
+    md: "8px",
+    lg: "12px",
+    xl: "16px",
+    xxl: "24px",
+  },
 }
 
 export const theme = {
+  pages:{
+    index: {
+      subjectListItem:{
+        margin: values.gutters.lg,
+        name:{
+          fontSize:"24px"
+        },
+        blurb: {
+          fontSize:"12px"
+        }
+      }
+    }
+  },
   gridCutoffs:{
     500: 2,
     768: 3,
@@ -22,13 +42,7 @@ export const theme = {
   fontSize: {
     jumbotron: "64px",
   },
-  gutters: {
-    sm: "4px",
-    md: "8px",
-    lg: "12px",
-    xl: "16px",
-    xxl: "24px",
-  },
+  gutters:values.gutters,
   card: {
     text: {
       accent: values.colors.brand,

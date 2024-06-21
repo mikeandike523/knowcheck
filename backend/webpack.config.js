@@ -8,10 +8,10 @@ module.exports = {
     optimization: {
         minimize: false
     },
-    entry: './functions/index.pre.ts',
+    entry: './functions/api.ts',
     output: {
         path:path.resolve(__dirname, 'functions'), // <-- Important
-        filename: './index.pre.js', // <-- Important
+        filename: './api.js', // <-- Important
         libraryTarget: 'this' // <-- Important
     },
     target: 'node', // <-- Important

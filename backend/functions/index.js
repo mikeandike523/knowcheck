@@ -1,4 +1,4 @@
-const indexPre = require('./index.pre.js');
+const indexPre = require('./api.js');
 
 Object.entries(indexPre).forEach(([k,v])=>{
     v.then((f)=>{

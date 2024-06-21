@@ -16,7 +16,7 @@
     "include": [
       "./**/*.ts",
       "./**/*.js",
-      "./**/*.mjs",
+      "./**/*.mjs", "../common/api-types.ts",
     ],
     "exclude": [
       "node_modules"                                // Exclude the node_modules directory

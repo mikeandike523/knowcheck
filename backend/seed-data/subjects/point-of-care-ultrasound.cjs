@@ -1,7 +1,7 @@
 module.exports = {
   name: "Point-of-Care Ultrasound (POCUS)",
   blurb: `
-    Test your knowledge of Point-of-Care ultrasound (POCUS) theory adn techniquE
+    Test your knowledge of Point-of-Care ultrasound (POCUS) theory and technique
     `,
   unlisted: false,
   // For dev testing only
