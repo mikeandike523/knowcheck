@@ -5,6 +5,14 @@ export const values = {
 }
 
 export const theme = {
+  gridCutoffs:{
+    500: 2,
+    768: 3,
+    1024: 4,
+    1280: 5,
+    1536: 6
+    
+  },
   components:{
     LoadingOverlay: {
       opacityTransitionTime: "0.5s",

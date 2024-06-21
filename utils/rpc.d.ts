@@ -19,16 +19,24 @@ declare module "./string-templating.js" {
 }
 
 interface RPCErrorConstructorParams {
-  status: number;
-  logMessage: string;
+  status?: number;
+  logMessage?: string;
   cause?: any;
   userFacingMessage?: string;
 }
 
+export interface RPCErrorData {
+  logMessage?: string;
+  userFacingMessage?: string;
+  status?: number;
+  cause?: any;
+  name: 'RPCError';
+}
+
 declare class RPCError extends Error {
-  logMessage: string;
-  status: number;
-  cause: any;
+  logMessage?: string;
+  status?: number;
+  cause?: any;
   userFacingMessage?: string;
 
   constructor(params: RPCErrorConstructorParams);

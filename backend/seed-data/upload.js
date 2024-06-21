@@ -46,9 +46,12 @@ async function main() {
   await clearCollection("subjects");
 
   const subjectsDir = path.join(__dirname, "subjects");
+
+  console.log(subjectsDir)
+
   const dataFiles = fs
     .readdirSync(subjectsDir)
-    .filter((file) => file.endsWith(".js"));
+    .filter((file) => file.endsWith(".cjs"));
 
   for (const dataFile of dataFiles) {
     const subjectData = (await import(path.join(subjectsDir, dataFile)))
@@ -65,6 +68,8 @@ async function main() {
       blurb: subjectBlurb,
       contextPrompt: subjectContextPrompt,
       userPromptTemplate: subjectUserPromptTemplate,
+      unlisted: subjectData.unlisted
+
     });
 
     for (const question of subjectData.questions) {

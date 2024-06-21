@@ -12,6 +12,7 @@ import {TypicalRPCErrors } from "../utils/rpc.js"
 import {createRPCHandler, fileError } from "../utils/rpc-server.js"
 
 import admin from 'firebase-admin'
+import {logger} from 'firebase-functions/v2'
 
 admin.initializeApp();
 
@@ -34,9 +35,18 @@ const db = admin.firestore();
  * `args` is expected to be an empty object since on the client side, if an api call takes no arguments,
  * `undefined` is coalesced to empty object `{}` using the nullish coalescing operator `??`
  */
-export const listSubjects = createRPCHandler(async (args) => {
-  // todo
-  return []
+export const listSubjects = createRPCHandler(async () => {
+  const subjects = await db.collection("subjects").where("unlisted", "==", false).get()
+  logger.write({
+    severity:"DEBUG",
+    data: subjects.docs
+  })
+  return subjects.docs.map((doc) => {
+    return {
+      name: doc.data().name,
+      blurb: doc.data().blurb
+    }
+  })
 });
 
 /**

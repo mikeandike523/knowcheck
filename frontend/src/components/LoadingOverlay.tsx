@@ -8,7 +8,7 @@ import * as fe from "@/utils/formatError";
 const RPCError = rpc.RPCError;
 const formatError = fe.default
 
-export interface LoadingOverlayProps<TData> {
+export interface LoadingOverlayProps<TData> extends DivProps {
   task: LoadingTask<TData>;
   /**
    * Whether or not the user is permitted to dismiss the error
@@ -52,12 +52,11 @@ export default function LoadingOverlay<TData>({
   dissmissAbortButtonProps = {},
   ...rest
 }: LoadingOverlayProps<TData>) {
-  console.log(task.state);
   const userFacingMessage = task.error
     ? typeof task.error === "string"
       ? task.error
       : RPCError.isLike(task.error)
-        ? task.error.userFacingMessage
+        ? (task.error as rpc.RPCErrorData).userFacingMessage
         : task.error instanceof Error
           ? task.error.message
           : typeof task.error === "object"

@@ -1,4 +1,4 @@
-import {RPCError} from './rpc.js'
+import {RPCError,TypicalRPCErrors} from './rpc.js'
 import functions from "firebase-functions/v2"
 import {logger} from "firebase-functions/v2";
 
@@ -15,6 +15,9 @@ import {logger} from "firebase-functions/v2";
  * @returns {Promise<RPCError>} A reference to the original error (potentially generated from a callback)
  */
 async function fileError(route, error) {
+
+    const TICKET_NUMBER_LENGTH = 15
+
     // Step 1: Generate a unique ticket number (15 digits numeric string)
     const generateTicketNumber = () => {
       let ticketNumber = "";
@@ -41,13 +44,7 @@ async function fileError(route, error) {
     errorData.route = route;
     errorData.ticketNumber = ticketNumber;
   
-    // Step 6: Log the error to Firebase Logging
-    const metadata = {
-      resource: { type: "global" },
-    };
-  
-    const entry = logger.entry(metadata, errorData);
-    await logger.write(entry);
+    await logger.write({severity:"ERROR",...errorData});
   
     // Step 7: Return the original error for "rethrow"
     return rpcError;
@@ -66,8 +63,8 @@ async function simulateRPC(request, response, callback, routeName = "") {
         response.status(e.status).json(e);
       } else {
         response.status(500).json(
-          await fileError(db, routeName, (ticketNumber) => {
-            return TypicalRPCErrors.GeneralServerError(e, ticketNumber);
+          await fileError(routeName, (ticketNumber) => {
+            return TypicalRPCErrors.UnknownServerError(e, ticketNumber);
           }),
         );
       }

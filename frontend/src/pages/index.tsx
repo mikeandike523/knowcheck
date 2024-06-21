@@ -1,3 +1,5 @@
+import {css} from '@emotion/react'
+
 import theme from "@/themes/main";
 import { H1, H2, Div } from "@/fwk/html";
 
@@ -8,7 +10,15 @@ import DynamicSVG from "svg-designer/lib/react/DynamicSVG";
 import SVGBuilder from "svg-designer/lib/SVGBuilder";
 
 export default function Index() {
-  const listSubjectsTask = useAPIData<null, string[]>("listSubjects", null);
+  const {task, fetchData} = useAPIData<null, string[]>("listSubjects", null);
+  const categories = task.data ?? []
+
+  console.log(categories)
+
+  const gridCutoffEntries = Object.entries(theme.gridCutoffs)
+
+  // A list of [number, number] where the first item is px and the second item is num columns
+
   return (
     <Div
       width="100%"
@@ -126,7 +136,6 @@ export default function Index() {
         flexDirection="column"
         alignItems="center"
         justifyContent="flex-start"
-        gap={theme.gutters.lg}
         marginTop={theme.gutters.xl}
         marginBottom={theme.gutters.xl}
       >
@@ -140,8 +149,20 @@ export default function Index() {
         >
           Categories
         </H1>
-        <LoadingOverlay task={listSubjectsTask}>
-          {JSON.stringify(listSubjectsTask.data ?? [], null, 2)}
+        <LoadingOverlay
+          task={task}
+          onDismiss={fetchData}
+          display="grid"
+          css={css`
+          ${gridCutoffEntries.map(([key, value]) => `
+          @media (min-width: ${key}px) {
+            grid-template-columns: repeat(${value}, 1fr);
+          }
+          `).join("\n")}
+            `}
+        >
+          {categories.map((category,i)=><Div key={i}>{JSON.stringify(category,null,2)}</Div>)}
+         
         </LoadingOverlay>
       </Div>
     </Div>

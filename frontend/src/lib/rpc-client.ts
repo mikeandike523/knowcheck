@@ -70,17 +70,23 @@ export function useAPIData<
   TArgs extends SerializableObject,
   TReturn extends SerializableObject,
 >(route: string, args: TArgs, additionalDeps: DependencyList = []) {
-  const loadingTask = useLoadingTask<TReturn>();
+  const task = useLoadingTask<TReturn>();
   const rpcRoute = useRPCRoute<TArgs, TReturn>(route);
-  useEffect(() => {
-    loadingTask.setLoading();
+  async function fetchData() {
+    task.setLoading();
     rpcRoute(args)
       .then((data) => {
-        loadingTask.setSuccess(data);
+        task.setSuccess(data);
       })
       .catch((e) => {
-        loadingTask.setError(e);
+        task.setError(e);
       });
+  }
+  useEffect(() => {
+    fetchData()
   }, [JSON.stringify(args), ...additionalDeps]);
-  return loadingTask;
+  return {
+    task,
+    fetchData
+  }
 }
