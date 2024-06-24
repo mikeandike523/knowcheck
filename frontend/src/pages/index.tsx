@@ -1,6 +1,5 @@
 import { css } from "@emotion/react";
 import { useEffect, useRef, useState, ReactNode } from "react";
-import {useNavigate} from 'react-router-dom'
 
 import { Div, DivProps, H1, H2 } from "@/fwk/html";
 import theme from "@/themes/main";
@@ -143,8 +142,7 @@ function HoverCard({ children, revealElement, ...rest }: HoverCardProps) {
 }
 
 export default function Index() {
-  const navigate = useNavigate();
-  const { task, fetchData } = useAPIData<null, SubjectListing[]>("listSubjects", null);
+  const { task, fetchData } = useAPIData<null, SubjectListingItem[]>("listSubjects", null);
   const subjects = task.data ?? [];
 
   console.log(subjects);
@@ -253,7 +251,7 @@ export default function Index() {
               gap={theme.gutters.md}
             >
               <HoverCard revealElement={<SemanticButton background="green" onClick={()=>{
-                navigate(`/subjects/${subject.id}`)
+                window.location.href = `/quiz/${subject.id}`
               }}>Go!</SemanticButton>}>
                 <H1
                   position="relative"

@@ -58,7 +58,7 @@ async function main() {
       .default;
     console.log(`Processing subject: ${dataFile}`);
     console.log(subjectData);
-    const subjectId = path.basename(dataFile, ".js");
+    const subjectId = path.basename(dataFile, ".cjs");
     const subjectName = subjectData.name;
     const subjectBlurb = subjectData.blurb;
     const subjectContextPrompt = subjectData.contextPrompt;
