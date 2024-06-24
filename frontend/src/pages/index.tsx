@@ -1,5 +1,6 @@
 import { css } from "@emotion/react";
 import { useEffect, useRef, useState, ReactNode } from "react";
+import {useNavigate} from 'react-router-dom'
 
 import { Div, DivProps, H1, H2 } from "@/fwk/html";
 import theme from "@/themes/main";
@@ -7,7 +8,7 @@ import theme from "@/themes/main";
 import LoadingOverlay from "@/components/LoadingOverlay";
 import { useAPIData } from "@/lib/rpc-client";
 
-import { Subject } from "@/common/api-types";
+import { SubjectListingItem } from "@/common/api-types";
 import DynamicSVG from "svg-designer/lib/react/DynamicSVG";
 import SVGBuilder from "svg-designer/lib/SVGBuilder";
 import SemanticButton from "@/components/SemanticButton";
@@ -37,8 +38,8 @@ function HoverCard({ children, revealElement, ...rest }: HoverCardProps) {
   });
   const baseSizeCss = isHovering
     ? css`
-        width: 48px;
-        height: 48px;
+        width: 64px;
+        height: 64px;
       `
     : css`
         width: 24px;
@@ -64,6 +65,7 @@ function HoverCard({ children, revealElement, ...rest }: HoverCardProps) {
         <Div></Div>
       </Div>
       {children}
+      <Div height="64px"></Div>
       <Div
         position="absolute"
         top="0"
@@ -80,8 +82,8 @@ function HoverCard({ children, revealElement, ...rest }: HoverCardProps) {
         <Div></Div>
         <Div></Div>
         <Div
-          width="48px"
-          height="48px"
+          width="64px"
+          height="64px"
           background={theme.page.background}
           position="relative"
         >
@@ -90,8 +92,8 @@ function HoverCard({ children, revealElement, ...rest }: HoverCardProps) {
           </Div>
 
           <Div
-            width="48px"
-            height="48px"
+            width="64px"
+            height="64px"
             position="absolute"
             bottom="0"
             right="0"
@@ -110,7 +112,7 @@ function HoverCard({ children, revealElement, ...rest }: HoverCardProps) {
               `}
               style={{
                 pointerEvents: "none",
-                transition: "all 0.2s ease-in-out",
+                transition: "all 0.25s ease",
                 filter: "drop-shadow(0px 0px 4px rgba(0,0,0,0.75))",
               }}
               cssVars={{
@@ -141,7 +143,8 @@ function HoverCard({ children, revealElement, ...rest }: HoverCardProps) {
 }
 
 export default function Index() {
-  const { task, fetchData } = useAPIData<null, Subject[]>("listSubjects", null);
+  const navigate = useNavigate();
+  const { task, fetchData } = useAPIData<null, SubjectListing[]>("listSubjects", null);
   const subjects = task.data ?? [];
 
   console.log(subjects);
@@ -249,8 +252,8 @@ export default function Index() {
               alignItems="center"
               gap={theme.gutters.md}
             >
-              <HoverCard revealElement={<SemanticButton onClick={()=>{
-                console.log(subject)
+              <HoverCard revealElement={<SemanticButton background="green" onClick={()=>{
+                navigate(`/subjects/${subject.id}`)
               }}>Go!</SemanticButton>}>
                 <H1
                   position="relative"
@@ -269,7 +272,6 @@ export default function Index() {
                   margin={0}
                   textAlign="center"
                   fontSize={theme.pages.index.subjectListItem.blurb.fontSize}
-                  marginBottom={"24px"}
                 >
                   {subject.blurb}
                 </H2>

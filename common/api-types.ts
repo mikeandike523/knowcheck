@@ -4,4 +4,7 @@ export type Subject = {
     contextPrompt: string;
     userPromptTemplate: string;
     unlisted: boolean;
+    id: string;
 }
+
+export type SubjectListingItem = Pick<Subject, "name" | "blurb" | "id">;

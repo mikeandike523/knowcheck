@@ -13,6 +13,7 @@ import {createRPCHandler, fileError } from "../utils/rpc-server.js"
 
 import admin from 'firebase-admin'
 import {logger} from 'firebase-functions/v2'
+import { Subject, SubjectListingItem } from "../common/api-types.js";
 
 admin.initializeApp();
 
@@ -35,7 +36,7 @@ const db = admin.firestore();
  * `args` is expected to be an empty object since on the client side, if an api call takes no arguments,
  * `undefined` is coalesced to empty object `{}` using the nullish coalescing operator `??`
  */
-export const listSubjects = createRPCHandler(async () => {
+export const listSubjects = createRPCHandler<null,SubjectListing>(async () => {
   const subjects = await db.collection("subjects").where("unlisted", "==", false).get()
   logger.write({
     severity:"DEBUG",
@@ -44,7 +45,8 @@ export const listSubjects = createRPCHandler(async () => {
   return subjects.docs.map((doc) => {
     return {
       name: doc.data().name,
-      blurb: doc.data().blurb
+      blurb: doc.data().blurb,
+      id: doc.id
     }
   })
 });
@@ -67,7 +69,7 @@ export const listSubjects = createRPCHandler(async () => {
  *   unlisted: boolean
  * }
  */
-export const getSubjectConfig = createRPCHandler(async (args) => {
+export const getSubjectConfig = createRPCHandler<{id: string}, Subject>(async (args) => {
   const subjectId = args.id;
   const subjectConfig = await db.collection("subjects").doc(subjectId).get();
   if (!subjectConfig.exists) {
@@ -90,5 +92,5 @@ export const getSubjectConfig = createRPCHandler(async (args) => {
     });
   }
 
-  return data;
+  return {id:subjectId,...data};
 });

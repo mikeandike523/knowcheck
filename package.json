@@ -1,6 +1,7 @@
 {
   "scripts":{
-    "link-code": "bash link-code.sh"
+    "link-code": "bash link-code.sh",
+    "link-projects": "bash link-projects.sh"
   },
   "dependencies": {
   }

@@ -1,7 +1,6 @@
 import { css } from "@emotion/react";
 
 import { Button, ButtonProps } from "@/fwk/html";
-import ColorUtil from "mousebox/src/lib/ColorUtil";
 
 export interface SemanticButtonProps extends ButtonProps {
   fontSize?: ButtonProps["fontSize"];
@@ -17,17 +16,15 @@ export default function SemanticButton({
 }: SemanticButtonProps) {
   return (
     <Button
-      css={css`
-        cursor: pointer;
-        box-shadow: 0px 0px 6px
-          ${ColorUtil.fromCss(background).withA(0.5).toCss()};
+      css={css` 
         &:hover {
-          transform: scale(1.05);
+          transform: scale(1.15);
         }
         &:active {
-          transform: scale(0.95);
+          transform: scale(0.85);
         }
       `}
+      cursor="pointer"
       aspectRatio="1.0"
       margin={0}
       paddingLeft="0.5em"

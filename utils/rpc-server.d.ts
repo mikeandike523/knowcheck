@@ -26,6 +26,6 @@ declare function simulateRPC(request: functions.https.Request, response: functio
  * @param routeName - The name of the route (optional)
  * @returns A Firebase HTTPS function to handle the RPC
  */
-declare function createRPCHandler(callback: (args: any) => any, routeName?: string): functions.https.OnRequestHandler;
+declare function createRPCHandler<TArgs,TReturn>(callback: (args: TARgs) => any, routeName?: string): functions.https.OnRequestHandler;
 
 export { fileError, simulateRPC, createRPCHandler };
