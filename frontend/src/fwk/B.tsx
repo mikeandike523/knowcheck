@@ -1,14 +1,15 @@
 import { css, SerializedStyles } from "@emotion/react";
 import lodash from "lodash";
-import React, { CSSProperties } from "react";
+import React, { CSSProperties, ForwardedRef} from "react";
 
-import { asMapping, AsType, SpecificAsPropsType } from "./references/asMapping";
+import { AsElementType, asMapping, AsType, SpecificAsPropsType } from "./references/asMapping";
 import { allStyleProps, StylePropTypeMapping } from "./styleProps";
 
 export type BProps<T extends AsType> = SpecificAsPropsType<T> & {
   as: T;
   css?: SerializedStyles;
   baseCss?: SerializedStyles;
+  baseRef?: ForwardedRef<AsElementType[T]>;
 } & {
   [P in keyof StylePropTypeMapping]?: undefined | StylePropTypeMapping[P];
 };
@@ -17,6 +18,7 @@ export default function B<T extends AsType>({
   baseCss = css``,
   css: overrideCss,
   as,
+  baseRef,
   ...rest
 }: BProps<T>) {
   const HTMLComponent = asMapping[as] as React.FC<SpecificAsPropsType<T>>;
@@ -28,6 +30,7 @@ export default function B<T extends AsType>({
 
   return (
     <HTMLComponent
+      ref={baseRef}
       css={css`
         ${baseCss};
         ${overrideCss};

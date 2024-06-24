@@ -20,7 +20,7 @@ export const theme = {
           fontSize:"24px"
         },
         blurb: {
-          fontSize:"12px"
+          fontSize:"16px"
         }
       }
     }

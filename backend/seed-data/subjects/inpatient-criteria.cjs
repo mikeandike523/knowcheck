@@ -2,7 +2,7 @@ module.exports = {
   name: "Inpatient Criteria",
   blurb: `
   Test your decision-making for the intake of an inpatient under specific diagnoses, based on well known criteria.
-  `,
+  `.trim(),
   unlisted: false,
   questions: [
     {

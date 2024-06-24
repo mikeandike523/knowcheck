@@ -11,16 +11,19 @@ const __dirname = path.dirname(__filename);
 // Extract the keys from asMapping to use for generating components
 const elementTypes = Object.keys(asMapping) as (keyof typeof asMapping)[];
 
-const imports = `import B, {BProps} from './B'
+const imports = `
+import B, {BProps} from './B';
+import {AsElementType} from './references/asMapping';
+import {forwardRef} from 'react';
 
 `;
 
 const generateComponent = (element: keyof typeof asMapping) => {
   const capitalizedElement = element.charAt(0).toUpperCase() + element.slice(1);
   return `export interface ${capitalizedElement}Props extends Omit<BProps<'${element}'>,'as'> {}
-export function ${capitalizedElement}(props: ${capitalizedElement}Props) {
-    return <B as="${element}" {...props} />
-}
+export const ${capitalizedElement}=forwardRef<AsElementType['${element}'],${capitalizedElement}Props>((props,ref)=> {
+    return <B baseRef={ref} as="${element}" {...props} />
+})
 `;
 };
 

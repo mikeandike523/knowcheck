@@ -1,8 +1,7 @@
 {
   "scripts":{
-    "link-folders": "bash link-folders.sh"
+    "link-code": "bash link-code.sh"
   },
   "dependencies": {
-    "svg-designer": "../svg-designer"
   }
 }

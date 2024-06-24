@@ -77,7 +77,9 @@ export const stylePropTypeMapping = {
   mask: "string",
   maskImage: "string",
   maskPosition: "string",
-  filter: "string"
+  filter: "string",
+  aspectRatio: "number | string",
+  transformOrigin: "string"
 } as const
 
 export default stylePropTypeMapping

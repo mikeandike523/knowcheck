@@ -141,14 +141,14 @@ export const asMapping = {
   ),
   td: forwardRef(
     (
-      props: HTMLAttributes<HTMLTableCellElement>,
-      ref: ForwardedRef<HTMLTableCellElement>,
+      props: HTMLAttributes<HTMLTableDataCellElement>,
+      ref: ForwardedRef<HTMLTableDataCellElement>,
     ) => <td ref={ref} {...props} />,
   ),
   th: forwardRef(
     (
-      props: HTMLAttributes<HTMLTableCellElement>,
-      ref: ForwardedRef<HTMLTableCellElement>,
+      props: HTMLAttributes<HTMLTableHeaderCellElement>,
+      ref: ForwardedRef<HTMLTableHeaderCellElement>,
     ) => <th ref={ref} {...props} />,
   ),
   ul: forwardRef(
@@ -307,6 +307,12 @@ export const asMapping = {
     ) => <hr ref={ref} {...props} />,
   )
 } as const;
+
+export type AsElementType = {
+  [P in keyof typeof asMapping]: (typeof asMapping)[P] extends FC<HTMLAttributes<infer ElementType>>
+    ? ElementType
+    : never;
+};
 
 export type AsPropsType = {
   [P in keyof typeof asMapping]: (typeof asMapping)[P] extends FC<infer Props>

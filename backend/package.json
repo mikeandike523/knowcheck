@@ -1,7 +1,9 @@
 {
   "dependencies": {
     "axios": "^1.6.8",
-    "firebase-functions": "^5.0.1"
+    "firebase-functions": "^5.0.1",
+    "mousebox": "/Users/michaelsohnen/Projects/mousebox",
+    "svg-designer": "/Users/michaelsohnen/Projects/svg-designer"
   },
   "devDependencies": {
     "@babel/core": "^7.24.7",

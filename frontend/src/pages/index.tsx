@@ -1,14 +1,144 @@
 import { css } from "@emotion/react";
+import { useEffect, useRef, useState, ReactNode } from "react";
 
+import { Div, DivProps, H1, H2 } from "@/fwk/html";
 import theme from "@/themes/main";
-import { H1, H2, Div, Button } from "@/fwk/html";
 
-import { useAPIData } from "@/lib/rpc-client";
 import LoadingOverlay from "@/components/LoadingOverlay";
+import { useAPIData } from "@/lib/rpc-client";
 
+import { Subject } from "@/common/api-types";
 import DynamicSVG from "svg-designer/lib/react/DynamicSVG";
 import SVGBuilder from "svg-designer/lib/SVGBuilder";
-import { Subject } from "@/common/api-types";
+import SemanticButton from "@/components/SemanticButton";
+
+interface HoverCardProps extends DivProps {
+  revealElement?: ReactNode | ReactNode[];
+}
+
+function HoverCard({ children, revealElement, ...rest }: HoverCardProps) {
+  const [isHovering, setIsHovering] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  function onMouseMove(event: MouseEvent) {
+    const current = ref.current;
+    if (current) {
+      const bbox = current.getBoundingClientRect();
+      const x = event.clientX - bbox.left;
+      const y = event.clientY - bbox.top;
+      const isHovering = x > 0 && x < bbox.width && y > 0 && y < bbox.height;
+      setIsHovering(isHovering);
+    }
+  }
+  useEffect(() => {
+    document.addEventListener("mousemove", onMouseMove);
+    return () => {
+      document.removeEventListener("mousemove", onMouseMove);
+    };
+  });
+  const baseSizeCss = isHovering
+    ? css`
+        width: 48px;
+        height: 48px;
+      `
+    : css`
+        width: 24px;
+        height: 24px;
+      `;
+  return (
+    <>
+      <Div
+        position="absolute"
+        top="0"
+        left="0"
+        right="0"
+        bottom="0"
+        display="grid"
+        gridTemplateColumns="1fr auto"
+        gridTemplateRows="1fr auto"
+        ref={ref}
+        {...rest}
+      >
+        <Div background={theme.card.background}></Div>
+        <Div background={theme.card.background}></Div>
+        <Div background={theme.card.background}></Div>
+        <Div></Div>
+      </Div>
+      {children}
+      <Div
+        position="absolute"
+        top="0"
+        left="0"
+        right="0"
+        bottom="0"
+        display="grid"
+        gridTemplateColumns="1fr auto"
+        gridTemplateRows="1fr auto"
+        ref={ref}
+        {...rest}
+      >
+        <Div></Div>
+        <Div></Div>
+        <Div></Div>
+        <Div
+          width="48px"
+          height="48px"
+          background={theme.page.background}
+          position="relative"
+        >
+          <Div position="absolute" right={0} bottom={0}>
+            {revealElement}
+          </Div>
+
+          <Div
+            width="48px"
+            height="48px"
+            position="absolute"
+            bottom="0"
+            right="0"
+            display="grid"
+            gridTemplateRows="1fr auto"
+            gridTemplateColumns="1fr auto"
+            pointerEvents="none"
+          >
+            <Div background={theme.card.background}></Div>
+            <Div background={theme.card.background}></Div>
+            <Div background={theme.card.background}></Div>
+            <DynamicSVG
+
+              css={css`
+                ${baseSizeCss};
+              `}
+              style={{
+                pointerEvents: "none",
+                transition: "all 0.2s ease-in-out",
+                filter: "drop-shadow(0px 0px 4px rgba(0,0,0,0.75))",
+              }}
+              cssVars={{
+                "--fgcolor": theme.card.background,
+                "--bgcolor": "transparent",
+              }}
+              text={new SVGBuilder(24, 24)
+                .artist("none", 0, "var(--bgcolor)")
+                .rectangle(0, 0, 24, 24)
+                .commit()
+                .artist("none", 0, "var(--fgcolor)")
+                .lineSequence(
+                  [
+                    [0, 24],
+                    [0, 0],
+                    [24, 0],
+                  ],
+                  false
+                )
+                .commit()
+                .compile(true)}
+            />
+          </Div>
+        </Div>
+      </Div>
+    </>
+  );
+}
 
 export default function Index() {
   const { task, fetchData } = useAPIData<null, Subject[]>("listSubjects", null);
@@ -51,58 +181,14 @@ export default function Index() {
             justifyContent="flex-start"
             position="relative"
           >
-            <Div
-              position="absolute"
-              top={0}
-              left={0}
-              right={0}
-              bottom={0}
-              display="grid"
-              gridTemplateRows="1fr auto"
-              gridTemplateColumns="1fr auto"
-              filter="drop-shadow(0px 0px 8px rgba(0,0,0,0.75))"
-            >
-              <Div background={theme.card.background}></Div>
-              <Div background={theme.card.background}></Div>
-              <Div background={theme.card.background}></Div>
-              <Div width="16px" height="16px">
-                <DynamicSVG
-                  style={{
-                    filter: "drop-shadow(0px 0px 4px rgba(0,0,0,0.75))",
-                    transform:"scale(0.5)",
-                    transformOrigin: "top left",
-                  }}
-                  cssVars={{
-                    "--fgcolor": theme.card.background,
-                    "--bgcolor": "transparent",
-                  }}
-                  text={new SVGBuilder(32, 32)
-                    .artist("none", 0, "var(--bgcolor)")
-                    .rectangle(0, 0, 32, 32)
-                    .commit()
-                    .artist("none", 0, "var(--fgcolor)")
-                    .lineSequence(
-                      [
-                        [0, 32],
-                        [0, 0],
-                        [32, 0],
-                      ],
-                      false
-                    )
-                    .commit()
-                    .compile(true)}
-                />
-              </Div>
-            </Div>
-
             <H1
               position="relative"
-              color={theme.colors.brand}
+              color={theme.navbar.text.primary}
               fontSize={theme.fontSize.jumbotron}
               margin={0}
               padding={0}
             >
-              Know/Check{"\u{2122}"}
+              Know/Check
             </H1>
           </Div>
           <Div
@@ -111,13 +197,11 @@ export default function Index() {
             alignItems="center"
             justifyContent="center"
           >
-            <H2
-              color={theme.navbar.text.primary}
-              textAlign="center"
-              margin={0}
-              padding={0}
-            >
-              The World's #1 AI-Powered Quiz App
+            <H2 color={"white"} textAlign="center" margin={0} padding={0}>
+              Know your stuff.
+            </H2>
+            <H2 color={"white"} textAlign="center" margin={0} padding={0}>
+              Check your mastery.
             </H2>
           </Div>
         </Div>
@@ -132,16 +216,6 @@ export default function Index() {
         marginTop={theme.gutters.xl}
         marginBottom={theme.gutters.xl}
       >
-        <H1
-          margin={0}
-          padding={theme.gutters.md}
-          width="100%"
-          textAlign="center"
-          background={theme.navbar.background}
-          color={theme.navbar.text.primary}
-        >
-          Subjects
-        </H1>
         <LoadingOverlay
           task={task}
           onDismiss={fetchData}
@@ -166,44 +240,40 @@ export default function Index() {
         >
           {subjects.map((subject, i) => (
             <Div
+              position="relative"
               key={i}
               width="auto"
               margin={theme.pages.index.subjectListItem.margin}
               display="flex"
               flexDirection="column"
               alignItems="center"
-              background={theme.card.background}
-              padding={theme.gutters.md}
               gap={theme.gutters.md}
             >
-              <H1
-                width="100%"
-                margin={0}
-                padding={0}
-                color={theme.colors.brand}
-                textAlign="center"
-                fontSize={theme.pages.index.subjectListItem.name.fontSize}
-              >
-                {subject.name}
-              </H1>
-              <H2
-                margin={0}
-                padding={0}
-                textAlign="center"
-                fontSize={theme.pages.index.subjectListItem.blurb.fontSize}
-              >
-                {subject.blurb}
-              </H2>
-              <Div
-                flex={1}
-                width="100%"
-                display="flex"
-                flexDirection="row"
-                alignItems="flex-end"
-                justifyContent="flex-end"
-              >
-                <Button>Go!</Button>
-              </Div>
+              <HoverCard revealElement={<SemanticButton onClick={()=>{
+                console.log(subject)
+              }}>Go!</SemanticButton>}>
+                <H1
+                  position="relative"
+                  width="100%"
+                  margin={0}
+                  color={theme.colors.brand}
+                  textAlign="center"
+                  fontSize={theme.pages.index.subjectListItem.name.fontSize}
+                >
+                  {subject.name}
+                </H1>
+                <H2
+                  position="relative"
+                  width="100%"
+                  color="black"
+                  margin={0}
+                  textAlign="center"
+                  fontSize={theme.pages.index.subjectListItem.blurb.fontSize}
+                  marginBottom={"24px"}
+                >
+                  {subject.blurb}
+                </H2>
+              </HoverCard>
             </Div>
           ))}
         </LoadingOverlay>
