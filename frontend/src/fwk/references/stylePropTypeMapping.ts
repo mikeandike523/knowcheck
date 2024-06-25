@@ -79,7 +79,8 @@ export const stylePropTypeMapping = {
   maskPosition: "string",
   filter: "string",
   aspectRatio: "number | string",
-  transformOrigin: "string"
+  transformOrigin: "string",
+  userSelect: "none | text | all | inherit | initial | unset"
 } as const
 
 export default stylePropTypeMapping

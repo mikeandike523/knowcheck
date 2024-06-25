@@ -250,7 +250,7 @@ export default function Index() {
               alignItems="center"
               gap={theme.gutters.md}
             >
-              <HoverCard revealElement={<SemanticButton background="green" onClick={()=>{
+              <HoverCard revealElement={<SemanticButton  justifyContent="flex-end" alignItems="flex-end" width="64px" fontSize="24px" color="success" onClick={()=>{
                 window.location.href = `/quiz/${subject.id}`
               }}>Go!</SemanticButton>}>
                 <H1
