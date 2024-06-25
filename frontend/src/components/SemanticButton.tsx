@@ -1,4 +1,4 @@
-import { css } from "@emotion/react";
+import { css, SerializedStyles } from "@emotion/react";
 import { ReactNode } from "react";
 
 import { Button, ButtonProps, Span } from "@/fwk/html";
@@ -20,12 +20,14 @@ export interface SemanticButtonProps extends ButtonProps {
   fontSize?: ButtonProps["fontSize"];
   color: SemanticColor;
   children?: ReactNode | ReactNode[];
+  textCss?: SerializedStyles;
 }
 
 export default function SemanticButton({
   fontSize = "16px",
   children,
   color,
+  textCss = css``,
   ...rest
 }: SemanticButtonProps) {
   const background = theme.colors.semantic[color];
@@ -59,14 +61,13 @@ export default function SemanticButton({
       margin={0}
       fontSize={fontSize}
       transformOrigin="center"
-      transition="transform 0.25s ease"
+      transition="transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease"
       border="none"
       background={background}
       color={textColor}
       {...rest}
     >
-      <Span></Span>
-      {children}
+      <Span css={textCss}>{children}</Span>
     </Button>
   );
 }

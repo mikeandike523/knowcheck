@@ -1,5 +1,6 @@
 import { css } from "@emotion/react";
-import { useEffect, useRef, useState, ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { Div, DivProps, H1, H2 } from "@/fwk/html";
 import theme from "@/themes/main";
@@ -8,15 +9,15 @@ import LoadingOverlay from "@/components/LoadingOverlay";
 import { useAPIData } from "@/lib/rpc-client";
 
 import { SubjectListingItem } from "@/common/api-types";
+import SemanticButton from "@/components/SemanticButton";
 import DynamicSVG from "svg-designer/lib/react/DynamicSVG";
 import SVGBuilder from "svg-designer/lib/SVGBuilder";
-import SemanticButton from "@/components/SemanticButton";
 
 interface HoverCardProps extends DivProps {
-  revealElement?: ReactNode | ReactNode[];
+  onClick?: () => void;
 }
 
-function HoverCard({ children, revealElement, ...rest }: HoverCardProps) {
+function HoverCard({ children, ...rest }: HoverCardProps) {
   const [isHovering, setIsHovering] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   function onMouseMove(event: MouseEvent) {
@@ -44,6 +45,10 @@ function HoverCard({ children, revealElement, ...rest }: HoverCardProps) {
         width: 24px;
         height: 24px;
       `;
+  const textCss = css`
+    transition: opacity 0.25s ease;
+    opacity: ${isHovering ? 1 : 0};
+  `;
   return (
     <>
       <Div
@@ -87,7 +92,16 @@ function HoverCard({ children, revealElement, ...rest }: HoverCardProps) {
           position="relative"
         >
           <Div position="absolute" right={0} bottom={0}>
-            {revealElement}
+            <SemanticButton
+              justifyContent="flex-end"
+              alignItems="flex-end"
+              width="64px"
+              fontSize="24px"
+              color="success"
+              textCss={textCss}
+            >
+              Go!
+            </SemanticButton>
           </Div>
 
           <Div
@@ -105,7 +119,6 @@ function HoverCard({ children, revealElement, ...rest }: HoverCardProps) {
             <Div background={theme.card.background}></Div>
             <Div background={theme.card.background}></Div>
             <DynamicSVG
-
               css={css`
                 ${baseSizeCss};
               `}
@@ -142,7 +155,11 @@ function HoverCard({ children, revealElement, ...rest }: HoverCardProps) {
 }
 
 export default function Index() {
-  const { task, fetchData } = useAPIData<null, SubjectListingItem[]>("listSubjects", null);
+  const navigate = useNavigate()
+  const { task, fetchData } = useAPIData<null, SubjectListingItem[]>(
+    "listSubjects",
+    null
+  );
   const subjects = task.data ?? [];
 
   console.log(subjects);
@@ -165,29 +182,31 @@ export default function Index() {
         flexDirection="column"
         justifyContent="flex-start"
         alignItems="center"
-        marginTop={theme.gutters.xl}
+        background={theme.navbar.background}
       >
         <Div
+          alignSelf="flex-start"
           display="grid"
-          gridTemplateColumns="1fr 1fr"
+          gridTemplateColumns="1fr auto"
           gridTemplateRows="1fr"
-          width={theme.page.width}
-          background={theme.navbar.background}
+          columnGap={theme.gutters.lg}
+          padding={theme.gutters.lg}
         >
           <Div
             display="flex"
-            flexDirection="column"
-            gap={theme.gutters.md}
+            flexDirection="row"
             alignItems="center"
-            justifyContent="flex-start"
+            justifyContent="center"
+            width="100%"
             position="relative"
           >
             <H1
               position="relative"
-              color={theme.navbar.text.primary}
-              fontSize={theme.fontSize.jumbotron}
+              color={theme.colors.brand}
+              fontSize="32px"
               margin={0}
-              padding={0}
+              background="white"
+              padding="0.25em"
             >
               Know/Check
             </H1>
@@ -195,8 +214,10 @@ export default function Index() {
           <Div
             display="flex"
             flexDirection="column"
-            alignItems="center"
+            alignItems="flex-start"
             justifyContent="center"
+            width="100%"
+            height="100%"
           >
             <H2 color={"white"} textAlign="center" margin={0} padding={0}>
               Know your stuff.
@@ -250,14 +271,17 @@ export default function Index() {
               alignItems="center"
               gap={theme.gutters.md}
             >
-              <HoverCard revealElement={<SemanticButton  justifyContent="flex-end" alignItems="flex-end" width="64px" fontSize="24px" color="success" onClick={()=>{
-                window.location.href = `/quiz/${subject.id}`
-              }}>Go!</SemanticButton>}>
+              <HoverCard
+                onClick={() => {
+                  navigate(`/quiz/${subject.id}/register`);
+                }}
+              >
                 <H1
+                  background={theme.navbar.background}
                   position="relative"
                   width="100%"
                   margin={0}
-                  color={theme.colors.brand}
+                  color={theme.navbar.text.primary}
                   textAlign="center"
                   fontSize={theme.pages.index.subjectListItem.name.fontSize}
                 >

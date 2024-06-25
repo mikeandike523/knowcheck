@@ -80,7 +80,9 @@ export const stylePropTypeMapping = {
   filter: "string",
   aspectRatio: "number | string",
   transformOrigin: "string",
-  userSelect: "none | text | all | inherit | initial | unset"
+  userSelect: "none | text | all | inherit | initial | unset",
+  rowGap: "string | number",
+  columnGap: "string | number",
 } as const
 
 export default stylePropTypeMapping

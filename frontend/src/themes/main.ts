@@ -90,7 +90,7 @@ export const theme = {
   navbar: {
     background: "hsla(213, 16%, 57%, 1)",
     text: {
-      primary: "hsla(100, 70%, 85%, 1)"
+      primary: "white"
     }
   },
 } as const;

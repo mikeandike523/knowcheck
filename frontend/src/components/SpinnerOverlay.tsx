@@ -56,7 +56,7 @@ export default function Spinner() {
           z-index: 1;
           position: relative;
           animation: ${spinAnimation} 1s linear infinite;
-          width: clamp(15%, 5rem, 10rem);
+          width: 4em;
           aspect-ratio: 1 / 1;
           border-radius: 50%;
           background: conic-gradient(
