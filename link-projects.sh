@@ -7,6 +7,15 @@ cd "$dn"
 mousebox_project="$(realpath "$dn/../mousebox")"
 svg_designer_project="$(realpath "$dn/../svg-designer")"
 
+
+function safe_rp {
+    target="$1"
+    target_dn="$(dirname "$target")"
+    dnrp="$(realpath "$target_dn")"
+    target_bn="$(basename "$target")"
+    echo "$dnrp/$target_bn"
+}
+
 # Function to create symbolic links with fully qualified paths
 # Relative paths in symlinks are wonky especially with dir symlinks
 # and I never recommend them
@@ -14,34 +23,22 @@ function resolve_and_link {
     target="$1"
     name="$2"
 
-    target_rp="$(realpath "$target")"
-    name_rp="$(realpath "$name")"
+    target_rp="$(safe_rp "$target")"
+    name_rp="$(safe_rp "$name")"
+
+    rm -rf "$name_rp"
+
     ln -s "$target_rp" "$name_rp"
 }
 
-# Check if a folder exists
-function check_folder_exists {
-    to_check="$1"
-    if [ ! -d "$to_check" ]; then
-        echo "Folder $to_check does not exist"
-        exit 1
-    fi
-}
 
-# Determines if the react library needs to be linked
-# To avoid issue where each seperate import of a react library casues a differnet context and makes react fail
-function should_link_react {
-    if [ -d "$dn/node_modules/react" ]; then
-        return 0
-    else
-        return 1
-    fi
-}
 
 # Repeat the process for @chakra-ui, since it tends to contain its own copy or react,#
-# adn linking th enetire thing, even if not necessary, makes things easier
-function should_link_chakra_ui {
-    if [ -d "$dn/node_modules/@chakra-ui" ]; then
+# adn linking th entiree thing, even if not necessary, makes things easier
+function should_link_package {
+    project_name="$1"
+    package_name="$2"
+    if [ -d "./node_modules/$project_name/node_modules/$package_name" ]; then
         return 0
     else
         return 1
@@ -68,27 +65,33 @@ function inject_package(){
 # We copy instead of linking the files (symlink) to avoid corrupting the referenced project when injecting a package
 function link_project(){
     project_name=$(basename "$1")
+
+    echo "Copying files for $project_name..."
+
     rm -rf "./node_modules/$project_name"
     cp -r "$1" "./node_modules/$project_name"
 
-    if should_link_react; then
+    if should_link_package "$project_name" "react"; then
+        echo "Injecting package react into $project_name..."
         inject_package "$1" "react"
     fi
 
-    if should_link_chakra_ui; then
-        inject_package "$1" "@chakra-ui"
+    if should_link_package "$project_name" "@chakra-ui"; then
+        echo "Injecting package @chakra-ui into $project_name..."
+        inject_package "$1" "react"
     fi
+
 }
 
-check_folder_exists "$mousebox_project"
-check_folder_exists "$svg_designer_project"
-
 cd frontend
+echo "Linking projects to frontend..."
 link_project "$mousebox_project"
 link_project "$svg_designer_project"
 cd ..
 
 cd backend
+echo "Linking projects to frontend..."
+
 link_project "$mousebox_project"
 link_project "$svg_designer_project"
 cd ..

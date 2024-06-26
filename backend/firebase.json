@@ -10,5 +10,14 @@
         "firebase-debug.*.log"
       ]
     }
-  ]
+  ],
+  "hosting":{
+    "public": "./hosting",
+    "rewrites":[
+      {
+        "source":"**",
+        "destination":"/index.html"
+      }
+    ]
+  }
 }

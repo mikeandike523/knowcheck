@@ -8,35 +8,17 @@
  * As well as a list of supporting information unique to the question at hand
  */
 
-import {TypicalRPCErrors } from "../utils/rpc.js"
-import {createRPCHandler, fileError } from "../utils/rpc-server.js"
+import { fileError } from "./utils/rpc-server.js";
+import { TypicalRPCErrors } from "./utils/rpc.js";
 
-import admin from 'firebase-admin'
-import {logger} from 'firebase-functions/v2'
-import { Subject, SubjectListingItem } from "../common/api-types.js";
+import admin from 'firebase-admin';
+import { logger } from 'firebase-functions/v2';
 
 admin.initializeApp();
 
 const db = admin.firestore();
 
-/**
- *
- * Route /listSubjects
- *
- * Lists the subjects throughout all of 'Know/Check' that are not marked as unlisted
- *
- * @param args - empty object {}
- *
- * @returns Array<{
- *  name: string,
- *  blurb: string
- * }>
- *
- * @remarks
- * `args` is expected to be an empty object since on the client side, if an api call takes no arguments,
- * `undefined` is coalesced to empty object `{}` using the nullish coalescing operator `??`
- */
-export const listSubjects = createRPCHandler<null,SubjectListing>(async () => {
+export const listSubjects = async () => {
   const subjects = await db.collection("subjects").where("unlisted", "==", false).get()
   logger.write({
     severity:"DEBUG",
@@ -49,27 +31,9 @@ export const listSubjects = createRPCHandler<null,SubjectListing>(async () => {
       id: doc.id
     }
   })
-});
+}
 
-/**
- *
- * Route /getSubjectConfig
- *
- * Gets
- *
- * @param args - {
- *  id: string
- * }
- *
- * @returns {
- *   name: string,
- *   blurb: string,
- *   contextPrompt: string,
- *   userPromptTemplate: string,
- *   unlisted: boolean
- * }
- */
-export const getSubjectConfig = createRPCHandler<{id: string}, Subject>(async (args) => {
+export const getSubjectConfig = async (args:{id: string}) => {
   const subjectId = args.id;
   const subjectConfig = await db.collection("subjects").doc(subjectId).get();
   if (!subjectConfig.exists) {
@@ -93,4 +57,4 @@ export const getSubjectConfig = createRPCHandler<{id: string}, Subject>(async (a
   }
 
   return {id:subjectId,...data};
-});
+}

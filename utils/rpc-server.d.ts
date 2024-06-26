@@ -1,7 +1,7 @@
 // index.d.ts
 
 import { RPCError } from './rpc.js';
-import * as functions from "firebase-functions/v2";
+import * as functions from 'firebase-functions/v2'; 
 
 export type ErrorCallback = (ticketNumber: string) => RPCError;
 
@@ -14,18 +14,12 @@ export type ErrorCallback = (ticketNumber: string) => RPCError;
  */
 declare function fileError(route: any, error: RPCError | ErrorCallback): Promise<RPCError>;
 /**
- * @param request - The HTTP request object
- * @param response - The HTTP response object
- * @param callback - The callback function to handle the RPC
- * @param routeName - The name of the route (optional)
- */
-declare function simulateRPC(request: functions.https.Request, response: functions.Response<any>, callback: (args: any) => any, routeName?: string): Promise<void>;
 
 /**
  * @param callback - The callback function to handle the RPC
  * @param routeName - The name of the route (optional)
  * @returns A Firebase HTTPS function to handle the RPC
  */
-declare function createRPCHandler<TArgs,TReturn>(callback: (args: TARgs) => any, routeName?: string): functions.https.OnRequestHandler;
+declare function createRPCHandler<TArgs,TReturn>(callback: (args: TArgs) => any, routeName?: string): functions.https.HttpsFunction;
 
-export { fileError, simulateRPC, createRPCHandler };
+export { fileError, createRPCHandler };
