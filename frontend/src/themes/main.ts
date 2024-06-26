@@ -87,7 +87,8 @@ export const theme = {
     width: "80vw",
     background:"darkgray"
   },
-  navbar: {
+  navbar: { 
+    height: "96px",
     background: "hsla(213, 16%, 57%, 1)",
     text: {
       primary: "white"

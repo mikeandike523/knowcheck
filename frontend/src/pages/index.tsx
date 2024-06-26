@@ -179,13 +179,13 @@ export default function Index() {
       <Div
         width="100%"
         display="flex"
-        flexDirection="column"
-        justifyContent="flex-start"
+        flexDirection="row"
         alignItems="center"
+        justifyContent="flex-start"
         background={theme.navbar.background}
+        height={theme.navbar.height}
       >
         <Div
-          alignSelf="flex-start"
           display="grid"
           gridTemplateColumns="1fr auto"
           gridTemplateRows="1fr"
