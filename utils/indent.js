@@ -3,4 +3,4 @@ export default function (text, indent = 2) {
   const normalized = text.replace(/\r\n/g, "\n");
   const lines = normalized.split("\n");
   return lines.map((line) => indentString + line).join("\n");
-};
+}

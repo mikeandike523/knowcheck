@@ -24,11 +24,13 @@
  * `args` is expected to be an empty object since on the client side, if an api call takes no arguments,
  * `undefined` is coalesced to empty object `{}` using the nullish coalescing operator `??`
  */
-export declare const listSubjects: () => Promise<{
+export declare const listSubjects: () => Promise<
+  {
     name: any;
     blurb: any;
     id: string;
-}[]>;
+  }[]
+>;
 /**
  *
  * Route /getSubjectConfig
@@ -47,9 +49,7 @@ export declare const listSubjects: () => Promise<{
  *   unlisted: boolean
  * }
  */
-export declare const getSubjectConfig: (args: {
-    id: string;
-}) => Promise<{
-    id: string;
+export declare const getSubjectConfig: (args: { id: string }) => Promise<{
+  id: string;
 }>;
 //# sourceMappingURL=api.d.ts.map

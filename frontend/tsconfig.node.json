@@ -8,7 +8,7 @@
     "strict": true,
     "lib": ["ESNext"],
     "jsx": "react-jsx",
-    "paths":{
+    "paths": {
       "@/*": ["./src/*"]
     }
   },
@@ -17,6 +17,6 @@
     "./src/lib/prerenderComponent.tsx",
     "./src/components/SpinnerOverlay.tsx",
     "./src/fwk/**/*.ts",
-    "./src/fwk/**/*.tsx",
+    "./src/fwk/**/*.tsx"
   ]
 }

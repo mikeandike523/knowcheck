@@ -2,21 +2,23 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import mkcert from "vite-plugin-mkcert";
 import rewriteAll from "vite-plugin-rewrite-all";
-import {createHtmlPlugin} from 'vite-plugin-html'
+import { createHtmlPlugin } from "vite-plugin-html";
 
 import path from "path";
 
-import React from 'react'
+import React from "react";
 
-import prerenderComponent from './src/lib/prerenderComponent'
-import Spinner from './src/components/SpinnerOverlay'
+import prerenderComponent from "./src/lib/prerenderComponent";
+import Spinner from "./src/components/SpinnerOverlay";
 
-const {html:spinnerHtml, styles:spinnerStyles} = prerenderComponent(React.createElement(Spinner))
+const { html: spinnerHtml, styles: spinnerStyles } = prerenderComponent(
+  React.createElement(Spinner),
+);
 
-console.log(spinnerHtml)
+console.log(spinnerHtml);
 
-const RPC_URL_PROD="http://localhost:5001/knowcheck-4cbab/us-central1"
-const RPC_URL_DEV="https://us-central1-knowcheck-4cbab.cloudfunctions.net"
+const RPC_URL_PROD = "http://localhost:5001/knowcheck-4cbab/us-central1";
+const RPC_URL_DEV = "https://us-central1-knowcheck-4cbab.cloudfunctions.net";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -30,11 +32,11 @@ export default defineConfig(({ mode }) => {
       createHtmlPlugin({
         inject: {
           data: {
-            spinnerStyles:`<style>${spinnerStyles}</style>`,
-            spinnerHtml
-          }
-        }
-      })
+            spinnerStyles: `<style>${spinnerStyles}</style>`,
+            spinnerHtml,
+          },
+        },
+      }),
     ],
     resolve: {
       alias: {

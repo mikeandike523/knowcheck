@@ -47,7 +47,7 @@ async function main() {
 
   const subjectsDir = path.join(__dirname, "subjects");
 
-  console.log(subjectsDir)
+  console.log(subjectsDir);
 
   const dataFiles = fs
     .readdirSync(subjectsDir)
@@ -68,8 +68,7 @@ async function main() {
       blurb: subjectBlurb,
       contextPrompt: subjectContextPrompt,
       userPromptTemplate: subjectUserPromptTemplate,
-      unlisted: subjectData.unlisted
-
+      unlisted: subjectData.unlisted,
     });
 
     for (const question of subjectData.questions) {

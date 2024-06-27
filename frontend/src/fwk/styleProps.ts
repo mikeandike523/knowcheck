@@ -21,8 +21,7 @@ type StringToType<T extends string> = T extends "number"
                   : T extends "function"
                     ? // eslint-disable-next-line @typescript-eslint/ban-types
                       Function
-                    :
-                      T extends "any"
+                    : T extends "any"
                       ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         any
                       : T extends `${infer U} | ${infer V}`
@@ -40,5 +39,5 @@ export type StylePropTypeMapping = {
 export type StyleProp = keyof StylePropTypeMapping;
 
 export const allStyleProps = Object.keys(
-  stylePropTypeMapping
+  stylePropTypeMapping,
 ) as Array<StyleProp>;

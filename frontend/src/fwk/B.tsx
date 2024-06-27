@@ -40,7 +40,7 @@ export const B = <T extends AsType>({
   const stylePropRest = lodash.pick(rest, allStyleProps) as CSSProperties;
   const nonStylePropsRest = lodash.omit(
     rest,
-    allStyleProps
+    allStyleProps,
   ) as object as SpecificAsExoticType<T>;
 
   return (
@@ -51,7 +51,7 @@ export const B = <T extends AsType>({
         ${overrideCss};
         ${Object.entries(stylePropRest)
           .map(
-            ([styleProp, value]) => `${lodash.kebabCase(styleProp)}: ${value};`
+            ([styleProp, value]) => `${lodash.kebabCase(styleProp)}: ${value};`,
           )
           .join("\n")};
       `}

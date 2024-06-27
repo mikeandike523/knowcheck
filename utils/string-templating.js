@@ -66,7 +66,4 @@ function escapeForTemplate(text) {
   return text.replace(/:/g, "::");
 }
 
-export {
-  fillTemplate,
-  escapeForTemplate
-}
+export { fillTemplate, escapeForTemplate };

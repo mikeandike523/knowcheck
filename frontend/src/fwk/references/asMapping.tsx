@@ -1,8 +1,12 @@
-import { FC, ForwardRefExoticComponent, HTMLAttributes, RefAttributes } from "react";
-import asMapping from './asMappingCore';
+import {
+  FC,
+  ForwardRefExoticComponent,
+  HTMLAttributes,
+  RefAttributes,
+} from "react";
+import asMapping from "./asMappingCore";
 
-export {asMapping};
-
+export { asMapping };
 
 export type AsElementType = {
   [P in keyof typeof asMapping]: (typeof asMapping)[P] extends FC<
@@ -14,21 +18,28 @@ export type AsElementType = {
 
 export type AsPropsType = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [P in keyof typeof asMapping]: (typeof asMapping)[P] extends (ForwardRefExoticComponent<infer Props>  & RefAttributes<any>)
+  [P in keyof typeof asMapping]: (typeof asMapping)[P] extends ForwardRefExoticComponent<
+    infer Props
+  > &
+    RefAttributes<any>
     ? Props
     : never;
 };
 
 export type AsRefType = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [P in keyof typeof asMapping]: (typeof asMapping)[P] extends (ForwardRefExoticComponent<any>  & RefAttributes<infer Ref>)
+  [P in keyof typeof asMapping]: (typeof asMapping)[P] extends ForwardRefExoticComponent<any> &
+    RefAttributes<infer Ref>
     ? Ref
     : never;
 };
 
 export type AsExoticType = {
-  [P in keyof typeof asMapping]: (typeof asMapping)[P] extends (ForwardRefExoticComponent<infer Props>  & RefAttributes<infer ElementType>)
-    ?  (ForwardRefExoticComponent< Props> & RefAttributes< ElementType>)
+  [P in keyof typeof asMapping]: (typeof asMapping)[P] extends ForwardRefExoticComponent<
+    infer Props
+  > &
+    RefAttributes<infer ElementType>
+    ? ForwardRefExoticComponent<Props> & RefAttributes<ElementType>
     : never;
 };
 

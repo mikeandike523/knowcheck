@@ -30,7 +30,7 @@ export interface RPCErrorData {
   userFacingMessage?: string;
   status?: number;
   cause?: any;
-  name: 'RPCError';
+  name: "RPCError";
 }
 
 declare class RPCError extends Error {
@@ -68,13 +68,13 @@ declare class TyipcalUserFacingErrorMessages extends Error {
 declare class TypicalRPCErrors {
   static InvalidAPIInputError(cause: any, ticketNumber: string): RPCError;
   static APIRouteNotFoundError(cause: any, ticketNumber: string): RPCError;
-  static ThirdPartyConnectionError(service: string, cause: any, ticketNumber: string): RPCError;
+  static ThirdPartyConnectionError(
+    service: string,
+    cause: any,
+    ticketNumber: string,
+  ): RPCError;
   static UnknownServerError(cause: any, ticketNumber: string): RPCError;
   static MissingDataError(cause: any, ticketNumber: string): RPCError;
 }
 
-export {
-  RPCError,
-  TypicalRPCErrors,
-  TyipcalUserFacingErrorMessages
-}
+export { RPCError, TypicalRPCErrors, TyipcalUserFacingErrorMessages };

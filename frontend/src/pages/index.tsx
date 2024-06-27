@@ -142,7 +142,7 @@ function HoverCard({ children, ...rest }: HoverCardProps) {
                     [0, 0],
                     [24, 0],
                   ],
-                  false
+                  false,
                 )
                 .commit()
                 .compile(true)}
@@ -155,10 +155,10 @@ function HoverCard({ children, ...rest }: HoverCardProps) {
 }
 
 export default function Index() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { task, fetchData } = useAPIData<null, SubjectListingItem[]>(
     "listSubjects",
-    null
+    null,
   );
   const subjects = task.data ?? [];
 
@@ -254,7 +254,7 @@ export default function Index() {
             @media (min-width: ${key}px) {
               grid-template-columns: repeat(${value}, min(1fr,calc(100%/${value})));
             }
-            `
+            `,
                 )
                 .join("\n")}
             `,

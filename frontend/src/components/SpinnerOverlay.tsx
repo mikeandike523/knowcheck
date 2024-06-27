@@ -94,7 +94,7 @@ export default function Spinner() {
             content: "";
             border-radius: 50%;
             transform-origin: center;
-            transform: scale(0.2);
+            transform: scale(0.25);
             border: 12px solid black;
             background: white;
           }

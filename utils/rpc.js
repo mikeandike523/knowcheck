@@ -3,12 +3,11 @@ const formatError = fe.default;
 import * as dt from "./dedentTrim.js";
 const dedentTrim = dt.default;
 
-console.log(dedentTrim)
-
+console.log(dedentTrim);
 
 import * as idnt from "./indent.js";
 const indent = idnt.default;
-import * as st from "./string-templating.js"
+import * as st from "./string-templating.js";
 const fillTemplate = st.fillTemplate;
 const escapeForTemplate = st.escapeForTemplate;
 
@@ -187,9 +186,4 @@ class TypicalRPCErrors {
   }
 }
 
-
-export {
-  RPCError,
-  TypicalRPCErrors,
-  TyipcalUserFacingErrorMessages
-}
+export { RPCError, TypicalRPCErrors, TyipcalUserFacingErrorMessages };

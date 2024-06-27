@@ -18,7 +18,7 @@ const App: React.FC = () => {
     <BrowserRouter>
       <Routes>
         {/*  */}
-        <Route path="/quiz/:subjectId/:action/:token?" Component={PagesQuiz} />
+        <Route path="/quiz/:subjectId/:action?/:token?" Component={PagesQuiz} />
         {/*  */}
         <Route path="/" Component={PagesIndex} />
         <Route path="*" Component={PageNotFound} />

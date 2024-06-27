@@ -26,7 +26,7 @@ export const values = {
       info: "white",
       light: "black",
       cancel: "white",
-    }
+    },
   },
   gutters: {
     sm: "4px",
@@ -35,40 +35,39 @@ export const values = {
     xl: "16px",
     xxl: "24px",
   },
-}
+};
 
 export const theme = {
-  pages:{
+  pages: {
     index: {
-      subjectListItem:{
+      subjectListItem: {
         margin: values.gutters.lg,
-        name:{
-          fontSize:"24px"
+        name: {
+          fontSize: "24px",
         },
         blurb: {
-          fontSize:"16px"
-        }
-      }
-    }
+          fontSize: "16px",
+        },
+      },
+    },
   },
-  gridCutoffs:{
+  gridCutoffs: {
     500: 2,
     768: 3,
     1024: 4,
     1280: 5,
-    1536: 6
-    
+    1536: 6,
   },
-  components:{
+  components: {
     LoadingOverlay: {
       opacityTransitionTime: "0.5s",
-    }
+    },
   },
-  colors: {...values.colors },
+  colors: { ...values.colors },
   fontSize: {
     jumbotron: "64px",
   },
-  gutters:values.gutters,
+  gutters: values.gutters,
   card: {
     text: {
       accent: values.colors.brand,
@@ -81,18 +80,18 @@ export const theme = {
     mainContent: {
       background: "hsla(200, 20%, 67%, 1)",
       text: {
-        primary: "white"
-      }
+        primary: "white",
+      },
     },
     width: "80vw",
-    background:"darkgray"
+    background: "darkgray",
   },
-  navbar: { 
+  navbar: {
     height: "96px",
     background: "hsla(213, 16%, 57%, 1)",
     text: {
-      primary: "white"
-    }
+      primary: "white",
+    },
   },
 } as const;
 

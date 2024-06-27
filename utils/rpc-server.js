@@ -62,7 +62,7 @@ async function simulateRPC(request, response, callback, routeName = "") {
       response.status(500).json(
         await fileError(routeName, (ticketNumber) => {
           return TypicalRPCErrors.UnknownServerError(e, ticketNumber);
-        })
+        }),
       );
     }
   }

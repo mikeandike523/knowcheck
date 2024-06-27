@@ -1,6 +1,6 @@
 {
-    "type": "module",
-    "dependencies": {
-        "firebase-functions": "^5.0.1"
-    }
+  "type": "module",
+  "dependencies": {
+    "firebase-functions": "^5.0.1"
+  }
 }

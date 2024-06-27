@@ -1,5 +1,5 @@
 import { FaHouse } from "react-icons/fa6";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import SemanticButton from "@/components/SemanticButton";
 import HStack from "@/fwk/components/HStack";
@@ -7,11 +7,24 @@ import VStack from "@/fwk/components/VStack";
 import { Div, H1 } from "@/fwk/html";
 import theme from "@/themes/main";
 
+import LayoutQuizRegister from "@/layouts/quiz/register";
+import LayoutQuizInvalidAction from "@/layouts/quiz/invalid-action";
+
+function SwitchQuizAction({ action }: { action: string | undefined }) {
+  switch (action) {
+    case "register":
+      return <LayoutQuizRegister />;
+    default:
+      return <LayoutQuizInvalidAction action={action} />;
+  }
+}
+
 export default function Quiz() {
-  // const { subjectId, action, token } = useParams();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { subjectId, action, token } = useParams();
   const navigate = useNavigate();
   return (
-    <VStack width="100%" height="100%" background={theme.page.background}>
+    <VStack width="100%" height="100%" background={theme.page.background} gap={theme.gutters.lg}>
       <HStack
         width="100%"
         background={theme.navbar.background}
@@ -52,7 +65,12 @@ export default function Quiz() {
           />
         </SemanticButton>
       </HStack>
-      <Div></Div>
+      <Div
+        width={theme.page.width}
+        background={theme.page.mainContent.background}
+      >
+        <SwitchQuizAction action={action} />
+      </Div>
     </VStack>
   );
 }

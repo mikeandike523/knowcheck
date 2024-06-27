@@ -10,5 +10,5 @@
     "firebase-admin": "^12.1.1",
     "lodash": "^4.17.21"
   },
-  "type":"module"
+  "type": "module"
 }

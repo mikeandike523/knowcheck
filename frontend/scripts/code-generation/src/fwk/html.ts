@@ -19,8 +19,8 @@ import {forwardRef} from 'react';
 `;
 
 const generateComponent = (element: keyof typeof asMapping) => {
-  if(element === "b"){
-    const capitalizedElement = 'Bold';
+  if (element === "b") {
+    const capitalizedElement = "Bold";
     return `export interface ${capitalizedElement}Props extends Omit<BProps<'b'>,'as'> {}
   export const ${capitalizedElement}=forwardRef<AsElementType['${element}'],${capitalizedElement}Props>((props,ref)=> {
       return <B baseRef={ref} as="b" {...props} />

@@ -121,9 +121,4 @@ class SmartFetch {
   }
 }
 
-export {
-  SmartFetch,
-  FetchError,
-  InvalidJSONError,
-}
-
+export { SmartFetch, FetchError, InvalidJSONError };

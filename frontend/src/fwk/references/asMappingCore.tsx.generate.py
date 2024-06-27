@@ -35,8 +35,15 @@ block_lines = list(
     filter(lambda x: len(x) > 0 and any([len(y) > 0 for y in x]), block_lines)
 )
 
+
 items = list(
-    map(lambda x: AS_MAPPING_ITEM_TEMPLATE.format(tag=x[0], tag_type=x[1]), block_lines)
+    map(
+        lambda x: AS_MAPPING_ITEM_TEMPLATE.format(
+            tag=x[0],
+            tag_type=x[1]
+        ),
+        block_lines,
+    )
 )
 
 print(",\n".join(items))

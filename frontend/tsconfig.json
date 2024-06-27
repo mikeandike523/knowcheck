@@ -1,7 +1,5 @@
 {
   "compilerOptions": {
-
-
     "allowJs": true,
 
     "target": "ES2020",
@@ -30,6 +28,6 @@
       "@/*": ["./src/*"] // Single pattern for absoltue imports
     }
   },
-  "include": ["src/**/*.ts","src/**/*.tsx"],
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["src/**/*.template.tsx"]
 }

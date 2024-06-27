@@ -32,14 +32,14 @@ export default function SemanticButton({
 }: SemanticButtonProps) {
   const background = theme.colors.semantic[color];
   const textColor = theme.colors.semanticContrast[color];
-  console.log(background,textColor)
+  console.log(background, textColor);
   const hoverBackground = ColorUtil.fromCss(background)
     .withScaledLightness(1.2)
     .withScaledSaturation(1.2);
   const activeBackground = ColorUtil.fromCss(background)
     .withScaledLightness(1.5)
     .withScaledSaturation(1.5);
-  console.log(hoverBackground.toCss(),activeBackground.toCss())
+  console.log(hoverBackground.toCss(), activeBackground.toCss());
   return (
     <Button
       css={css`

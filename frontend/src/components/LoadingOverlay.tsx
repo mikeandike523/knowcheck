@@ -6,7 +6,7 @@ import SpinnerOverlay from "@/components/SpinnerOverlay";
 import * as rpc from "@/utils/rpc";
 import * as fe from "@/utils/formatError";
 const RPCError = rpc.RPCError;
-const formatError = fe.default
+const formatError = fe.default;
 
 export interface LoadingOverlayProps<TData> extends DivProps {
   task: LoadingTask<TData>;

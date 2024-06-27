@@ -1,9 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { forwardRef as fwdRef, HTMLAttributes} from "react";
+import { forwardRef as fwdRef, HTMLAttributes, HTMLInputTypeAttribute } from "react";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type HAttr<T> = HTMLAttributes<T>;
-
-
 
 // BEGIN_AS_MAPPING_DATA
 
@@ -74,7 +72,7 @@ type HAttr<T> = HTMLAttributes<T>;
 // END_AS_MAPPING_DATA
 
 export const asMapping = {
-    // <AS_MAPPING>
-  } as const;
+  // <AS_MAPPING>
+} as const;
 
 export default asMapping;

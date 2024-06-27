@@ -83,10 +83,10 @@ export function useAPIData<
       });
   }
   useEffect(() => {
-    fetchData()
+    fetchData();
   }, [JSON.stringify(args), ...additionalDeps]);
   return {
     task,
-    fetchData
-  }
+    fetchData,
+  };
 }
