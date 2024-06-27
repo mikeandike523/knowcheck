@@ -68,6 +68,9 @@ export const theme = {
     jumbotron: "64px",
   },
   gutters: values.gutters,
+  form: {
+    borderRadius:"16px"
+  },
   card: {
     text: {
       accent: values.colors.brand,
