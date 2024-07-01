@@ -3,8 +3,6 @@ const formatError = fe.default;
 import * as dt from "./dedentTrim.js";
 const dedentTrim = dt.default;
 
-console.log(dedentTrim);
-
 import * as idnt from "./indent.js";
 const indent = idnt.default;
 import * as st from "./string-templating.js";

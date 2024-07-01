@@ -15,11 +15,6 @@ const { html: spinnerHtml, styles: spinnerStyles } = prerenderComponent(
   React.createElement(Spinner),
 );
 
-console.log(spinnerHtml);
-
-const RPC_URL_PROD = "http://localhost:5001/knowcheck-4cbab/us-central1";
-const RPC_URL_DEV = "https://us-central1-knowcheck-4cbab.cloudfunctions.net";
-
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   return {

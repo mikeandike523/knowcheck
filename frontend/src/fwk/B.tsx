@@ -11,8 +11,7 @@ import {
   AsElementType,
   asMapping,
   AsType,
-  SpecificAsExoticType,
-  SpecificAsPropsType,
+  SpecificAsPropsType
 } from "./references/asMapping";
 import { allStyleProps, StylePropTypeMapping } from "./styleProps";
 
@@ -24,6 +23,29 @@ export type BProps<T extends AsType> = SpecificAsPropsType<T> & {
 } & {
   [P in keyof StylePropTypeMapping]?: undefined | StylePropTypeMapping[P];
 };
+
+export function styleEngine<TProps extends object>(
+  props:TProps
+){
+  const stylePropRest = lodash.pick(props, allStyleProps) as CSSProperties;
+  const nonStylePropsRest = lodash.omit(
+    props,
+    allStyleProps,
+  ) as object;
+  return {
+    stylePropRest,
+    nonStylePropsRest,
+  }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function stylesToCssString(styles: Record<string,any>) {
+  return Object.entries(styles)
+   .map(
+      ([styleProp, value]) => `${lodash.kebabCase(styleProp)}: ${value};`,
+    )
+   .join("\n")
+}
 
 export const B = <T extends AsType>({
   baseCss = css``,
@@ -37,11 +59,7 @@ export const B = <T extends AsType>({
       ref?: ForwardedRef<AsElementType[T]> | undefined;
     }
   >;
-  const stylePropRest = lodash.pick(rest, allStyleProps) as CSSProperties;
-  const nonStylePropsRest = lodash.omit(
-    rest,
-    allStyleProps,
-  ) as object as SpecificAsExoticType<T>;
+  const { stylePropRest, nonStylePropsRest } = styleEngine(rest)
 
   return (
     <HTMLComponent
@@ -49,11 +67,7 @@ export const B = <T extends AsType>({
       css={css`
         ${baseCss};
         ${overrideCss};
-        ${Object.entries(stylePropRest)
-          .map(
-            ([styleProp, value]) => `${lodash.kebabCase(styleProp)}: ${value};`,
-          )
-          .join("\n")};
+        ${stylesToCssString(stylePropRest)};
       `}
       {...(nonStylePropsRest as object)}
     />

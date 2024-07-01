@@ -70,7 +70,7 @@ export default function Spinner() {
             rgba(255, 0, 0, 1) 360deg
           );
 
-          &::before {
+          &:before {
             z-index: 2;
             position: absolute;
             top: 0;
@@ -82,9 +82,9 @@ export default function Spinner() {
             transform-origin: center;
             transform: scale(0.25);
             background: white;
-          }
+          };
 
-          &::after {
+          &:after {
             z-index: 2;
             position: absolute;
             top: 0;
@@ -97,7 +97,7 @@ export default function Spinner() {
             transform: scale(0.25);
             border: 12px solid black;
             background: white;
-          }
+          };
         `}
       ></Div>
     </Div>

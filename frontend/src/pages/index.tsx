@@ -2,7 +2,7 @@ import { css } from "@emotion/react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { Div, DivProps, H1, H2 } from "@/fwk/html";
+import { Div, DivProps, H1, H2, Span } from "@/fwk/html";
 import theme from "@/themes/main";
 
 import LoadingOverlay from "@/components/LoadingOverlay";
@@ -45,10 +45,6 @@ function HoverCard({ children, ...rest }: HoverCardProps) {
         width: 24px;
         height: 24px;
       `;
-  const textCss = css`
-    transition: opacity 0.25s ease;
-    opacity: ${isHovering ? 1 : 0};
-  `;
   return (
     <>
       <Div
@@ -93,14 +89,15 @@ function HoverCard({ children, ...rest }: HoverCardProps) {
         >
           <Div position="absolute" right={0} bottom={0}>
             <SemanticButton
+              display="flex"
               justifyContent="flex-end"
               alignItems="flex-end"
               width="64px"
+              aspectRatio={1}
               fontSize="24px"
               color="success"
-              textCss={textCss}
             >
-              Go!
+              <Span>Go!</Span>
             </SemanticButton>
           </Div>
 
@@ -119,6 +116,12 @@ function HoverCard({ children, ...rest }: HoverCardProps) {
             <Div background={theme.card.background}></Div>
             <Div background={theme.card.background}></Div>
             <DynamicSVG
+              viewBox={{
+                x: 0,
+                y: 0,
+                width: 24,
+                height: 24,
+              }}
               css={css`
                 ${baseSizeCss};
               `}
@@ -142,7 +145,7 @@ function HoverCard({ children, ...rest }: HoverCardProps) {
                     [0, 0],
                     [24, 0],
                   ],
-                  false,
+                  false
                 )
                 .commit()
                 .compile(true)}
@@ -158,11 +161,9 @@ export default function Index() {
   const navigate = useNavigate();
   const { task, fetchData } = useAPIData<null, SubjectListingItem[]>(
     "listSubjects",
-    null,
+    null
   );
   const subjects = task.data ?? [];
-
-  console.log(subjects);
 
   const gridCutoffEntries = Object.entries(theme.gridCutoffs);
 
@@ -254,7 +255,7 @@ export default function Index() {
             @media (min-width: ${key}px) {
               grid-template-columns: repeat(${value}, min(1fr,calc(100%/${value})));
             }
-            `,
+            `
                 )
                 .join("\n")}
             `,

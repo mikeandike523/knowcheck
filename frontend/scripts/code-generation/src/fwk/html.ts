@@ -45,5 +45,3 @@ fs.writeFileSync(
   path.resolve(__dirname, "..", "..", "..", "..", "src", "fwk", "html.tsx"),
   fileContent,
 );
-
-console.log("Components generated successfully!");

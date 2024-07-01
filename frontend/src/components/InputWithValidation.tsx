@@ -1,12 +1,11 @@
 import { css, SerializedStyles } from "@emotion/react";
-import lodash from "lodash";
 import { HTMLAttributes, HTMLInputTypeAttribute, useId, useState } from "react";
 import { z, ZodError } from "zod";
 
 import { Div, Span } from "@/fwk/html";
-import { allStyleProps } from "@/fwk/styleProps";
 // A function to sanitize any object that might have been thrown
 // for use with JSON.sßtringify
+import { styleEngine, stylesToCssString } from "@/fwk/B";
 import VStack from "@/fwk/components/VStack";
 import formatError from "@/utils/formatError";
 
@@ -160,7 +159,7 @@ export function useInputWithValidationState<TData extends SignificantValue>({
   const [domValue, setDomValue] = useState(initialDOMValue ?? "");
   const [validationResult, setValidationResult] =
     useState<ValidationResult<TData> | null>(null);
-  const validate = () => {
+  const validate = (updateUI = true) => {
     const result = validator(domValue);
     if (!result.valid && result.errorSource === "unknown") {
       console.error(`
@@ -169,7 +168,10 @@ An unknown error occurred while validating the input value: ${domValue}
 ${JSON.stringify(formatError(result.extra), null, 2)}
         `);
     }
-    setValidationResult(result);
+    if (updateUI) {
+      setValidationResult(result);
+    }
+    return result;
   };
   const validationState = !validationResult
     ? "idle"
@@ -209,15 +211,8 @@ export default function InputWithValidation({
   const inputUniqueDOMId = useId();
   const { domValue, setDomValue, validationState, validationMessages } =
     inputState;
-  const stylePropsAsStrings: { [key: string]: string } = {};
-  const nonStyleProps: Partial<InputWithValidationProps> = {};
-  Object.entries(rest).forEach(([key, value]) => {
-    if ((allStyleProps as string[]).includes(key)) {
-      stylePropsAsStrings[key] = value.toString();
-    } else {
-      nonStyleProps[key as keyof InputWithValidationProps] = value;
-    }
-  });
+  const { stylePropRest, nonStylePropsRest } = styleEngine(rest);
+
   const baseCss = css`
     margin: 0;
     padding: 0;
@@ -235,11 +230,7 @@ export default function InputWithValidation({
   const computedCss = css`
     ${priorCss};
     ${baseCss};
-    ${Object.entries(stylePropsAsStrings)
-      .map(([k, v]) => {
-        return `${lodash.kebabCase(k)}: ${v};`;
-      })
-      .join("\n")};
+    ${stylesToCssString(stylePropRest)};
   `;
   return (
     <Div width="100%" margin={0} padding={0} boxSizing="border-box">
@@ -255,7 +246,7 @@ export default function InputWithValidation({
         }}
         css={computedCss}
         type={type}
-        {...rest}
+        {...nonStylePropsRest}
       />
       <VStack width="100%">
         {validationMessages.map((message, i) => (
