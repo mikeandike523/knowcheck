@@ -4,11 +4,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import SemanticButton from "@/components/SemanticButton";
 import HStack from "@/fwk/components/HStack";
 import VStack from "@/fwk/components/VStack";
-import { Div, H1 } from "@/fwk/html";
+import { H1 } from "@/fwk/html";
 import theme from "@/themes/main";
 
-import LayoutQuizRegister from "@/layouts/quiz/register";
 import LayoutQuizInvalidAction from "@/layouts/quiz/invalid-action";
+import LayoutQuizRegister from "@/layouts/quiz/register";
 
 function SwitchQuizAction({ action }: { action: string | undefined }) {
   switch (action) {
@@ -65,12 +65,11 @@ export default function Quiz() {
           />
         </SemanticButton>
       </HStack>
-      <Div
+      <VStack
         width={theme.page.width}
-        background={theme.page.mainContent.background}
       >
         <SwitchQuizAction action={action} />
-      </Div>
+      </VStack>
     </VStack>
   );
 }

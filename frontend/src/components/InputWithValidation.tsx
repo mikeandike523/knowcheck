@@ -1,14 +1,14 @@
 import { css, SerializedStyles } from "@emotion/react";
 import lodash from "lodash";
-import { HTMLAttributes, HTMLInputTypeAttribute, useState } from "react";
+import { HTMLAttributes, HTMLInputTypeAttribute, useId, useState } from "react";
 import { z, ZodError } from "zod";
 
-import { Label, Span } from "@/fwk/html";
+import { Div, Span } from "@/fwk/html";
 import { allStyleProps } from "@/fwk/styleProps";
 // A function to sanitize any object that might have been thrown
 // for use with JSON.sßtringify
-import formatError from "@/utils/formatError";
 import VStack from "@/fwk/components/VStack";
+import formatError from "@/utils/formatError";
 
 export type InputType =
   | "text"
@@ -206,6 +206,7 @@ export default function InputWithValidation({
 }: InputWithValidationProps & {
   inputState: InputWithValidationState;
 }) {
+  const inputUniqueDOMId = useId();
   const { domValue, setDomValue, validationState, validationMessages } =
     inputState;
   const stylePropsAsStrings: { [key: string]: string } = {};
@@ -218,8 +219,14 @@ export default function InputWithValidation({
     }
   });
   const baseCss = css`
+    margin: 0;
+    padding: 0;
     width: 100%;
+    display: block;
     background: white;
+    box-sizing: border-box;
+    max-width: 100%;
+
     border: ${validationState === "error"
       ? "1px solid red"
       : "1px solid black"};
@@ -235,9 +242,10 @@ export default function InputWithValidation({
       .join("\n")};
   `;
   return (
-    <Label width="100%">
-      {label}
+    <Div width="100%" margin={0} padding={0} boxSizing="border-box">
+      <label htmlFor={inputUniqueDOMId}>{label}</label>
       <input
+        id={inputUniqueDOMId}
         value={domValue}
         onChange={(e) => {
           setDomValue(e.target.value);
@@ -256,6 +264,6 @@ export default function InputWithValidation({
           </Span>
         ))}
       </VStack>
-    </Label>
+    </Div>
   );
 }

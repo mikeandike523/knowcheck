@@ -83,6 +83,7 @@ export const stylePropTypeMapping = {
   userSelect: "none | text | all | inherit | initial | unset",
   rowGap: "string | number",
   columnGap: "string | number",
+  boxSizing: "content-box | border-box | inherit | initial | unset"
 } as const;
 
 export default stylePropTypeMapping;

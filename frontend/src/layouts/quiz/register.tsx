@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { Div, H1 } from "@/fwk/html";
+
 import InputWithValidation, {
   zodToSimple,
   useInputWithValidationState,
@@ -25,19 +27,45 @@ export default function Register() {
     validator: formValidators.fullName,
   });
   return (
-    <Form width="30em" maxWidth="100%" background={theme.card.background}>
-      <VStack width="100%" gap={theme.gutters.lg}>
-        <InputWithValidation
-          label="Email"
-          type="email"
-          inputState={emailInputState}
-        />
-        <InputWithValidation
-          label="Full Name"
-          type="text"
-          inputState={fullNameInputState}
-        />
-      </VStack>
-    </Form>
+    <Div 
+    
+      width="30em"
+    
+    >
+      <H1
+        width="100%"
+        textAlign="center"
+        background={theme.navbar.background}
+        color="white"
+        margin={0}
+        padding={0}
+      >
+        Register
+      </H1>
+
+      <Form
+        width="100%"
+        boxSizing="border-box"
+        background={theme.card.background}
+        padding={theme.gutters.lg}
+
+      >
+        <VStack width="100%" gap={theme.gutters.lg}
+        
+        
+        >
+          <InputWithValidation
+            label="Email"
+            type="email"
+            inputState={emailInputState}
+          />
+          <InputWithValidation
+            label="Full Name"
+            type="text"
+            inputState={fullNameInputState}
+          />
+        </VStack>
+      </Form>
+    </Div>
   );
 }
