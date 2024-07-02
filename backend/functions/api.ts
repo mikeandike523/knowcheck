@@ -11,6 +11,7 @@
 import { fileError } from "./utils/rpc-server.js";
 import { TypicalRPCErrors } from "./utils/rpc.js";
 import { QuizRegistration } from "./common/api-types";
+import { createTransport } from "nodemailer";
 
 import admin from "firebase-admin";
 import { logger } from "firebase-functions/v2";
@@ -40,7 +41,7 @@ export const getSubjectConfig = async (args: { id: string }) => {
     throw await fileError("/getSubjectConfig", (ticketNumber) => {
       return TypicalRPCErrors.InvalidAPIInputError(
         `No subject with id ${subjectId}`,
-        ticketNumber,
+        ticketNumber
       );
     });
   }
@@ -51,7 +52,7 @@ export const getSubjectConfig = async (args: { id: string }) => {
     throw await fileError("/getSubjectConfig", (ticketNumber) => {
       return TypicalRPCErrors.MissingDataError(
         `The data for subject ${subjectId} may be missing`,
-        ticketNumber,
+        ticketNumber
       );
     });
   }
@@ -60,10 +61,11 @@ export const getSubjectConfig = async (args: { id: string }) => {
 };
 
 export const registerForQuiz = async (args: {
-subjectId: string;
-email: string;
-fullName: string;
-}):Promise<QuizRegistration> => {
+  subjectId: string;
+  email: string;
+  fullName: string;
+  baseUrl: string;
+}): Promise<QuizRegistration> => {
   const subjectId = args.subjectId;
   const email = args.email;
   const fullName = args.fullName;
@@ -72,7 +74,7 @@ fullName: string;
     throw await fileError("/registerForQuiz", (ticketNumber) => {
       return TypicalRPCErrors.InvalidAPIInputError(
         `No subject with id ${subjectId}`,
-        ticketNumber,
+        ticketNumber
       );
     });
   }
@@ -83,15 +85,15 @@ fullName: string;
     throw await fileError("/registerForQuiz", (ticketNumber) => {
       return TypicalRPCErrors.MissingDataError(
         `The data for subject ${subjectId} may be missing`,
-        ticketNumber,
+        ticketNumber
       );
     });
   }
 
   // Generate an access code of 10 capital characters and digits
   const generateAccessCode = (length: number) => {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let result = '';
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let result = "";
     for (let i = 0; i < length; i++) {
       result += chars.charAt(Math.floor(Math.random() * chars.length));
     }
@@ -106,14 +108,36 @@ fullName: string;
     email,
     fullName,
     accessCode,
-    createdAt: admin.firestore.FieldValue.serverTimestamp()
+    createdAt: admin.firestore.FieldValue.serverTimestamp(),
   });
+
+  console.log(process.env)
+
+  const gmailTransport = createTransport({
+    service: "gmail",
+    auth: {
+      user: "michaelsohnenacademic@gmail.com",
+      pass: process.env.GMAIL_APP_PASSWORD,
+    },
+  });
+
+  const liveLink = `${args.baseUrl.replace(/\/$/,'')}/quiz/${subjectId}/live/${newRegistration.id}`;
+
+  await gmailTransport.sendMail({
+    from: "Know/Check <michaelsohnenacademic@gmail.com>",
+    to: email,
+    subject: "Welcome to Know/Check!",
+    html: `
+      <h1>Welcome to Know/Check!</h1>
+      <p>You have been registered for the "${data.name}" quiz.</p>
+      <p>Your access code is: ${accessCode}</p>
+      <p>Please visit <a href="${liveLink}">${liveLink}</a> to take the quiz.</p>
+    `,
+  })
 
   // Return the necessary data
   return {
     subjectId,
     instanceId: newRegistration.id,
-    accessCode
   };
-
-}
+};

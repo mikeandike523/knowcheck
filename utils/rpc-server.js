@@ -1,4 +1,5 @@
 import { RPCError, TypicalRPCErrors } from "./rpc.js";
+import * as logger from 'firebase-functions/logger'
 
 /**
  * @param {*} route - The requested route / firebase function

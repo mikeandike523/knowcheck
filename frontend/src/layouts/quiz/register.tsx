@@ -42,6 +42,7 @@ export default function Register({ subjectId }: RegisterProps) {
       email: string;
       fullName: string;
       subjectId: string;
+      baseUrl: string;
     },
     QuizRegistration
   >("registerForQuiz");
@@ -65,6 +66,7 @@ export default function Register({ subjectId }: RegisterProps) {
           email: data[0],
           fullName: data[1],
           subjectId,
+          baseUrl: `${window.location.protocol}//${window.location.host}`,
         });
         registerTask.setSuccess(result);
 
