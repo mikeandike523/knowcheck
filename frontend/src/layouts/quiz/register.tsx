@@ -10,6 +10,10 @@ import SemanticButton from "@/components/SemanticButton";
 import VStack from "@/fwk/components/VStack";
 import { Form } from "@/fwk/html";
 import theme from "@/themes/main";
+import { useLoadingTask } from "@/lib/loading"
+import {QuizRegistration} from '@/common/api-types'
+import { useRPCRoute } from "@/lib/rpc-client";
+import LoadingOverlay from "@/components/LoadingOverlay";
 
 const formValidators = {
   email: zodToSimple(z.string().email(), (domValue: string) =>
@@ -25,6 +29,11 @@ const formValidators = {
 } as const;
 
 export default function Register() {
+  const reqisterRoute = useRPCRoute<{
+    email:string,
+    fullName: string,
+  subjectId: string},QuizRegistration>("registerForQuiz")
+  const registerTask = useLoadingTask<QuizRegistration>();
   const emailInputState = useInputWithValidationState({
     initialDOMValue: "",
     validator: formValidators.email,

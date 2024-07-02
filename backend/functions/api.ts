@@ -10,6 +10,7 @@
 
 import { fileError } from "./utils/rpc-server.js";
 import { TypicalRPCErrors } from "./utils/rpc.js";
+import { QuizRegistration } from "./common/api-types";
 
 import admin from "firebase-admin";
 import { logger } from "firebase-functions/v2";
@@ -61,3 +62,62 @@ export const getSubjectConfig = async (args: { id: string }) => {
 
   return { id: subjectId, ...data };
 };
+
+export const registerForQuiz = async (args: {
+subjectId: string;
+email: string;
+fullName: string;
+}):Promise<QuizRegistration> => {
+  const subjectId = args.subjectId;
+  const email = args.email;
+  const fullName = args.fullName;
+  const subjectConfig = await db.collection("subjects").doc(subjectId).get();
+  if (!subjectConfig.exists) {
+    throw await fileError("/registerForQuiz", (ticketNumber) => {
+      return TypicalRPCErrors.InvalidAPIInputError(
+        `No subject with id ${subjectId}`,
+        ticketNumber,
+      );
+    });
+  }
+  const data = subjectConfig.data();
+  // The API reference/typings indicate that data can be undefined
+  // IDK why, but I'll handle it anyway
+  if (typeof data === "undefined") {
+    throw await fileError("/registerForQuiz", (ticketNumber) => {
+      return TypicalRPCErrors.MissingDataError(
+        `The data for subject ${subjectId} may be missing`,
+        ticketNumber,
+      );
+    });
+  }
+
+  // Generate an access code of 10 capital characters and digits
+  const generateAccessCode = (length: number) => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+  };
+
+  const accessCode = generateAccessCode(10);
+
+  // Create a new document in the registrations collection
+  const newRegistration = await db.collection("registrations").add({
+    subjectId,
+    email,
+    fullName,
+    accessCode,
+    createdAt: admin.firestore.FieldValue.serverTimestamp()
+  });
+
+  // Return the necessary data
+  return {
+    subjectId,
+    instanceId: newRegistration.id,
+    accessCode
+  };
+
+}

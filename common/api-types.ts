@@ -8,3 +8,9 @@ export type Subject = {
 };
 
 export type SubjectListingItem = Pick<Subject, "name" | "blurb" | "id">;
+
+export type QuizRegistration = {
+  subjectId: string;
+  instanceId: string;
+  accessCode: string;
+}
