@@ -24,10 +24,6 @@ export const listSubjects = async () => {
     .collection("subjects")
     .where("unlisted", "==", false)
     .get();
-  logger.write({
-    severity: "DEBUG",
-    data: subjects.docs,
-  });
   return subjects.docs.map((doc) => {
     return {
       name: doc.data().name,

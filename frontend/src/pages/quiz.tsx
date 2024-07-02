@@ -11,12 +11,18 @@ import theme from "@/themes/main";
 import LayoutQuizInvalidAction from "@/layouts/quiz/invalid-action";
 import LayoutQuizRegister from "@/layouts/quiz/register";
 
-function SwitchQuizAction({ action }: { action: string | undefined }) {
+function SwitchQuizAction({
+  action,
+  subjectId,
+}: {
+  action: string | undefined;
+  subjectId: string;
+}) {
   switch (action) {
     case "register":
       return (
         <Fragment key="ActionLayout">
-          <LayoutQuizRegister />
+          <LayoutQuizRegister subjectId={subjectId}/>
         </Fragment>
       );
     default:
@@ -80,7 +86,7 @@ export default function Quiz() {
         </SemanticButton>
       </HStack>
       <VStack width={theme.page.width}>
-        <SwitchQuizAction key="ActionLayout" action={action} />
+        <SwitchQuizAction key="ActionLayout" action={action} subjectId={subjectId!}/>
       </VStack>
     </VStack>
   );
