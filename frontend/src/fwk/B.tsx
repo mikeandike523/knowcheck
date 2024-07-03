@@ -24,6 +24,10 @@ export type BProps<T extends AsType> = SpecificAsPropsType<T> & {
   [P in keyof StylePropTypeMapping]?: undefined | StylePropTypeMapping[P];
 };
 
+export type StyleProps = {
+  [P in keyof StylePropTypeMapping]?: undefined | StylePropTypeMapping[P];
+}
+
 export function styleEngine<TProps extends object>(
   props:TProps
 ){

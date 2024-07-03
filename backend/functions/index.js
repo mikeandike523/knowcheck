@@ -30,3 +30,4 @@ const createHandler = (routeName) =>
 module.exports.listSubjects = createHandler("listSubjects");
 module.exports.getSubjectConfig = createHandler("getSubjectConfig");
 module.exports.registerForQuiz = createHandler("registerForQuiz");
+module.exports.getQuizInstanceData = createHandler("getQuizInstanceData");

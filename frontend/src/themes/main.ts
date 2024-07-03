@@ -39,6 +39,14 @@ export const values = {
 
 export const theme = {
   pages: {
+    quiz: {
+      panel: {
+        background:"white",
+        borderRadius: "16px",
+        padding: values.gutters.lg,
+        boxShadow: "0px 0px 16px 0px rgba(0,0,0,0.25)",
+      }
+    },
     index: {
       subjectListItem: {
         margin: values.gutters.lg,

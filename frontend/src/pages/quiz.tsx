@@ -10,19 +10,28 @@ import theme from "@/themes/main";
 
 import LayoutQuizInvalidAction from "@/layouts/quiz/invalid-action";
 import LayoutQuizRegister from "@/layouts/quiz/register";
+import LayoutQuizLive from "@/layouts/quiz/live";
 
 function SwitchQuizAction({
   action,
   subjectId,
+  instanceId
 }: {
   action: string | undefined;
   subjectId: string;
+  instanceId: string | undefined
 }) {
   switch (action) {
     case "register":
       return (
         <Fragment key="ActionLayout">
           <LayoutQuizRegister subjectId={subjectId}/>
+        </Fragment>
+      );
+    case "live":
+      return (
+        <Fragment key="ActionLayout">
+          <LayoutQuizLive subjectId={subjectId} instanceId={instanceId}/>
         </Fragment>
       );
     default:
@@ -37,6 +46,7 @@ function SwitchQuizAction({
 export default function Quiz() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { subjectId, action, instanceId } = useParams();
+  console.log(subjectId, action, instanceId);
   const navigate = useNavigate();
   return (
     <VStack
@@ -86,7 +96,7 @@ export default function Quiz() {
         </SemanticButton>
       </HStack>
       <VStack width={theme.page.width}>
-        <SwitchQuizAction key="ActionLayout" action={action} subjectId={subjectId!}/>
+        <SwitchQuizAction key="ActionLayout" action={action} subjectId={subjectId!} instanceId={instanceId}/>
       </VStack>
     </VStack>
   );
