@@ -50,10 +50,20 @@ export default function Register({ subjectId }: RegisterProps) {
   const emailInputState = useInputWithValidationState({
     initialDOMValue: "",
     validator: formValidators.email,
+    changeHook: () => {
+      if(registerTask.state === "success") {
+        registerTask.setIdle();
+      }
+    },
   });
   const fullNameInputState = useInputWithValidationState({
     initialDOMValue: "",
     validator: formValidators.fullName,
+    changeHook: () => {
+      if(registerTask.state === "success") {
+        registerTask.setIdle();
+      }
+    }
   });
   async function register() {
     const results = [emailInputState.validate(), fullNameInputState.validate()];
@@ -78,7 +88,12 @@ export default function Register({ subjectId }: RegisterProps) {
   }
   return (
     <Div width="30em">
-      <LoadingOverlay task={registerTask}>
+      <LoadingOverlay
+        task={registerTask}
+        onDismiss={() => {
+          registerTask.setIdle();
+        }}
+      >
         <H1
           width="100%"
           textAlign="center"
@@ -118,6 +133,21 @@ export default function Register({ subjectId }: RegisterProps) {
             >
               Submit
             </SemanticButton>
+            {registerTask.state === "success" && (
+              <>
+                <Div background="lightgreen">
+                  <Div>Succesfully registered for the quiz.</Div>
+                  <Div>
+                    Check your email for the access link and access code.
+                  </Div>
+                  <Div>
+                    If you did not recieve the email, check for typos in the
+                    provided email, check your spam folder, and then try
+                    registering again.
+                  </Div>
+                </Div>
+              </>
+            )}
           </VStack>
         </Form>
       </LoadingOverlay>

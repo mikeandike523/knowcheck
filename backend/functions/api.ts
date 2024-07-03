@@ -124,13 +124,13 @@ export const registerForQuiz = async (args: {
   const liveLink = `${args.baseUrl.replace(/\/$/,'')}/quiz/${subjectId}/live/${newRegistration.id}`;
 
   await gmailTransport.sendMail({
-    from: "Know/Check <michaelsohnenacademic@gmail.com>",
+    from: "Know/Check Administrator <michaelsohnenacademic@gmail.com>",
     to: email,
-    subject: "Welcome to Know/Check!",
+    subject: `Registration for Quiz ${data.name}`,
     html: `
       <h1>Welcome to Know/Check!</h1>
       <p>You have been registered for the "${data.name}" quiz.</p>
-      <p>Your access code is: ${accessCode}</p>
+      <p>Your access code is: <b>${accessCode}</b></p>
       <p>Please visit <a href="${liveLink}">${liveLink}</a> to take the quiz.</p>
     `,
   })

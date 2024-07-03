@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { Fragment, ReactNode } from "react";
 
 import { Button, ButtonProps, Div, DivProps } from "@/fwk/html";
 import { LoadingTask } from "@/lib/loading";
@@ -34,6 +34,7 @@ export interface LoadingOverlayProps<TData> extends DivProps {
   loadingOverlayProps?: Partial<DivProps>;
   errorOverlayProps?: Partial<DivProps>;
   dissmissAbortButtonProps?: Partial<ButtonProps>;
+  exclusiveSuccessComponent?: ReactNode | ReactNode[] | undefined;
 }
 
 export default function LoadingOverlay<TData>({
@@ -50,6 +51,7 @@ export default function LoadingOverlay<TData>({
   loadingOverlayProps = {},
   errorOverlayProps = {},
   dissmissAbortButtonProps = {},
+  exclusiveSuccessComponent,
   ...rest
 }: LoadingOverlayProps<TData>) {
   const userFacingMessage = task.error
@@ -81,7 +83,12 @@ export default function LoadingOverlay<TData>({
         }
         {...contentProps}
       >
-        {children}
+        {exclusiveSuccessComponent&&<Fragment key="content">
+          {task.state === "success" ? exclusiveSuccessComponent : children}
+          </Fragment>}
+        {!exclusiveSuccessComponent&&<Fragment key="content">
+          {children}
+          </Fragment>}
       </Div>
       <Div
         key="SpinnerOverlay"

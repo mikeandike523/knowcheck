@@ -136,6 +136,10 @@ export interface InputWithValidationConfig<TData> {
    * if the data does not need to be validated
    */
   validator: Validator<TData>;
+  /**
+   * An optional hook to be called when the input value changes
+   */
+  changeHook?: (value: string) => void;
 }
 
 /**
@@ -155,6 +159,7 @@ export interface InputWithValidationConfig<TData> {
 export function useInputWithValidationState<TData extends SignificantValue>({
   initialDOMValue,
   validator,
+  changeHook
 }: InputWithValidationConfig<TData>) {
   const [domValue, setDomValue] = useState(initialDOMValue ?? "");
   const [validationResult, setValidationResult] =
@@ -191,6 +196,7 @@ ${JSON.stringify(formatError(result.extra), null, 2)}
     parsedValue,
     validate,
     validationMessages,
+    changeHook
   };
 }
 
@@ -242,6 +248,9 @@ export default function InputWithValidation({
           setDomValue(e.target.value);
           if (validateOnChange) {
             inputState.validate();
+          }
+          if(inputState.changeHook) {
+            inputState.changeHook(e.target.value);
           }
         }}
         css={computedCss}
