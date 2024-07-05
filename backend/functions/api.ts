@@ -8,13 +8,12 @@
  * As well as a list of supporting information unique to the question at hand
  */
 
+import { createTransport } from "nodemailer";
+import { QuizRegistration } from "./common/api-types";
 import { fileError } from "./utils/rpc-server.js";
 import { TypicalRPCErrors } from "./utils/rpc.js";
-import { QuizRegistration } from "./common/api-types";
-import { createTransport } from "nodemailer";
 
 import admin from "firebase-admin";
-import { logger } from "firebase-functions/v2";
 
 admin.initializeApp();
 
@@ -38,7 +37,7 @@ export const getSubjectConfig = async (args: { id: string }) => {
   const subjectId = args.id;
   const subjectConfig = await db.collection("subjects").doc(subjectId).get();
   if (!subjectConfig.exists) {
-    throw await fileError("/getSubjectConfig", (ticketNumber) => {
+    throw await fileError("/getSubjectConfig", (ticketNumber:string) => {
       return TypicalRPCErrors.InvalidAPIInputError(
         `No subject with id ${subjectId}`,
         ticketNumber
@@ -49,7 +48,7 @@ export const getSubjectConfig = async (args: { id: string }) => {
   // The API reference/typings indicate that data can be undefined
   // IDK why, but I'll handle it anyway
   if (typeof data === "undefined") {
-    throw await fileError("/getSubjectConfig", (ticketNumber) => {
+    throw await fileError("/getSubjectConfig", (ticketNumber:string) => {
       return TypicalRPCErrors.MissingDataError(
         `The data for subject ${subjectId} may be missing`,
         ticketNumber
@@ -71,7 +70,7 @@ export const registerForQuiz = async (args: {
   const fullName = args.fullName;
   const subjectConfig = await db.collection("subjects").doc(subjectId).get();
   if (!subjectConfig.exists) {
-    throw await fileError("/registerForQuiz", (ticketNumber) => {
+    throw await fileError("/registerForQuiz", (ticketNumber:string) => {
       return TypicalRPCErrors.InvalidAPIInputError(
         `No subject with id ${subjectId}`,
         ticketNumber
@@ -82,7 +81,7 @@ export const registerForQuiz = async (args: {
   // The API reference/typings indicate that data can be undefined
   // IDK why, but I'll handle it anyway
   if (typeof data === "undefined") {
-    throw await fileError("/registerForQuiz", (ticketNumber) => {
+    throw await fileError("/registerForQuiz", (ticketNumber:string) => {
       return TypicalRPCErrors.MissingDataError(
         `The data for subject ${subjectId} may be missing`,
         ticketNumber
@@ -150,7 +149,7 @@ export const getQuizInstanceData = async (args: {
   const instanceId = args.instanceId;
   const subjectConfig = await db.collection("subjects").doc(subjectId).get();
   if (!subjectConfig.exists) {
-    throw await fileError("/getQuizInstanceData", (ticketNumber) => {
+    throw await fileError("/getQuizInstanceData", (ticketNumber:string) => {
       return TypicalRPCErrors.InvalidAPIInputError(
         `No subject with id ${subjectId}`,
         ticketNumber
@@ -161,7 +160,7 @@ export const getQuizInstanceData = async (args: {
   // The API reference/typings indicate that data can be undefined
   // IDK why, but I'll handle it anyway
   if (typeof data === "undefined") {
-    throw await fileError("/getQuizInstanceData", (ticketNumber) => {
+    throw await fileError("/getQuizInstanceData", (ticketNumber:string) => {
       return TypicalRPCErrors.MissingDataError(
         `The data for subject ${subjectId} may be missing`,
         ticketNumber
@@ -172,7 +171,7 @@ export const getQuizInstanceData = async (args: {
   const registrationData = await db.collection("registrations").doc(instanceId).get();
 
   if (!registrationData.exists) {
-    throw await fileError("/getQuizInstanceData", (ticketNumber) => {
+    throw await fileError("/getQuizInstanceData", (ticketNumber:string) => {
       return TypicalRPCErrors.InvalidAPIInputError(
         `No registration with id ${instanceId}`,
         ticketNumber
@@ -182,7 +181,7 @@ export const getQuizInstanceData = async (args: {
 
   const registration = registrationData.data();
   if(typeof registration === "undefined") {
-    throw await fileError("/getQuizInstanceData", (ticketNumber) => {
+    throw await fileError("/getQuizInstanceData", (ticketNumber:string) => {
       return TypicalRPCErrors.MissingDataError(
         `The data for registration ${instanceId} may be missing`,
         ticketNumber

@@ -18,7 +18,7 @@
  * If you want to represent complex information, consider using "./CookieEngine.js".
  */
 
-import { encode, parse } from 'cookie';
+import { serialize, parse } from 'cookie';
 
 /**
  * @typedef {object} CookieOptions
@@ -81,7 +81,7 @@ export default class CookieManager {
     
     for (const cookieName of changedCookies) {
       const cookieChange = this.cookieChanges.get(cookieName);
-      commands.push(encode(cookieName, cookieChange.value, cookieChange.options));
+      commands.push(serialize(cookieName, cookieChange.value, cookieChange.options));
     }
     
     this.res.setHeader('Set-Cookie', commands);

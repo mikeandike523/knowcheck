@@ -3,10 +3,10 @@
  * and the ability to specify default options for cookies.
  */
 
-import CookieManager from './CookieManager';
+import CookieManager from './CookieManager.js';
 
 /**
- * @typedef {import('./CookieManager').CookieOptions} CookieOptions
+ * @typedef {import('./CookieManager.js').CookieOptions} CookieOptions
  */
 
 class CookieEngine {

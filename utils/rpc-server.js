@@ -1,5 +1,6 @@
 import { RPCError, TypicalRPCErrors } from "./rpc.js";
-import * as logger from 'firebase-functions/logger'
+import * as logger from 'firebase-functions/logger';
+import CookieEngine from "./CookieEngine.js";
 
 /**
  * @param {*} route - The requested route / firebase function
@@ -48,28 +49,10 @@ async function fileError(route, error) {
   return rpcError;
 }
 
-class CookieManager {
-  constructor(req){
-    this.req = req;
-  }
-  getCookie(){
-
-  }
-  setCookie(){
-
-  }
-  listCookies(){
-
-  }
-  hasCookie(){
-    
-  }
-}
-
 async function simulateRPC(request, response, callback, routeName = "") {
   const args = request.body; // Auto-parsed
   try {
-    let resultOrPromise = callback(args, new CookieManager(request,response));
+    let resultOrPromise = callback(args, new CookieEngine(request,response));
     if (resultOrPromise instanceof Promise) {
       resultOrPromise = await resultOrPromise;
     }

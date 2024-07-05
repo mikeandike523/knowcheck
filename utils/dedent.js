@@ -1,3 +1,5 @@
+import rebuildTaggedTemplateLiteral from "./rebuildTaggedTemplateLiteral.js";
+
 function commonPrefix(strings) {
   const minLength = Math.min(...strings.map((s) => s.length));
   for (let i = 0; i < minLength; i++) {
@@ -15,20 +17,20 @@ function captureLeadingWhitespace(line) {
   };
 }
 
+
+
 /**
  * A highly flexible dedent algorithm
  *
  * Note, this algorithm does not remove any leading or trailing blank lines
  * This is because we do not want to introduce unexpected behavior,
  * even though the vast majority of the time the user will call trim() anyway
- *
- * @param {string} text - the text to dedent
+ * 
+ * @param {TemplateStringsArray} parts - the parts of the template literal
+ * @param {...any} values - the values to interpolate into the template literal
  */
-function dedent(text) {
-  if (Array.isArray(text)) {
-    text = text.join("");
-  }
-  console.log(text);
+function dedent(parts, ...values) {
+  const text = rebuildTaggedTemplateLiteral(parts, ...values);
   const normalized = text.replace(/\r\n/g, "\n");
   const lines = normalized.split("\n");
   const nonBlankOrAllWhitespaceLines = lines.filter(

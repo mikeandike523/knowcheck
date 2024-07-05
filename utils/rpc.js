@@ -10,6 +10,7 @@ const fillTemplate = st.fillTemplate;
 const escapeForTemplate = st.escapeForTemplate;
 
 class RPCError extends Error {
+
   static buildMessage({
     status,
     logMessage,

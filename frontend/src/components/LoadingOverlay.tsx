@@ -58,7 +58,9 @@ export default function LoadingOverlay<TData>({
     ? typeof task.error === "string"
       ? task.error
       : RPCError.isLike(task.error)
-        ? (task.error as rpc.RPCErrorData).userFacingMessage
+        ? (task.error as {
+          userFacingMessage?: string;
+        }).userFacingMessage
         : task.error instanceof Error
           ? task.error.message
           : typeof task.error === "object"

@@ -1,6 +1,13 @@
 import dedent from "./dedent.js";
+import rebuildTaggedTemplateLiteral from "./rebuildTaggedTemplateLiteral.js";
 
-export default function (text) {
-  console.log(text);
-  return dedent(text).trim();
+/**
+ * 
+ * @param {TemplateStringsArray} parts 
+ * @param  {...any} values 
+ * @returns 
+ */
+export default function (parts, ...values) {
+  const text = rebuildTaggedTemplateLiteral(parts, ...values);
+  return (dedent`${text}`).trim();
 }
