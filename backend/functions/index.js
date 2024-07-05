@@ -20,6 +20,7 @@ async function getRoute(name) {
   }
 }
 
+
 const createHandler = (routeName) =>
   functions.https.onRequest({ cors: true }, async (req, res) => {
     const callback = await getRoute(routeName);

@@ -48,10 +48,28 @@ async function fileError(route, error) {
   return rpcError;
 }
 
+class CookieManager {
+  constructor(req){
+    this.req = req;
+  }
+  getCookie(){
+
+  }
+  setCookie(){
+
+  }
+  listCookies(){
+
+  }
+  hasCookie(){
+    
+  }
+}
+
 async function simulateRPC(request, response, callback, routeName = "") {
   const args = request.body; // Auto-parsed
   try {
-    let resultOrPromise = callback(args);
+    let resultOrPromise = callback(args, new CookieManager(request,response));
     if (resultOrPromise instanceof Promise) {
       resultOrPromise = await resultOrPromise;
     }

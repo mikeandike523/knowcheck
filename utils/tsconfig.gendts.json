@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+      "target": "ESNext",
+      "module": "ESNext",
+      "declaration": true,
+      "emitDeclarationOnly": true,
+      "rootDir": ".",
+      "allowJs": true,
+      "checkJs": true,
+      "noEmitOnError": true
+    },
+    "include": ["./**/*.js","./*.js"],
+    "exclude": ["node_modules"]
+  }
+  

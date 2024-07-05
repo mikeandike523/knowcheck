@@ -1,6 +1,14 @@
 {
   "type": "module",
   "dependencies": {
+    "@types/cookie": "^0.6.0",
+    "cookie": "^0.6.0",
     "firebase-functions": "^5.0.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.3"
+  },
+  "scripts":{
+    "gendts":"yarn run tsc -p ./tsconfig.gendts.json"
   }
 }
