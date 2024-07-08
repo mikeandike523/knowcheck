@@ -1,5 +1,5 @@
 import { Firestore } from "firebase-admin/firestore";
-import admin from "firebase-admin";
+import * as admin from "firebase-admin";
 
 import { QuizRegistration } from "../../common/api-types";
 

@@ -11,4 +11,3 @@ export type QuizRegistration = {
     subjectId: string;
     instanceId: string;
 };
-//# sourceMappingURL=api-types.d.ts.map

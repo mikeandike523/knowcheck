@@ -19,24 +19,24 @@ import createHandlerGetSubjectConfig from "./src/handlers/getSubjectConfig";
 // Because firebase is the cause of needing cjs compatibility
 // it can generally be assumed that imports from firebase libraries
 // are either true cjs or cjs compatible out of the box
-import admin from "firebase-admin";
+import admin from "firebase-admin"
 
 admin.initializeApp();
 const db = admin.firestore();
 
-module.exports.listSubjects = createRoute(
+export const listSubjects = createRoute(
   "/listSubjects",
   createHandlerListSubjects(db)
 );
-module.exports.getSubjectConfig = createRoute(
+export const getSubjectConfig = createRoute(
   "/getSubjectConfig",
   createHandlerGetSubjectConfig(db)
 );
-module.exports.registerForQuiz = createRoute(
+export const registerForQuiz = createRoute(
   "/registerForQuiz",
   createHandlerRegisterForQuiz(db)
 );
-module.exports.getQuizInstanceData = createRoute(
+export const getQuizInstanceData = createRoute(
   "/getQuizInstanceData",
   createHandlerGetQuizInstanceData(db)
 );
