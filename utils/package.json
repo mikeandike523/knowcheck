@@ -10,6 +10,6 @@
     "typescript": "^5.5.3"
   },
   "scripts":{
-    "gendts":"rm -f ./*.d.ts && yarn run tsc -p ./tsconfig.gendts.json"
+    "gendts":"rm -f ./*.d.ts && pnpm run tsc -p ./tsconfig.gendts.json"
   }
 }

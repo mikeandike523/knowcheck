@@ -15,7 +15,7 @@ def run_ts_file(ts_file):
     try:
         print(f"Running {ts_file}...")
         result = subprocess.check_output(
-            ["yarn", "run", "tsx", ts_file], stderr=subprocess.STDOUT
+            ["pnpm", "run", "tsx", ts_file], stderr=subprocess.STDOUT
         )
         print(result.decode())
         print("done")

@@ -2,9 +2,9 @@
   "scripts": {
     "link-code": "bash link-code.sh",
     "link-projects": "bash link-projects.sh",
-    "dev": "concurrently --kill-others-on-fail \"yarn run backend:dev\" \"yarn run frontend:dev\"",
-    "backend:dev": "cd backend && export GOOGLE_APPLICATION_CREDENTIALS=\"$(pwd)/service-account-key.json\" && yarn run firebase emulators:start --only functions",
-    "frontend:dev": "cd frontend && yarn run dev"
+    "dev": "concurrently --kill-others-on-fail \"pnpm run backend:dev\" \"pnpm run frontend:dev\"",
+    "backend:dev": "cd backend && export GOOGLE_APPLICATION_CREDENTIALS=\"$(pwd)/service-account-key.json\" && pnpm run firebase emulators:start --only functions",
+    "frontend:dev": "cd frontend && pnpm run dev"
   },
   "dependencies": {},
   "devDependencies": {
