@@ -56,10 +56,8 @@ export default function createHandlerRegisterForQuiz(db: Firestore) {
       email,
       fullName,
       accessCode,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      createdAt: new Date(Date.now()).toISOString(),
     });
-
-    console.log(process.env);
 
     const gmailTransport = createTransport({
       service: "gmail",
