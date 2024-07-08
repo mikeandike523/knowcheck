@@ -1,13 +1,13 @@
 import { Firestore } from "firebase-admin/firestore";
 import * as admin from "firebase-admin";
+import { createTransport } from "nodemailer";
 
 import { QuizRegistration } from "../../common/api-types";
 
-import {
-  importNodeMailer,
-  importUtilsRpc,
-  importUtilsRpcServer,
-} from "../importers";
+
+import { fileError } from "../../utils/rpc-server";
+import { TypicalRPCErrors } from "../../utils/rpc";
+
 
 export default function createHandlerRegisterForQuiz(db: Firestore) {
   return async function registerForQuiz(args: {
@@ -16,9 +16,6 @@ export default function createHandlerRegisterForQuiz(db: Firestore) {
     fullName: string;
     baseUrl: string;
   }): Promise<QuizRegistration> {
-    const { fileError } = await importUtilsRpcServer();
-    const { TypicalRPCErrors } = await importUtilsRpc();
-    const { createTransport } = await importNodeMailer();
     const subjectId = args.subjectId;
     const email = args.email;
     const fullName = args.fullName;

@@ -1,18 +1,13 @@
 import { Firestore } from "firebase-admin/firestore";
 
-import { 
-    importUtilsRpc,
-    importUtilsRpcServer
- } from "../importers";
+import { fileError } from "../../utils/rpc-server";
+import { TypicalRPCErrors } from "../../utils/rpc";
 
 
 export default function createHandlerGetSubjectConfig(
     db: Firestore
 ) {
     return async function getSubjectConfig (args: { id: string }) {
-        const { fileError } = await importUtilsRpcServer();
-        const { TypicalRPCErrors } =
-          await importUtilsRpc();
         const subjectId = args.id;
         const subjectConfig = await db.collection("subjects").doc(subjectId).get();
         if (!subjectConfig.exists) {

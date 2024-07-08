@@ -1,14 +1,14 @@
 import { Firestore } from "firebase-admin/firestore";
 
-import { importUtilsRpcServer, importUtilsRpc } from "../importers";
+import { fileError } from "../../utils/rpc-server";
+import { TypicalRPCErrors } from "../../utils/rpc";
 
 export default function createHandlerGetQuizInstanceData(db: Firestore) {
   return async function getQuizInstanceData(args: {
     subjectId: string;
     instanceId: string;
   }) {
-    const { fileError } = await importUtilsRpcServer();
-    const { TypicalRPCErrors } = await importUtilsRpc();
+
     const subjectId = args.subjectId;
     const instanceId = args.instanceId;
     const subjectConfig = await db.collection("subjects").doc(subjectId).get();

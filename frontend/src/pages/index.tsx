@@ -13,6 +13,7 @@ import SemanticButton from "@/components/SemanticButton";
 import DynamicSVG from "svg-designer/lib/react/DynamicSVG";
 import SVGBuilder from "svg-designer/lib/SVGBuilder";
 
+
 interface HoverCardProps extends DivProps {
   onClick?: () => void;
 }
@@ -124,12 +125,10 @@ function HoverCard({ children, ...rest }: HoverCardProps) {
               }}
               css={css`
                 ${baseSizeCss};
+                pointer-events: none;
+                transition: all 0.25s ease;
+                filter: drop-shadow(0px 0px 4px rgba(0,0,0,0.75));
               `}
-              style={{
-                pointerEvents: "none",
-                transition: "all 0.25s ease",
-                filter: "drop-shadow(0px 0px 4px rgba(0,0,0,0.75))",
-              }}
               cssVars={{
                 "--fgcolor": theme.card.background,
                 "--bgcolor": "transparent",

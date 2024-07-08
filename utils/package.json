@@ -1,15 +1,20 @@
 {
   "type": "module",
-  "license":"MIT",
+  "license": "MIT",
   "dependencies": {
+    "@types/color": "^3.0.6",
     "@types/cookie": "^0.6.0",
+    "@types/express": "^4.17.21",
+    "color": "^4.2.3",
     "cookie": "^0.6.0",
+    "express": "^4.19.2",
     "firebase-functions": "^5.0.1"
   },
   "devDependencies": {
+    "@types/node": "^20.14.10",
     "typescript": "^5.5.3"
   },
-  "scripts":{
-    "gendts":"rm -f ./*.d.ts && pnpm run tsc -p ./tsconfig.gendts.json"
+  "scripts": {
+    "gendts": "rm -f ./*.d.ts && ./node_modules/.bin/tsc -p ./tsconfig.gendts.json"
   }
 }

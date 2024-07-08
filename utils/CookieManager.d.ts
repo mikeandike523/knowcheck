@@ -7,8 +7,8 @@ export default class CookieManager {
      * @param {import('express').Response} res - The HTTP response object.
      */
     constructor(req: import("express").Request, res: import("express").Response);
-    req: import("express").Request<import("express-serve-static-core").ParamsDictionary>;
-    res: import("express").Response<any>;
+    req: import("express").Request<import(".pnpm/@types+express-serve-static-core@4.19.5/node_modules/@types/express-serve-static-core").ParamsDictionary, any, any, import(".pnpm/@types+qs@6.9.15/node_modules/@types/qs").ParsedQs, Record<string, any>>;
+    res: import("express").Response<any, Record<string, any>>;
     cookieChanges: Map<any, any>;
     existingCookies: Map<string, CookieInfo>;
     /**

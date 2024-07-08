@@ -6,7 +6,7 @@ import { ButtonProps } from "@/fwk/html";
 // Don't feel like rewriting the code
 import { styleEngine, stylesToCssString } from "@/fwk/B";
 import theme from "@/themes/main";
-import ColorUtil from "mousebox/src/lib/ColorUtil";
+import ColorUtil from "../utils/ColorUtil";
 
 export type SemanticColor =
   | "primary"

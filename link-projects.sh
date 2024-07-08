@@ -8,12 +8,17 @@ mousebox_project="$(realpath "$dn/../mousebox")"
 svg_designer_project="$(realpath "$dn/../svg-designer")"
 
 cd frontend
-pnpm link "$mousebox_project"
-pnpm link "$svg_designer_project"
+pnpm remove svg-designer
+pnpm add "$svg_designer_project"
 
-cd ..
+A="$(realpath "./node_modules/react")"
+B="$(realpath "./node_modules/svg-designer/node_modules/react")"
 
-cd backend
-cd functions
-pnpm link "$mousebox_project"
-pnpm link "$svg_designer_project"
+echo "$A"
+echo "$B"
+
+rm -rf "$A" 
+ln -s "$B" "$A"
+
+file "$A"
+file "$B"
