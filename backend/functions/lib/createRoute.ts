@@ -25,7 +25,7 @@ export default   function createRoute<TIn, TOut>(
     routeName: string,
     handler: (args: TIn) => TOut | Promise<TOut>
 ){
-    return functions.https.onRequest(async (request:Request, response:Response) => {
+    return functions.https.onRequest({cors:true},async (request:Request, response:Response) => {
         simulateRPC(request, response, handler, routeName);
       });
 }

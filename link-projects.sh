@@ -20,5 +20,5 @@ echo "$B"
 rm -rf "$A" 
 ln -s "$B" "$A"
 
-file "$A"
-file "$B"
+# file "$A"
+# file "$B"

@@ -16,6 +16,7 @@ module.exports = {
     ]
   },
   resolve: {
+    symlinks:true,
     extensions: ['.ts', '.js']
   },
   output: {
