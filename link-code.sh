@@ -6,11 +6,11 @@ cd "$dn"
 
 echo "$dn"
 
-rm  backend/functions/utils
-rm  frontend/src/utils
+rm  -rf backend/functions/utils
+rm  -rf frontend/src/utils
 
-rm  backend/functions/common
-rm  frontend/src/common
+rm  -rf backend/functions/common
+rm  -rf frontend/src/common
 
 ln -s "$dn/utils" "$dn/backend/functions/utils"
 ln -s "$dn/utils" "$dn/frontend/src/utils"

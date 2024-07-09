@@ -1,12 +1,12 @@
 import { Firestore } from "firebase-admin/firestore";
-import * as admin from "firebase-admin";
 import { createTransport } from "nodemailer";
+import { hash } from "argon2"
 
 import { QuizRegistration } from "../../common/api-types";
 
 
-import { fileError } from "../../utils/rpc-server";
 import { TypicalRPCErrors } from "../../utils/rpc";
+import { fileError } from "../../utils/rpc-server";
 
 
 export default function createHandlerRegisterForQuiz(db: Firestore) {
@@ -50,13 +50,17 @@ export default function createHandlerRegisterForQuiz(db: Firestore) {
 
     const accessCode = generateAccessCode(10);
 
+    const accessCodeHash = await hash(accessCode);
+
+
     // Create a new document in the registrations collection
     const newRegistration = await db.collection("registrations").add({
       subjectId,
       email,
       fullName,
-      accessCode,
-      createdAt: new Date(Date.now()).toISOString(),
+      accessCodeHash,
+      // Epoch millis
+      timestamp: Date.now(),
     });
 
     const gmailTransport = createTransport({

@@ -11,5 +11,5 @@
     "noEmit": true
   },
   "include": ["./src/**/*.ts",
-"./lib/**/*.ts"],
+"./lib/**/*.ts", "./common/api-types/handlers/auth.ts"],
 }
