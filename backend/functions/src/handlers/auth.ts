@@ -28,6 +28,12 @@ export default function createHandlerAuth(db:Firestore){
         // 6. Set the cookie using the cookieEngine class with appropriate settings
         // This includes mataching expires and maxAge from the claims in the format used for cookies whatever that is
 
+
+        // Implementation
+
+        // Setp 1
+        const subjectConfig =
+
         return null
     }
     
