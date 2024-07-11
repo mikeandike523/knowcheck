@@ -1,14 +1,13 @@
 import { css, SerializedStyles } from "@emotion/react";
 import { HTMLAttributes, HTMLInputTypeAttribute, useId, useState } from "react";
-import { z, ZodError } from "zod";
 
 import { Div, Span } from "@/fwk/html";
 // A function to sanitize any object that might have been thrown
 // for use with JSON.sßtringify
 import { styleEngine, stylesToCssString } from "@/fwk/B";
-import VStack from "@/fwk/components/VStack"
-import formatError from "@/utils/formatError"
-import {Validator,ValidationResult, SignificantValue} from "@/utils/input-validation"
+import VStack from "@/fwk/components/VStack";
+import formatError from "@/utils/formatError";
+import { SignificantValue, ValidationResult, Validator } from "@/utils/input-validation";
 
 export type InputType =
   | "text"
@@ -181,7 +180,7 @@ export default function InputWithValidation({
       <VStack width="100%">
         {validationMessages.map((message, i) => (
           <Span key={i} color="red">
-            {message}
+            {message.toString()}
           </Span>
         ))}
       </VStack>

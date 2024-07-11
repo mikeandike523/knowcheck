@@ -1,9 +1,7 @@
-import { z } from "zod";
-
 import { QuizRegistration } from "@/common/api-types";
+import schema from "@/common/validators/handlers/registerForQuiz";
 import InputWithValidation, {
   useInputWithValidationState,
-  zodToSimple,
 } from "@/components/InputWithValidation";
 import LoadingOverlay from "@/components/LoadingOverlay";
 import SemanticButton from "@/components/SemanticButton";
@@ -12,25 +10,6 @@ import { Div, Form, H1 } from "@/fwk/html";
 import { useLoadingTask } from "@/lib/loading";
 import { useRPCRoute } from "@/lib/rpc-client";
 import theme from "@/themes/main";
-
-const formValidators = {
-  email: zodToSimple(z.string().email(), (domValue: string) =>
-    domValue.trim().toLowerCase()
-  ),
-  // How in zod to ensure that there are at least two significant strings seperated by at least one whitespace
-  fullName: zodToSimple(
-    z.string().refine(
-      (value) => {
-        const parts = value.trim().split(/\s+/);
-        return parts.length >= 2 && parts.every((part) => part.length > 0);
-      },
-      {
-        message: "At least a first and last name is required.",
-      }
-    ),
-    (domValue: string) => domValue.trim()
-  ),
-} as const;
 
 export interface RegisterProps {
   subjectId: string;
@@ -49,7 +28,7 @@ export default function Register({ subjectId }: RegisterProps) {
   const registerTask = useLoadingTask<QuizRegistration>();
   const emailInputState = useInputWithValidationState({
     initialDOMValue: "",
-    validator: formValidators.email,
+    validator: schema.email,
     changeHook: () => {
       if(registerTask.state === "success") {
         registerTask.setIdle();
@@ -58,7 +37,7 @@ export default function Register({ subjectId }: RegisterProps) {
   });
   const fullNameInputState = useInputWithValidationState({
     initialDOMValue: "",
-    validator: formValidators.fullName,
+    validator: schema.fullName,
     changeHook: () => {
       if(registerTask.state === "success") {
         registerTask.setIdle();
