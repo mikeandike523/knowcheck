@@ -1,6 +1,6 @@
 import {z} from 'zod'
-import {TArgs} from "../api-types/handlers/auth"
-import nonempty from '../../utils/zod-refiners/nonempty'
+import {TArgs} from "../../api-types/handlers/auth"
+import nonempty from '../../../utils/zod-refiners/nonempty'
 
 const validator = z.object({
     subjectId:z.string().superRefine<string>(
