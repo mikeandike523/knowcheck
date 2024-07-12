@@ -1,5 +1,5 @@
 import { QuizRegistration } from "@/common/api-types";
-import schema from "@/common/validators/handlers/registerForQuiz";
+import {schema} from "@/common/validators/handlers/registerForQuiz";
 import InputWithValidation, {
   useInputWithValidationState,
 } from "@/components/InputWithValidation";

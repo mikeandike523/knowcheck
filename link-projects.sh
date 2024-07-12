@@ -4,21 +4,23 @@ dn="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 
 cd "$dn"
 
-mousebox_project="$(realpath "$dn/../mousebox")"
 svg_designer_project="$(realpath "$dn/../svg-designer")"
+link_name="$dn/frontend/node_modules/svg-designer"
+
+# rm -rf "$link_name"
+# ln -s "$svg_designer_project" "$link_name"
 
 cd frontend
 pnpm remove svg-designer
 pnpm add "$svg_designer_project"
+cd ..
 
-A="$(realpath "./node_modules/react")"
-B="$(realpath "./node_modules/svg-designer/node_modules/react")"
+
+A="$dn/frontend/node_modules/react"
+B="$dn/frontend/node_modules/svg-designer/node_modules/react"
 
 echo "$A"
 echo "$B"
 
 rm -rf "$A" 
 ln -s "$B" "$A"
-
-# file "$A"
-# file "$B"

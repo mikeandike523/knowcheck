@@ -11,6 +11,9 @@ importers:
       '@google-cloud/functions-framework':
         specifier: ^3.4.0
         version: 3.4.0
+      '@types/jsonwebtoken':
+        specifier: ^9.0.6
+        version: 9.0.6
       '@types/nodemailer':
         specifier: ^6.4.15
         version: 6.4.15
@@ -29,6 +32,9 @@ importers:
       firebase-functions:
         specifier: ^5.0.1
         version: 5.0.1(firebase-admin@12.2.0)
+      jsonwebtoken:
+        specifier: ^9.0.2
+        version: 9.0.2
       nodemailer:
         specifier: ^6.9.14
         version: 6.9.14

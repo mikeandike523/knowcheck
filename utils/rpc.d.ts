@@ -36,6 +36,7 @@ export class TypicalRPCErrors {
     static ThirdPartyConnectionError(service: any, cause: any, ticketNumber: any): RPCError;
     static UnknownServerError(cause: any, ticketNumber: any): RPCError;
     static MissingDataError(cause: any, ticketNumber: any): RPCError;
+    static UnauthorizedError(cause: any, ticketNumber: any): RPCError;
 }
 export class TyipcalUserFacingErrorMessages extends Error {
     static GeneralServerError(explanation: any, ticketNumber: any): any;

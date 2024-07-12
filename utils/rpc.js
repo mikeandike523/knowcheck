@@ -183,6 +183,18 @@ class TypicalRPCErrors {
       ),
     });
   }
+
+  static UnauthorizedError(cause, ticketNumber) {
+    return new RPCError({
+      cause,
+      status: 401,
+      logMessage: `Unauthorized`,
+      userFacingMessage: TyipcalUserFacingErrorMessages.GeneralServerError(
+        "You are not authorized to access this resource.",
+        ticketNumber,
+      ),
+    });
+  }
 }
 
 export { RPCError, TypicalRPCErrors, TyipcalUserFacingErrorMessages };

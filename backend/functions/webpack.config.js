@@ -10,7 +10,12 @@ module.exports = {
     rules: [
       {
         test: /\.(t|j|c)sx?$/,
-        use: 'babel-loader',
+        use: {
+          loader: 'babel-loader',
+          options: {
+            configFile: path.resolve(__dirname, '.babelrc') // Specify the path to your .babelrc file
+          }
+        },
         exclude: /node_modules/
       }
     ]

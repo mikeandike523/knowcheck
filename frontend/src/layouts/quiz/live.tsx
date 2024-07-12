@@ -2,8 +2,8 @@ import { useState } from "react";
 
 import InputWithValidation, {
   useInputWithValidationState,
-  zodToSimple,
 } from "@/components/InputWithValidation";
+import { zodToSimple } from "@/utils/input-validation";
 import LoadingEllipses from "@/components/LoadingEllipses";
 import LoadingOverlay from "@/components/LoadingOverlay";
 import SemanticButton from "@/components/SemanticButton";
@@ -13,6 +13,7 @@ import { useAPIData } from "@/lib/rpc-client";
 import theme from "@/themes/main";
 import { z } from "zod";
 import { useLoadingTask } from "@/lib/loading";
+import nonempty from "@/utils/zod-refiners/nonempty";
 
 export interface LiveProps {
   subjectId: string;
@@ -51,17 +52,10 @@ function SublayoutEnterAccessCode({
     validator: zodToSimple(
       z
         .string()
-
+        .transform((value) => value.trim())
+        .superRefine(nonempty(false, "Please enter an access code"))
         .superRefine((value, ctx) => {
-          if (value.length === 0) {
-            ctx.addIssue({
-              code: z.ZodIssueCode.custom,
-              message: "Please enter an access code.",
-              fatal: true,
-            });
-            return z.NEVER;
-          }
-          if (value.toLowerCase().match(/^[a-z0-9]{10}$/) === null) {
+          if (value.toLowerCase().match(/^[a-zA-Z0-9]{10}$/) === null) {
             ctx.addIssue({
               code: z.ZodIssueCode.custom,
               message:
@@ -69,8 +63,7 @@ function SublayoutEnterAccessCode({
               fatal: true,
             });
           }
-        }),
-      (value) => value.trim()
+        })
     ),
   });
   const instanceData = loadInstanceDataTask.data;
