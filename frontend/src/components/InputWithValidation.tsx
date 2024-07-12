@@ -7,7 +7,12 @@ import { Div, Span } from "@/fwk/html";
 import { styleEngine, stylesToCssString } from "@/fwk/B";
 import VStack from "@/fwk/components/VStack";
 import formatError from "@/utils/formatError";
-import { SignificantValue, ValidationResult, Validator } from "@/utils/input-validation";
+import {
+  SignificantValue,
+  ValidationErrorMessage,
+  ValidationResult,
+  Validator,
+} from "@/utils/input-validation";
 
 export type InputType =
   | "text"
@@ -19,22 +24,6 @@ export type InputType =
   | "search"
   | "date"
   | "datetime-local";
-
-
-
-
-
-
-
-function normalizeMessageProperty(message?: string | string[] | undefined) {
-  if (typeof message === "string") {
-    return [message];
-  }
-  if (message && Array.isArray(message)) {
-    return message;
-  }
-  return [];
-}
 
 export interface InputWithValidationProps
   extends HTMLAttributes<HTMLInputElement> {
@@ -55,7 +44,7 @@ export interface InputWithValidationConfig<TData> {
    * To keep things simple, we expect the caller to supply a trivial validator
    * if the data does not need to be validated
    */
-  validator: Validator<TData>;
+  validator: Validator<string, TData>;
   /**
    * An optional hook to be called when the input value changes
    */
@@ -79,7 +68,7 @@ export interface InputWithValidationConfig<TData> {
 export function useInputWithValidationState<TData extends SignificantValue>({
   initialDOMValue,
   validator,
-  changeHook
+  changeHook,
 }: InputWithValidationConfig<TData>) {
   const [domValue, setDomValue] = useState(initialDOMValue ?? "");
   const [validationResult, setValidationResult] =
@@ -104,9 +93,36 @@ ${JSON.stringify(formatError(result.extra), null, 2)}
       ? "valid"
       : "invalid";
   const parsedValue = validationResult?.data ?? null;
-  const validationMessages = normalizeMessageProperty(
-    validationResult?.message
-  );
+  const validationMessages = validationResult?.message ?? [];
+  const normalizeValidationMessages = (
+    messages:
+      | ValidationErrorMessage
+      | ValidationErrorMessage[]
+      | { [key: string]: ValidationErrorMessage[] }
+      | undefined
+      | null
+  ): ValidationErrorMessage[] => {
+    if (!messages) {
+      return [""];
+    }
+    if (typeof messages === "string") {
+      return [messages];
+    }
+    if (Array.isArray(messages)) {
+      return messages.map((m) => normalizeValidationMessages(m));
+    }
+    if(typeof messages === "object") {
+      if(messages===null){
+        return []
+      }
+      return Object.entries(messages).map(([key, value]) => {
+        return `${key}: ${normalizeValidationMessages(value)}`;
+      })
+    }
+    return [];
+  };
+
+  const messages = normalizeValidationMessages(validationMessages);
 
   return {
     domValue,
@@ -115,8 +131,8 @@ ${JSON.stringify(formatError(result.extra), null, 2)}
     validationResult,
     parsedValue,
     validate,
-    validationMessages,
-    changeHook
+    messages,
+    changeHook,
   };
 }
 
@@ -135,7 +151,7 @@ export default function InputWithValidation({
   inputState: InputWithValidationState;
 }) {
   const inputUniqueDOMId = useId();
-  const { domValue, setDomValue, validationState, validationMessages } =
+  const { domValue, setDomValue, validationState, messages } =
     inputState;
   const { stylePropRest, nonStylePropsRest } = styleEngine(rest);
 
@@ -169,7 +185,7 @@ export default function InputWithValidation({
           if (validateOnChange) {
             inputState.validate();
           }
-          if(inputState.changeHook) {
+          if (inputState.changeHook) {
             inputState.changeHook(e.target.value);
           }
         }}
@@ -178,7 +194,7 @@ export default function InputWithValidation({
         {...nonStylePropsRest}
       />
       <VStack width="100%">
-        {validationMessages.map((message, i) => (
+        {messages.map((message, i) => (
           <Span key={i} color="red">
             {message.toString()}
           </Span>

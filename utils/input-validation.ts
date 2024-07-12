@@ -5,9 +5,12 @@ import formatError from "./formatError";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type SignificantValue = Exclude<any, null | undefined>;
 
-export type ValidationErrorMessage = string | ValidationErrorMessage[] | {
-  [key: string]:ValidationErrorMessage;
-}
+export type ValidationErrorMessage =
+  | string
+  | ValidationErrorMessage[]
+  | {
+      [key: string]: ValidationErrorMessage;
+    };
 
 export type ValidationResult<TData extends SignificantValue> = {
   valid: boolean;
@@ -30,7 +33,7 @@ export type ValidationResult<TData extends SignificantValue> = {
   /**
    * An option message or list of messages to display to the user.
    */
-  message?: ValidationErrorMessage
+  message?: ValidationErrorMessage;
   /**
    * Optional extra information
    */
@@ -42,17 +45,18 @@ export type ValidationResult<TData extends SignificantValue> = {
  * here, value is a string since in HTML no whetter the input type is,
  * retrieving it's DOM value will always be a string
  */
-export type Validator<TIn extends SignificantValue,TOut extends SignificantValue> = (
-  value: TIn,
-) => ValidationResult<TOut>;
+export type Validator<
+  TIn extends SignificantValue,
+  TOut extends SignificantValue,
+> = (value: TIn) => ValidationResult<TOut>;
 
 /**
  * Wraps a zod validator into a simpler for appropriate for this app
  * This is generally because ZodError is a highly complex data type and we want to boild it down first
  */
 export function zodToSimple<TData extends SignificantValue>(
-  zodValidator: z.ZodType<TData>,
-): Validator<unknown,TData> {
+  zodValidator: z.ZodType<TData>
+): Validator<unknown, TData> {
   return (value: unknown): ValidationResult<TData> => {
     try {
       const result = zodValidator.safeParse(value);
@@ -87,18 +91,21 @@ export function zodToSimple<TData extends SignificantValue>(
   };
 }
 
-function chainValidators<TIn,TMid,TOut>(A:Validator<TIn,TMid>,B:Validator<TMid,TOut>){
+function chainValidators<TIn, TMid, TOut>(
+  A: Validator<TIn, TMid>,
+  B: Validator<TMid, TOut>
+) {
   return (value: TIn): ValidationResult<TOut> => {
     const AResult = A(value);
     if (!AResult.valid) {
       return {
         valid: false,
         errorSource: "zod",
-        message: AResult.message
-      }
+        message: AResult.message,
+      };
     }
-    return B(AResult.data!)
-  }
+    return B(AResult.data!);
+  };
 }
 
 /**
@@ -153,36 +160,30 @@ export function createApiInputShapeChecker<TApiInput>(
     arrayOptions = {
       fixedLength: undefined,
     },
-  }: CheckApiInputShapeOptions,
+  }: CheckApiInputShapeOptions
 ) {
   /**
    * A shorecut to quickly define validation results in the error cases
    */
-  const failResult = (
-    message: string,
-  ): ValidationResult<TApiInput> => {
+  const failResult = (message: string): ValidationResult<TApiInput> => {
     return {
       valid: false,
       errorSource: "custom",
       message,
     };
   };
-  const successResult = (
-    value: TApiInput,
-  ): ValidationResult<TApiInput> => {
+  const successResult = (value: TApiInput): ValidationResult<TApiInput> => {
     return {
       valid: true,
       data: value,
     };
   };
-  const checkObjectFields = (
-    obj: object,
-  ): ValidationResult<TApiInput> => {
+  const checkObjectFields = (obj: object): ValidationResult<TApiInput> => {
     const foundKeys = Object.keys(obj);
     const foundKeysSet = new Set(foundKeys);
     const requiredKeys = objectOptions.fields ?? [];
     const requiredKeysSet = new Set(requiredKeys);
-    const issues:string[] = [];
+    const issues: string[] = [];
     for (const key of requiredKeys) {
       if (!foundKeysSet.has(key)) {
         issues.push(`Missing key ${key}`);
@@ -207,7 +208,7 @@ export function createApiInputShapeChecker<TApiInput>(
         if (typeof value !== "undefined") {
           return failResult(
             "Api input must be undefined and only undefined, found type: " +
-              typeof value,
+              typeof value
           );
         }
         break;
@@ -215,7 +216,7 @@ export function createApiInputShapeChecker<TApiInput>(
         if (value !== null) {
           if (typeof value === "object") {
             return failResult(
-              "Api input must be explictly null. Recieved a regular javascript object.",
+              "Api input must be explictly null. Recieved a regular javascript object."
             );
           } else {
             return failResult("Api must be explictly null.");
@@ -233,19 +234,19 @@ export function createApiInputShapeChecker<TApiInput>(
         }
         if (typeof value !== rootType) {
           return failResult(
-            `Api input must be of type \"${rootType}\", got \"${typeof value}\"`,
+            `Api input must be of type \"${rootType}\", got \"${typeof value}\"`
           );
         }
         break;
       case "array":
         if (typeof value !== "object") {
           return failResult(
-            `Api input must be an array, got javascript type \"${typeof value}\"`,
+            `Api input must be an array, got javascript type \"${typeof value}\"`
           );
         }
         if (!Array.isArray(value)) {
           return failResult(
-            `Api input must be an array. Got a javascript object that is not an array.`,
+            `Api input must be an array. Got a javascript object that is not an array.`
           );
         }
         if (typeof arrayOptions.fixedLength === "number") {
@@ -253,7 +254,7 @@ export function createApiInputShapeChecker<TApiInput>(
             return failResult(
               `
 Api must be an array of length ${arrayOptions.fixedLength},
-got an array of length ${(value as Array<any>).length}`.trim(),
+got an array of length ${(value as Array<any>).length}`.trim()
             );
           }
         }
@@ -261,12 +262,12 @@ got an array of length ${(value as Array<any>).length}`.trim(),
       case "object":
         if (typeof value !== "object") {
           return failResult(
-            `Api input must be a regular obejct, got javascript type \"${typeof value}\"`,
+            `Api input must be a regular obejct, got javascript type \"${typeof value}\"`
           );
         }
         if (Array.isArray(value)) {
           return failResult(
-            `Api input must be a regular object. Got an array.`,
+            `Api input must be a regular object. Got an array.`
           );
         }
         return checkObjectFields(value as object);
@@ -277,42 +278,59 @@ got an array of length ${(value as Array<any>).length}`.trim(),
 }
 
 export function createApiSchemaChecker<TSchema>(schema: {
-  [K in keyof TSchema]:Validator<unknown,TSchema[K]>
-}):Validator<unknown, TSchema> {
+  [K in keyof TSchema]: Validator<unknown, TSchema[K]>;
+}): Validator<unknown, TSchema> {
   const baseChecker = createApiInputShapeChecker<TSchema>("object", {
     canBeNull: false,
     canBeUndefined: false,
     objectOptions: {
       fields: Object.keys(schema),
       strict: true,
-    }
-  })
+    },
+  });
   const fieldChecker = (inputObject: {
-    [K in keyof TSchema]: unknown
+    [K in keyof TSchema]: unknown;
   }): ValidationResult<TSchema> => {
-    const keysToCheck = Object.keys(schema) as (keyof TSchema)[]
+    const keysToCheck = Object.keys(schema) as (keyof TSchema)[];
     const fieldIssues: {
-      [K in keyof TSchema]?: ValidationErrorMessage
-    } = {}
-    for(const key of keysToCheck) {
-      const fieldResult = schema[key](inputObject[key])
+      [K in keyof TSchema]?: ValidationErrorMessage;
+    } = {};
+    for (const key of keysToCheck) {
+      const fieldResult = schema[key](inputObject[key]);
       if (!fieldResult.valid) {
-        fieldIssues[key]=fieldResult.message
+        fieldIssues[key] = fieldResult.message;
       }
     }
-    if(Object.keys(fieldIssues).length > 0) {
+    if (Object.keys(fieldIssues).length > 0) {
       return {
         valid: false,
         errorSource: "custom",
-        message: fieldIssues as ValidationErrorMessage
-      }
+        message: fieldIssues as ValidationErrorMessage,
+      };
     }
     return {
       valid: true,
-      data: inputObject as TSchema
-    }
-  }
-  return chainValidators(baseChecker, fieldChecker)
+      data: inputObject as TSchema,
+    };
+  };
+  return chainValidators(baseChecker, fieldChecker);
 }
 
+export function parseApiInput<TSchema>(
+  apiInput: unknown,
+  schema: {
+    [K in keyof TSchema]: Validator<unknown, TSchema[K]>;
+  }
+): TSchema {
+  const result = createApiSchemaChecker(schema)(apiInput);
+  if (!result.valid) {
+    throw result;
+  }
+  return result.data!;
+}
 
+export type ValidatorSchemaUnwrap<TValidatorSchema extends {
+  [key: string]: Validator<any, any>;
+}> = {
+  [K in keyof TValidatorSchema]:TValidatorSchema[K] extends Validator<any, infer T>? T : never;
+}

@@ -3,20 +3,16 @@ import { createTransport } from "nodemailer";
 import { hash } from "argon2"
 
 import { QuizRegistration } from "../../common/api-types";
-
-
 import { TypicalRPCErrors } from "../../utils/rpc";
 import { fileError } from "../../utils/rpc-server";
+import {parseApiInput} from "../../utils/input-validation"
+import {schema,TSchema} from "../../common/validators/handlers/registerForQuiz"
 
 
 export default function createHandlerRegisterForQuiz(db: Firestore) {
-  return async function registerForQuiz(args: {
-    subjectId: string;
-    email: string;
-    fullName: string;
-    baseUrl: string;
-  }): Promise<QuizRegistration> {
-    const subjectId = args.subjectId;
+  return async function registerForQuiz(args: TSchema): Promise<QuizRegistration> {
+    const parsedArgs = parseApiInput<TSchema>(args, schema);
+    const subjectId = parsedArgs.subjectId;
     const email = args.email;
     const fullName = args.fullName;
     const subjectConfig = await db.collection("subjects").doc(subjectId).get();
@@ -71,7 +67,7 @@ export default function createHandlerRegisterForQuiz(db: Firestore) {
       },
     });
 
-    const liveLink = `${args.baseUrl.replace(/\/$/, "")}/quiz/${subjectId}/live/${newRegistration.id}`;
+    const liveLink = `${parsedArgs.baseUrl.replace(/\/$/, "")}/quiz/${subjectId}/live/${newRegistration.id}`;
 
     await gmailTransport.sendMail({
       from: "Know/Check Administrator <michaelsohnenacademic@gmail.com>",
