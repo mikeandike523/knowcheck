@@ -1,8 +1,6 @@
 import { useState } from "react";
 
-import {
-  TSchema
-} from "@/common/validators/handlers/auth";
+import { TSchema } from "@/common/validators/handlers/auth";
 import InputWithValidation, {
   useInputWithValidationState,
 } from "@/components/InputWithValidation";
@@ -124,6 +122,9 @@ function SublayoutEnterAccessCode({
               gap: theme.gutters.lg,
               alignItems: "center",
             }}
+            onDismiss={()=>{
+              submitAccessCodeTask.setIdle();
+            }}
           >
             <InputWithValidation
               type="password"
@@ -142,6 +143,9 @@ function SublayoutEnterAccessCode({
             >
               Start Quiz
             </SemanticButton>
+            {submitAccessCodeTask.state === "success" && (
+              <Div background="lightgreen">Login successful.</Div>
+            )}
           </LoadingOverlay>
         </VStack>
       </LoadingOverlay>

@@ -71,9 +71,6 @@ export default function LoadingOverlay<TData>({
               ).userFacingMessage ?? "Unknown Error"
             : "Unknown Error"
     : "Unknown Error";
-  if (task.error) {
-    console.error(JSON.stringify(formatError(task.error), null, 2));
-  }
   return (
     <Div position={position} width={width} height={height} {...rest}>
       <Div

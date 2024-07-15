@@ -27,10 +27,6 @@ ${logMessage}
 
 User Facing Message:
 ${userFacingMessage}
-
-Cause:
-${typeof cause === "undefined" ? "undefined" : JSON.stringify(formatError(cause), null, 2)}
-
     `;
   }
 
@@ -69,6 +65,7 @@ ${typeof cause === "undefined" ? "undefined" : JSON.stringify(formatError(cause)
 
   toJSON() {
     return {
+      name: this.name,
       message: this.message,
       logMessage: this.logMessage,
       status: this.status,
@@ -91,9 +88,14 @@ ${typeof cause === "undefined" ? "undefined" : JSON.stringify(formatError(cause)
       RPCError.is(obj) || (typeof obj === "object" && obj.name === "RPCError")
     );
   }
-  static wrap(obj, status = 5000) {
+  static wrap(obj, status = 500) {
     if (RPCError.isLike(obj)) {
-      return obj;
+      return new RPCError({
+        status:obj.status??status,
+        logMessage: obj.logMessage,
+        cause: obj.cause,
+        userFacingMessage: obj.userFacingMessage,
+      });
     }
     return new RPCError({
       status,

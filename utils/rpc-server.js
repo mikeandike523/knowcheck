@@ -59,7 +59,7 @@ async function simulateRPC(request, response, callback, routeName = "") {
     response.status(200).json(resultOrPromise);
   } catch (e) {
     if (RPCError.isLike(e)) {
-      response.status(e.status).json(e);
+      response.status(e.status).json(RPCError.wrap(e).toJSON());
     } else {
       response.status(500).json(
         await fileError(routeName, (ticketNumber) => {

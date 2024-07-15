@@ -3,7 +3,7 @@ import CookieEngine from "../../utils/CookieEngine.js";
 import { verify } from "argon2";
 import jwt from "jsonwebtoken";
 
-import { TypicalRPCErrors } from "../../utils/rpc.js";
+import { RPCError, TypicalRPCErrors } from "../../utils/rpc.js";
 import { parseApiInput } from "../../utils/input-validation";
 import { fileError } from "../../utils/rpc-server.js";
 import { schema, TSchema } from "../../common/validators/handlers/auth";
@@ -58,9 +58,11 @@ export default function createHandlerAuth(db: Firestore) {
       accessCode
     );
     if (!isAccessCodeValid) {
-      throw await fileError("/auth", (ticketNumber: string) =>
-        TypicalRPCErrors.UnauthorizedError("Invalid access code", ticketNumber)
-      );
+      throw new RPCError({
+        status: 401,
+        userFacingMessage: "Invalid access code",
+        logMessage: "Provided access code does not match the one stored in the database",
+      })
     }
 
     // 4. If verified, begin the process of generating an access code and corresponding jwt token

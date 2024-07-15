@@ -8,6 +8,7 @@ import { useLoadingTask } from "./loading";
 
 const RPCError = rpc.RPCError;
 const SmartFetch = sf.SmartFetch;
+const FetchError = sf.FetchError;
 
 /**
  * The list of JSON compatible JS primitive types
@@ -41,14 +42,33 @@ export function useRPCRoute<
     try {
       return await sf.post(args);
     } catch (e) {
-      if (RPCError.isLike(e)) {
-        throw RPCError.wrap(e);
-      } else {
+      if (e instanceof FetchError) {
+        if(e.data){
+          if(RPCError.isLike(e.data)){
+            throw RPCError.wrap(e.data,e.statusCode);
+          }else{
+            throw new RPCError({
+              status: 400,
+              userFacingMessage: "Something went wrong in your browser.",
+              logMessage: e.text,
+              cause: e,
+            });
+          }
+        }else{
+          throw new RPCError({
+            status: e.statusCode,
+            userFacingMessage: "Something went wrong in your browser.",
+            logMessage: e.text,
+            cause: e
+          });
+        }
+      } 
+      else {
         throw new RPCError({
           status: 400,
           userFacingMessage: "Something went wrong in your browser.",
           logMessage: "Client error",
-          cause: e,
+          cause: e
         });
       }
     }

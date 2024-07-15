@@ -25,6 +25,7 @@ export function useLoadingTask<TData>(): LoadingTask<TData> {
     setIdle: () => setState("idle"),
     setLoading: () => setState("loading"),
     setError: (error) => {
+      console.error(error)
       setState("error");
       setError(error);
     },
