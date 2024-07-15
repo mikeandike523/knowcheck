@@ -6,21 +6,68 @@ import {
   TSchema,
   actions,
 } from "../../common/validators/handlers/token";
-import { parseApiInput } from "../../utils/input-validation";
+import { parseObjectSchema } from "../../utils/input-validation";
 import { TokenClaims } from "../../common/api-types";
 import CookieEngine from "../../utils/CookieEngine";
 import { RPCError } from "../../utils/rpc";
 import {
   schemaTokenClaims,
-  TSchemaTokenClaims,
 } from "../../common/validators/index";
 
+export enum InvalidTokenReason {
+  EXPIRED = "EXPIRED",
+  INVALID_FORMAT = "INVALID_FORMAT",
+  INVALID_TOKEN = "INVALID_TOKEN",
+  MISSING_TOKEN = "MISSING_TOKEN",
+}
+
 async function checkToken(claims: TokenClaims, db: Firestore) {
-  //placeholder
+  const docs = (
+    await db
+      .collection("access_tokens")
+      .where("subjectId", "==", claims.subjectId)
+      .where("instanceId", "==", claims.instanceId)
+      .get()
+  ).docs;
+  if (docs.length === 0) {
+    throw new RPCError({
+      status: 401,
+      logMessage: InvalidTokenReason.INVALID_TOKEN,
+      cause: InvalidTokenReason.INVALID_TOKEN,
+    });
+  }
+  // Partial just in case
+  const latestDoc = docs.pop()!
+  const latest = latestDoc.data()??{} as Partial<TokenClaims>;
+  if(!latest.data.expires){
+    throw new RPCError({
+      status: 401,
+      logMessage: InvalidTokenReason.INVALID_FORMAT,
+      cause: InvalidTokenReason.INVALID_FORMAT,
+    });
+  }
+  if(Date.now() >= latest.expires){
+    throw new RPCError({
+      status: 401,
+      logMessage: InvalidTokenReason.EXPIRED,
+      cause: InvalidTokenReason.EXPIRED,
+    })
+  }
+  return docs.map(doc=>doc.id)
 }
 async function refreshToken(claims: TokenClaims, db: Firestore) {
-  //placeholder
-  return claims;
+  const docsToCleanup = await checkToken(claims, db);
+  for(const docId of docsToCleanup){
+    await db.collection("access_tokens").doc(docId).delete();
+  }
+  const newClaims = {
+    ...claims,
+    expires: Date.now() + 30 * 60 * 1000,
+    maxAge: 30 * 60 * 1000,
+    timestamp: Date.now(),
+  }
+  await db.collection("access_tokens").add(newClaims);
+  return newClaims;
 }
 
 export default function createHandlerToken(db: Firestore) {
@@ -32,14 +79,14 @@ export default function createHandlerToken(db: Firestore) {
     // Even isntanceId and subejctId are public as its present in the url
     // This would NOT necessarily be true of every single app
     // Some app smay need to return only info about login date and expiry, or none at all
-    const parsedArgs = parseApiInput<TSchema>(args, schema);
+    const parsedArgs = parseObjectSchema<TSchema>(args, schema);
     const action = parsedArgs.action;
     const access_token = cookieEngine.getCookie("access_token");
     if (!access_token) {
       throw new RPCError({
         status: 401,
-        userFacingMessage: "Access token is required",
-        logMessage: "Access token is required for this action",
+        logMessage: InvalidTokenReason.MISSING_TOKEN,
+        cause: InvalidTokenReason.MISSING_TOKEN,
       });
     }
 
@@ -49,16 +96,14 @@ export default function createHandlerToken(db: Firestore) {
     ) as object as Partial<TokenClaims>;
 
     try {
-      // Clever trick, we use a parseApiInput to check that the structure of the claims is correct,
-      // as if token verification itself was an api
-      const parsedClaims = parseApiInput<TSchemaTokenClaims>(
+      const parsedClaims = parseObjectSchema<TokenClaims>(
         claims,
         schemaTokenClaims
       );
-      await checkToken(parsedClaims,db);
+      await checkToken(parsedClaims, db);
       switch (action) {
         case "refresh":
-          const newClaims = await refreshToken(parsedClaims,db);
+          const newClaims = await refreshToken(parsedClaims, db);
           return newClaims;
         case "check":
           return parsedClaims;
@@ -66,9 +111,8 @@ export default function createHandlerToken(db: Firestore) {
     } catch (e) {
       throw new RPCError({
         status: 401,
-        userFacingMessage: "Invalid access token",
-        logMessage: "Invalid access token: incorrect format",
-        cause: e,
+        logMessage: InvalidTokenReason.INVALID_FORMAT,
+        cause: InvalidTokenReason.INVALID_FORMAT,
       });
     }
   };

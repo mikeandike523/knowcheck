@@ -10,6 +10,3 @@ export const schemaTokenClaims = {
     expires: zodToSimple(z.number()),
     maxAge: zodToSimple(z.number()),
 }
-
-export type TSchemaTokenClaims = ValidatorSchemaUnwrap<typeof schemaTokenClaims>
-

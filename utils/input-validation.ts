@@ -316,7 +316,7 @@ export function createApiSchemaChecker<TSchema>(schema: {
   return chainValidators(baseChecker, fieldChecker);
 }
 
-export function parseApiInput<TSchema>(
+export function parseObjectSchema<TSchema>(
   apiInput: unknown,
   schema: {
     [K in keyof TSchema]: Validator<unknown, TSchema[K]>;

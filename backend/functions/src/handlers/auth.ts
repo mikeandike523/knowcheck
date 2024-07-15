@@ -4,7 +4,7 @@ import { verify } from "argon2";
 import jwt from "jsonwebtoken";
 
 import { RPCError, TypicalRPCErrors } from "../../utils/rpc.js";
-import { parseApiInput } from "../../utils/input-validation";
+import { parseObjectSchema } from "../../utils/input-validation";
 import { fileError } from "../../utils/rpc-server.js";
 import { schema, TSchema } from "../../common/validators/handlers/auth";
 import { TokenClaims } from "../../common/api-types/index.js";
@@ -14,7 +14,7 @@ export default function createHandlerAuth(db: Firestore) {
     args: TSchema,
     cookieEngine: CookieEngine
   ): Promise<null> {
-    const parsedArgs = parseApiInput(args, schema);
+    const parsedArgs = parseObjectSchema(args, schema);
 
     const { subjectId, instanceId, accessCode } = parsedArgs;
 
@@ -84,11 +84,7 @@ export default function createHandlerAuth(db: Firestore) {
     const token = jwt.sign(claims, process.env.JWT_SECRET);
 
     // Add it to the "access_tokens" collection as a new document with a new random/unique id
-    const accessTokenData = {
-      claims,
-      revoked: false,
-    };
-    await db.collection("access_tokens").add(accessTokenData);
+    await db.collection("access_tokens").add(claims);
 
     cookieEngine.setCookie("access_token", token, {
       expires: new Date(now + expiresIn),

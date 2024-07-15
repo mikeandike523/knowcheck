@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import { TSchema } from "@/common/validators/handlers/auth";
+import { TSchema as TSchemaAuth } from "@/common/validators/handlers/auth";
+import { TSchema as TSchemaToken } from "@/common/validators/handlers/token";
+import { TokenClaims } from "@/common/api-types";
+
 import InputWithValidation, {
   useInputWithValidationState,
 } from "@/components/InputWithValidation";
@@ -28,7 +31,8 @@ function SublayoutEnterAccessCode({
   subjectId: string;
   instanceId: string;
 }) {
-  const authRoute = useRPCRoute<TSchema, null>("auth");
+  const authRoute = useRPCRoute<TSchemaAuth, null>("auth");
+  const tokenRoute = useRPCRoute<TSchemaToken, TokenClaims>("token");
   const loadInstanceDataTask = useAPIData<
     {
       subjectId: string;
@@ -78,19 +82,28 @@ function SublayoutEnterAccessCode({
         subjectId +
         "/register/"
       : "";
-  async function submitAccessCode(accessCode: string) {
+  async function submitAccessCode(accessCode: string | null) {
     try {
       submitAccessCodeTask.setLoading();
-      await authRoute({
-        accessCode,
-        subjectId,
-        instanceId,
-      });
+      if (accessCode === null) {
+        await tokenRoute({
+          action: "check",
+        });
+      } else {
+        await authRoute({
+          accessCode,
+          subjectId,
+          instanceId,
+        });
+      }
       submitAccessCodeTask.setSuccess(null);
     } catch (e) {
       submitAccessCodeTask.setError(e);
     }
   }
+  useEffect(() => {
+    submitAccessCode(null);
+  }, []);
   return (
     <VStack height="100%" justifyContent="center">
       <LoadingOverlay
@@ -122,7 +135,7 @@ function SublayoutEnterAccessCode({
               gap: theme.gutters.lg,
               alignItems: "center",
             }}
-            onDismiss={()=>{
+            onDismiss={() => {
               submitAccessCodeTask.setIdle();
             }}
           >

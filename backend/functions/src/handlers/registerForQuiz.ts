@@ -5,13 +5,13 @@ import { hash } from "argon2"
 import { QuizRegistration } from "../../common/api-types";
 import { TypicalRPCErrors } from "../../utils/rpc";
 import { fileError } from "../../utils/rpc-server";
-import {parseApiInput} from "../../utils/input-validation"
+import {parseObjectSchema} from "../../utils/input-validation"
 import {schema,TSchema} from "../../common/validators/handlers/registerForQuiz"
 
 
 export default function createHandlerRegisterForQuiz(db: Firestore) {
   return async function registerForQuiz(args: TSchema): Promise<QuizRegistration> {
-    const parsedArgs = parseApiInput<TSchema>(args, schema);
+    const parsedArgs = parseObjectSchema<TSchema>(args, schema);
     const subjectId = parsedArgs.subjectId;
     const email = args.email;
     const fullName = args.fullName;
