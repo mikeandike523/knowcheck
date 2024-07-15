@@ -55,7 +55,7 @@ export type Validator<
  * This is generally because ZodError is a highly complex data type and we want to boild it down first
  */
 export function zodToSimple<TData extends SignificantValue>(
-  zodValidator: z.ZodType<TData>
+  zodValidator: z.ZodType<TData> | z.ZodEffects<z.ZodTypeAny>
 ): Validator<unknown, TData> {
   return (value: unknown): ValidationResult<TData> => {
     try {

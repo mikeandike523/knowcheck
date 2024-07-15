@@ -7,6 +7,7 @@ import { RPCError, TypicalRPCErrors } from "../../utils/rpc.js";
 import { parseApiInput } from "../../utils/input-validation";
 import { fileError } from "../../utils/rpc-server.js";
 import { schema, TSchema } from "../../common/validators/handlers/auth";
+import { TokenClaims } from "../../common/api-types/index.js";
 
 export default function createHandlerAuth(db: Firestore) {
   return async function auth(
@@ -68,7 +69,7 @@ export default function createHandlerAuth(db: Firestore) {
     // 4. If verified, begin the process of generating an access code and corresponding jwt token
     const now = Date.now();
     const expiresIn = 30 * 60 * 1000; // 30 minutes in milliseconds
-    const claims = {
+    const claims: TokenClaims= {
       subjectId: subjectDoc.id,
       instanceId: parsedArgs.instanceId,
       timestamp: now,

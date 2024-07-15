@@ -13,3 +13,11 @@ export type QuizRegistration = {
   subjectId: string;
   instanceId: string;
 }
+
+export type TokenClaims = {
+  subjectId: string,
+  instanceId: string,
+  timestamp: number,
+  expires: number,
+  maxAge: number,
+}
