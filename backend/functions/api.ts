@@ -14,6 +14,7 @@ import createHandlerGetQuizInstanceData from "./src/handlers/getQuizInstanceData
 import createHandlerRegisterForQuiz from "./src/handlers/registerForQuiz";
 import createHandlerListSubjects from "./src/handlers/listSubjects";
 import createHandlerGetSubjectConfig from "./src/handlers/getSubjectConfig";
+import createHandlerAuth from "./src/handlers/auth";
 
 // static js/ts imports
 // Because firebase is the cause of needing cjs compatibility
@@ -40,3 +41,8 @@ export const getQuizInstanceData = createRoute(
   "/getQuizInstanceData",
   createHandlerGetQuizInstanceData(db)
 );
+
+export const auth = createRoute(
+  "/auth",
+  createHandlerAuth(db)
+)

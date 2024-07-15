@@ -7,17 +7,16 @@ cd "$dn"
 svg_designer_project="$(realpath "$dn/../svg-designer")"
 link_name="$dn/frontend/node_modules/svg-designer"
 
-# rm -rf "$link_name"
-# ln -s "$svg_designer_project" "$link_name"
-
 cd frontend
-pnpm remove svg-designer
 pnpm add "$svg_designer_project"
+
 cd ..
 
+rm -rf "$link_name"
+cp -r "$svg_designer_project" "./frontend/node_modules"
 
-A="$dn/frontend/node_modules/react"
-B="$dn/frontend/node_modules/svg-designer/node_modules/react"
+A="$dn/frontend/node_modules/svg-designer/node_modules/react"
+B="$dn/frontend/node_modules/react"
 
 echo "$A"
 echo "$B"

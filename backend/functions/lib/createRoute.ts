@@ -6,6 +6,7 @@ import { type Response } from 'firebase-functions/v1';
 // provided primarily to facilitiy ease CommonJS compatibility
 // which is required for firebase functions at this time
 import { simulateRPC }  from '../utils/rpc-server.js';
+import CookieEngine from "../utils/CookieEngine.js";
 
 /**
  * Given an RPC-style handler, wrap it with the necessary code
@@ -23,7 +24,7 @@ import { simulateRPC }  from '../utils/rpc-server.js';
  */
 export default   function createRoute<TIn, TOut>(
     routeName: string,
-    handler: (args: TIn) => TOut | Promise<TOut>
+    handler: (args: TIn,cookieEngine:CookieEngine) => TOut | Promise<TOut>
 ){
     return functions.https.onRequest({cors:true},async (request:Request, response:Response) => {
         simulateRPC(request, response, handler, routeName);

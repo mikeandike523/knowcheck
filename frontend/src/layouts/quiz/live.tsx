@@ -1,19 +1,22 @@
 import { useState } from "react";
 
+import {
+  TSchema
+} from "@/common/validators/handlers/auth";
 import InputWithValidation, {
   useInputWithValidationState,
 } from "@/components/InputWithValidation";
-import { zodToSimple } from "@/utils/input-validation";
 import LoadingEllipses from "@/components/LoadingEllipses";
 import LoadingOverlay from "@/components/LoadingOverlay";
 import SemanticButton from "@/components/SemanticButton";
 import VStack from "@/fwk/components/VStack";
 import { Div, H1 } from "@/fwk/html";
-import { useAPIData } from "@/lib/rpc-client";
-import theme from "@/themes/main";
-import { z } from "zod";
 import { useLoadingTask } from "@/lib/loading";
+import { useAPIData, useRPCRoute } from "@/lib/rpc-client";
+import theme from "@/themes/main";
+import { zodToSimple } from "@/utils/input-validation";
 import nonempty from "@/utils/zod-refiners/nonempty";
+import { z } from "zod";
 
 export interface LiveProps {
   subjectId: string;
@@ -27,6 +30,7 @@ function SublayoutEnterAccessCode({
   subjectId: string;
   instanceId: string;
 }) {
+  const authRoute = useRPCRoute<TSchema, null>("auth");
   const loadInstanceDataTask = useAPIData<
     {
       subjectId: string;
@@ -76,7 +80,19 @@ function SublayoutEnterAccessCode({
         subjectId +
         "/register/"
       : "";
-  async function submitAccessCode(accessCode: string) {}
+  async function submitAccessCode(accessCode: string) {
+    try {
+      submitAccessCodeTask.setLoading();
+      await authRoute({
+        accessCode,
+        subjectId,
+        instanceId,
+      });
+      submitAccessCodeTask.setSuccess(null);
+    } catch (e) {
+      submitAccessCodeTask.setError(e);
+    }
+  }
   return (
     <VStack height="100%" justifyContent="center">
       <LoadingOverlay
@@ -100,23 +116,33 @@ function SublayoutEnterAccessCode({
             If you cannot locate the email, you will have to register again at:
           </p>
           <a href={registerLink}>{registerLink}</a>
-          <InputWithValidation
-            type="password"
-            inputState={accessCodeInputState}
-            label="Access Code"
-          />
-          <SemanticButton
-            color="primary"
-            padding="0.5em"
-            onClick={() => {
-              const validationResult = accessCodeInputState.validate();
-              if (validationResult.valid) {
-                submitAccessCode(validationResult.data!);
-              }
+          <LoadingOverlay
+            task={submitAccessCodeTask}
+            contentProps={{
+              display: "flex",
+              flexDirection: "column",
+              gap: theme.gutters.lg,
+              alignItems: "center",
             }}
           >
-            Start Quiz
-          </SemanticButton>
+            <InputWithValidation
+              type="password"
+              inputState={accessCodeInputState}
+              label="Access Code"
+            />
+            <SemanticButton
+              color="primary"
+              padding="0.5em"
+              onClick={() => {
+                const validationResult = accessCodeInputState.validate();
+                if (validationResult.valid) {
+                  submitAccessCode(validationResult.data!);
+                }
+              }}
+            >
+              Start Quiz
+            </SemanticButton>
+          </LoadingOverlay>
         </VStack>
       </LoadingOverlay>
     </VStack>

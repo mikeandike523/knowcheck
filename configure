@@ -3,4 +3,6 @@
 git config core.autocrlf false
 git config core.eol lf
 
-bash linkutils.sh
+pnpm run all-install
+pnpm run link-code
+pnpm run link-projects
