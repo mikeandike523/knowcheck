@@ -18,6 +18,8 @@ import theme from "@/themes/main";
 import { zodToSimple } from "@/utils/input-validation";
 import nonempty from "@/utils/zod-refiners/nonempty";
 import { z } from "zod";
+import { RPCError } from "@/utils/rpc";
+import { InvalidTokenReason } from "@/common/api-types";
 
 export interface LiveProps {
   subjectId: string;
@@ -86,9 +88,34 @@ function SublayoutEnterAccessCode({
     try {
       submitAccessCodeTask.setLoading();
       if (accessCode === null) {
-        await tokenRoute({
-          action: "check",
-        });
+        try {
+          await tokenRoute({
+            action: "check",
+          });
+          submitAccessCodeTask.setSuccess(null);
+          console.info("Existing token is still valid, proceeding with quiz..");
+        } catch(e){
+          if(e instanceof RPCError){
+            if(e.status===401||e.status===403){
+              if(e.cause===InvalidTokenReason.MISSING_TOKEN){
+                console.info("There was no existing login token, opening up login form...")
+              }
+              if(e.cause===InvalidTokenReason.INVALID_TOKEN){
+                console.info("Existing token is no longer valid, opening up login form...")
+              }
+              if(e.cause===InvalidTokenReason.EXPIRED){
+                console.info("Token has expired, opening up login form...")
+              }
+              if(e.cause===InvalidTokenReason.INVALID_FORMAT){
+                console.info("Token format is invalid, opening up login form...")
+              }
+              submitAccessCodeTask.setIdle();
+              return
+            }
+          }
+          throw e
+        }
+
       } else {
         await authRoute({
           accessCode,

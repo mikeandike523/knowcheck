@@ -75,6 +75,7 @@ export default function createHandlerAuth(db: Firestore) {
       timestamp: now,
       expires: now + expiresIn,
       maxAge: expiresIn,
+      path: "/quiz/"+subjectId+"/live/"+instanceId
     };
 
     if (!process.env.JWT_SECRET) {
@@ -91,6 +92,7 @@ export default function createHandlerAuth(db: Firestore) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: true,
+      path: "/quiz/"+subjectId+"/live/"+instanceId,
     });
 
     cookieEngine.commit();

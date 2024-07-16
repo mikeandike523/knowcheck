@@ -9,4 +9,5 @@ export const schemaTokenClaims = {
     timestamp: zodToSimple(z.number()),
     expires: zodToSimple(z.number()),
     maxAge: zodToSimple(z.number()),
+    path: zodToSimple(z.string().superRefine(nonempty())),
 }

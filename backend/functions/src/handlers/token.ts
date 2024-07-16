@@ -13,13 +13,9 @@ import { RPCError } from "../../utils/rpc";
 import {
   schemaTokenClaims,
 } from "../../common/validators/index";
+import { InvalidTokenReason } from "../../common/api-types";
 
-export enum InvalidTokenReason {
-  EXPIRED = "EXPIRED",
-  INVALID_FORMAT = "INVALID_FORMAT",
-  INVALID_TOKEN = "INVALID_TOKEN",
-  MISSING_TOKEN = "MISSING_TOKEN",
-}
+
 
 async function checkToken(claims: TokenClaims, db: Firestore) {
   const docs = (
