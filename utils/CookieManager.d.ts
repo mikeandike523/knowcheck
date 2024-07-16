@@ -12,6 +12,11 @@ export default class CookieManager {
     cookieChanges: Map<any, any>;
     existingCookies: Map<string, CookieInfo>;
     /**
+     *
+     * @returns {string|undefined}
+     */
+    getBearer(): string | undefined;
+    /**
      * Commits the staged cookie changes to the response header.
      */
     commit(): void;

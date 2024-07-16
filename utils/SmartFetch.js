@@ -78,6 +78,7 @@ class SmartFetch {
       finalUrl += new URLSearchParams(args).toString();
     }
     const response = await fetch(finalUrl, {
+      // credentials: "include",
       mode: "cors",
       method,
       headers: {

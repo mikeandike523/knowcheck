@@ -20,6 +20,7 @@ import nonempty from "@/utils/zod-refiners/nonempty";
 import { z } from "zod";
 import { RPCError } from "@/utils/rpc";
 import { InvalidTokenReason } from "@/common/api-types";
+import jsCookie from 'js-cookie'
 
 export interface LiveProps {
   subjectId: string;
@@ -33,8 +34,11 @@ function SublayoutEnterAccessCode({
   subjectId: string;
   instanceId: string;
 }) {
-  const authRoute = useRPCRoute<TSchemaAuth, null>("auth");
-  const tokenRoute = useRPCRoute<TSchemaToken, TokenClaims>("token");
+  const authRoute = useRPCRoute<TSchemaAuth, string>("auth");
+  const tokenRoute = useRPCRoute<TSchemaToken, TokenClaims>("token",()=>{
+    // const __session = jsCookie.get()["__session"]??""
+    return sessionStorage.getItem("__session")??undefined
+  });
   const loadInstanceDataTask = useAPIData<
     {
       subjectId: string;
@@ -117,11 +121,13 @@ function SublayoutEnterAccessCode({
         }
 
       } else {
-        await authRoute({
+        const __session = await authRoute({
           accessCode,
           subjectId,
           instanceId,
         });
+        // jsCookie.set("__session",__session)
+        sessionStorage.setItem("__session",__session)
       }
       submitAccessCodeTask.setSuccess(null);
     } catch (e) {

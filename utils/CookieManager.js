@@ -73,6 +73,18 @@ export default class CookieManager {
   }
 
   /**
+   * 
+   * @returns {string|undefined}
+   */
+  getBearer(){
+    const authorization = this.req.headers["authorization"]??""
+    if(authorization.startsWith("Bearer")){
+      return authorization.slice("Bearer ".length)
+    }
+    return undefined
+  }
+
+  /**
    * Commits the staged cookie changes to the response header.
    */
   commit() {

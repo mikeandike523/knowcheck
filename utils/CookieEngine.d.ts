@@ -13,6 +13,10 @@ declare class CookieEngine {
     cookieManager: CookieManager;
     defaultOptions: import("./CookieManager.js").CookieOptions;
     /**
+     * @returns {string|undefined}
+     */
+    getBearer(): string | undefined;
+    /**
      * Gets a cookie value by name and parses it as JSON.
      *
      * @param {string} name - The name of the cookie.

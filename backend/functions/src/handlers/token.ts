@@ -14,47 +14,43 @@ import {
   schemaTokenClaims,
 } from "../../common/validators/index";
 import { InvalidTokenReason } from "../../common/api-types";
+import ColorDebug from "../../utils/ColorDebug";
 
 
 
-async function checkToken(claims: TokenClaims, db: Firestore) {
-  const docs = (
-    await db
-      .collection("access_tokens")
-      .where("subjectId", "==", claims.subjectId)
-      .where("instanceId", "==", claims.instanceId)
-      .get()
-  ).docs;
-  if (docs.length === 0) {
+async function checkToken(token: string, db: Firestore) {
+
+  // Partial just in case
+  const doc = await db.collection("__sessions").doc(token).get()
+  if(!doc.exists){
     throw new RPCError({
       status: 401,
       logMessage: InvalidTokenReason.INVALID_TOKEN,
       cause: InvalidTokenReason.INVALID_TOKEN,
-    });
+    })
   }
-  // Partial just in case
-  const latestDoc = docs.pop()!
-  const latest = latestDoc.data()??{} as Partial<TokenClaims>;
-  if(!latest.data.expires){
+  const data = (doc.data()??{}) as Partial<TokenClaims>
+  if(!data.expires){
     throw new RPCError({
       status: 401,
       logMessage: InvalidTokenReason.INVALID_FORMAT,
       cause: InvalidTokenReason.INVALID_FORMAT,
     });
   }
-  if(Date.now() >= latest.expires){
+  if(Date.now() >= data.expires){
     throw new RPCError({
       status: 401,
       logMessage: InvalidTokenReason.EXPIRED,
       cause: InvalidTokenReason.EXPIRED,
     })
   }
-  return docs.map(doc=>doc.id)
+  return data
 }
-async function refreshToken(claims: TokenClaims, db: Firestore) {
-  const docsToCleanup = await checkToken(claims, db);
-  for(const docId of docsToCleanup){
-    await db.collection("access_tokens").doc(docId).delete();
+async function refreshToken(claims: TokenClaims,token: string, db: Firestore) {
+  try {
+    await db.collection("__sessions").doc(token).delete();
+  }catch(e){
+    console.warn(`Failed to delete document in collections "__sessions" with id "${token}"`)
   }
   const newClaims = {
     ...claims,
@@ -62,7 +58,7 @@ async function refreshToken(claims: TokenClaims, db: Firestore) {
     maxAge: 30 * 60 * 1000,
     timestamp: Date.now(),
   }
-  await db.collection("access_tokens").add(newClaims);
+  await db.collection("__sessions").add(newClaims);
   return newClaims;
 }
 
@@ -77,8 +73,12 @@ export default function createHandlerToken(db: Firestore) {
     // Some app smay need to return only info about login date and expiry, or none at all
     const parsedArgs = parseObjectSchema<TSchema>(args, schema);
     const action = parsedArgs.action;
-    const access_token = cookieEngine.getCookie("access_token");
-    if (!access_token) {
+    // const __session = cookieEngine.getCookie("__session");
+    console.log("__session", cookieEngine.getBearer())
+    // const __session = JSON.parse(cookieEngine.getBearer()??JSON.stringify(null))
+    const __session = cookieEngine.getBearer()
+
+    if (!__session) {
       throw new RPCError({
         status: 401,
         logMessage: InvalidTokenReason.MISSING_TOKEN,
@@ -87,23 +87,19 @@ export default function createHandlerToken(db: Firestore) {
     }
 
     const claims = verify(
-      access_token,
+      __session,
       process.env.JWT_SECRET!
     ) as object as Partial<TokenClaims>;
 
+    let parsedClaims: TokenClaims| null = null
+
     try {
-      const parsedClaims = parseObjectSchema<TokenClaims>(
+      parsedClaims = parseObjectSchema<TokenClaims>(
         claims,
         schemaTokenClaims
       );
-      await checkToken(parsedClaims, db);
-      switch (action) {
-        case "refresh":
-          const newClaims = await refreshToken(parsedClaims, db);
-          return newClaims;
-        case "check":
-          return parsedClaims;
-      }
+     
+
     } catch (e) {
       throw new RPCError({
         status: 401,
@@ -111,5 +107,23 @@ export default function createHandlerToken(db: Firestore) {
         cause: InvalidTokenReason.INVALID_FORMAT,
       });
     }
+
+    if(parsedClaims){
+      await checkToken(__session, db);
+      switch (action) {
+        case "refresh":
+          const newClaims = await refreshToken(parsedClaims,__session, db);
+          return newClaims;
+        case "check":
+          return parsedClaims;
+      }
+  
+    }
+
+    throw new RPCError({
+      status: 401,
+      logMessage: InvalidTokenReason.INVALID_FORMAT,
+      cause: InvalidTokenReason.INVALID_FORMAT,
+    });
   };
 }

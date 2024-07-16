@@ -21,6 +21,13 @@ class CookieEngine {
   }
 
   /**
+   * @returns {string|undefined}
+   */
+  getBearer(){
+    return this.cookieManager.getBearer()
+  }
+
+  /**
    * Gets a cookie value by name and parses it as JSON.
    * 
    * @param {string} name - The name of the cookie.

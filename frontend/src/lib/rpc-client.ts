@@ -36,10 +36,16 @@ export type SerializableObject =
 export function useRPCRoute<
   TArgs extends SerializableObject,
   TReturn extends SerializableObject,
->(route: string) {
+>(route: string,getToken?: ()=>string|undefined) {
   const sf = new SmartFetch(appConfig().RPC_URL).route(route);
   return async function route(args: TArgs): Promise<TReturn> {
     try {
+      if(getToken){
+        const token = getToken()
+        if(token){
+          return await sf.bearer(getToken()).post(args);
+        }
+      }
       return await sf.post(args);
     } catch (e) {
       if (e instanceof FetchError) {

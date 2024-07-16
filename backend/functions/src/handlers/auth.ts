@@ -13,7 +13,7 @@ export default function createHandlerAuth(db: Firestore) {
   return async function auth(
     args: TSchema,
     cookieEngine: CookieEngine
-  ): Promise<null> {
+  ): Promise<string> {
     const parsedArgs = parseObjectSchema(args, schema);
 
     const { subjectId, instanceId, accessCode } = parsedArgs;
@@ -84,19 +84,20 @@ export default function createHandlerAuth(db: Firestore) {
 
     const token = jwt.sign(claims, process.env.JWT_SECRET);
 
-    // Add it to the "access_tokens" collection as a new document with a new random/unique id
-    await db.collection("access_tokens").add(claims);
+    // Add it to the "__sessions" collection as a new document with a new random/unique id
+    await db.collection("__sessions").doc(token).set(claims);
 
-    cookieEngine.setCookie("access_token", token, {
-      expires: new Date(now + expiresIn),
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: true,
-      path: "/quiz/"+subjectId+"/live/"+instanceId,
-    });
+    // cookieEngine.setCookie("__session", token, {
+    //   expires: new Date(now + expiresIn),
+    //   // httpOnly: true,
+    //   httpOnly: false, // sercurity concession due to firebase stupidity
+    //   secure: process.env.NODE_ENV === "production",
+    //   sameSite: true,
+    //   path: "/quiz/"+subjectId+"/live/"+instanceId,
+    // });
 
-    cookieEngine.commit();
+    // cookieEngine.commit();
 
-    return null;
+    return token;
   };
 }
