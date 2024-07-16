@@ -7,7 +7,7 @@ export class RPCError extends Error {
     }): string;
     static is(obj: any): obj is RPCError;
     static isLike(obj: any): boolean;
-    static wrap(obj: any, status?: number): any;
+    static wrap(obj: any, status?: number): RPCError;
     constructor({ status, logMessage, cause, userFacingMessage, }: {
         status: any;
         logMessage: any;
@@ -22,6 +22,7 @@ export class RPCError extends Error {
     getLogMessage(): any;
     getUserFacingMessage(): any;
     toJSON(): {
+        name: string;
         message: string;
         logMessage: any;
         status: any;

@@ -1,11 +1,38 @@
-// launch.js
 import { readFileSync } from "fs";
 import puppeteer from "puppeteer";
-import tmp from "tmp";
+import fs from 'fs'
+import os from 'os'
+import path from "path"
+import ColorDebug from "./utils/ColorDebug.js"
 
+let globalBrowser = undefined
+let globalTd = undefined
 
+const getRandomName = () => {
+  return "test-browser-storage-dir-" + (new Array(20).fill(0).map((i) => {
+    const chars = "0123456789"
+    return chars[Math.floor(Math.random() * (chars.length))]
+  }).join(''))
+}
 
-const tmpDir = tmp.dirSync();
+function getMessage(e) {
+  if (e instanceof Error) {
+    return e.message
+  }
+  return e.toString()
+}
+
+async function getCurrentPage(browser) {
+  const targets = browser.targets();
+  for (let i = 0, I = targets.length; i < I; ++i) {
+    const target = targets[i];
+    const page = await target.page();
+    if (page) {
+      return page;
+    }
+  }
+  return null;
+}
 
 // Read URLs from browser.json
 const urls = JSON.parse(readFileSync("browser.json", "utf-8")).urls;
@@ -24,27 +51,104 @@ if (!["development", "production"].includes(env)) {
 const url = urls[env];
 
 async function main() {
+
+  const tempdirPath = os.tmpdir()
+
+  let td = path.join(tempdirPath, getRandomName())
+
+  while (fs.existsSync(td)) {
+    td = path.join(tempdirPath, getRandomName())
+  }
+
+  ColorDebug.ansi().info(`Creating temporary directory "${td}"...`, {
+    textColor: "blue"
+  })
+
+  fs.mkdirSync(td)
+
+  globalTd = td
+
   // Launch Puppeteer
-const browser = await puppeteer.launch({
-  headless: false, // Set to true if you want headless mode
-  userDataDir: tmpDir.name, // Change path if needed
-  args: ["--start-maximized"], // Uncomment to start browser in maximized mode
-  defaultViewport: null,
-});
+  const browser = await puppeteer.launch({
+    headless: false,
+    userDataDir: td,
+    args: ["--start-maximized"],
+    ignoreHTTPSErrors:true,
+    defaultViewport: null,
+  });
 
-// Open a new page
-const page = await browser.newPage();
+  globalBrowser = browser;
 
-// Navigate to the URL
-await page.goto(url);
+  const page = await getCurrentPage(browser)
 
-console.log(`Launched browser in ${env} mode and navigated to ${url}`);
+  try {
+    console.log(`Navigating to ${url}...`);
+    await page.goto(url);
+  } catch (e) {
+    ColorDebug.ansi().error("Could not navigate to page: " + getMessage(e), {
+      textColor: "red"
+    })
+
+    try {
+      await browser.close()
+    } catch (e) {
+      ColorDebug.ansi().error("Lost control of puppeteer browser", {
+        "textColor": "red"
+      })
+      throw e
+    }
+  }
+}
+
+function onExitCommon() {
+  if (globalTd) {
+    try {
+      ColorDebug.ansi().info(`Removing temporary directory "${globalTd}"...`, {
+        textColor: "blue"
+      })
+      fs.rmdirSync(globalTd, {
+        recursive: true,
+        force: true
+      })
+    } catch (e) {
+      ColorDebug.ansi().warn(`! WARNING ! Could not remove temporary directory "${globalTd}": ` + getMessage(e), {
+        textColor: "yellow"
+      })
+    }
+  }
 
 }
 
-// todo -- register on signal ctrl+c kill but first clean up the tempdir
+function onExitSigint() {
+  ColorDebug.ansi().info("Detected CTRL+C (SIGINT), exiting gracefully...", {
+    textColor: "blue"
+  })
 
-await main();
+  if (globalBrowser) {
+    ColorDebug.ansi().info("Closing browser...", {
+      textColor: "blue"
+    })
+    globalBrowser.close()
+      .catch(e => {
+
+        ColorDebug.ansi().error("Lost control of puppeteer browser", {
+          "textColor": "red"
+        })
+
+      })
+  }
+}
+
+process.on('exit', onExitCommon);
+process.on('SIGINT', onExitSigint);
+
+try {
+  await main()
+} catch (e) {
+  ColorDebug.ansi().error(`Main process failed: ` + getMessage(e), {
+    textColor: "red"
+  })
+}
 
 
 

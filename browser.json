@@ -1,6 +1,6 @@
 {
     "urls":{
-        "development": "https://localhost:5173",
+        "development": "https://localhost:5173/",
         "production": "https://knowcheck-4cbab.web.app"
     }
 }
