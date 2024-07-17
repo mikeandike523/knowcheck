@@ -5,6 +5,7 @@ import rewriteAll from "vite-plugin-rewrite-all";
 import { createHtmlPlugin } from "vite-plugin-html";
 
 import path from "path";
+import fs from "fs"
 
 import React from "react";
 
@@ -14,6 +15,12 @@ import Spinner from "./src/components/SpinnerOverlay";
 const { html: spinnerHtml, styles: spinnerStyles } = prerenderComponent(
   React.createElement(Spinner),
 );
+
+fs.writeFileSync("./spinnerHtml.html",spinnerHtml)
+fs.writeFileSync("./spinnerStyles.html",spinnerStyles)
+
+
+
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {

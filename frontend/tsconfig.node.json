@@ -6,11 +6,13 @@
     "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "lib": ["ESNext"],
+    "lib": ["ESNext","DOM","DOM.Iterable"],
     "jsx": "react-jsx",
+    "jsxImportSource": "@emotion/react",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "rootDir": ".",
   },
   "include": [
     "vite.config.ts",
