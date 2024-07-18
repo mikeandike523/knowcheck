@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 import { TSchema as TSchemaAuth } from "@/common/validators/handlers/auth";
 import { TSchema as TSchemaToken } from "@/common/validators/handlers/token";
@@ -20,7 +20,7 @@ import nonempty from "@/utils/zod-refiners/nonempty";
 import { z } from "zod";
 import { RPCError } from "@/utils/rpc";
 import { InvalidTokenReason } from "@/common/api-types";
-import jsCookie from 'js-cookie'
+import jsCookie from "js-cookie";
 
 export interface LiveProps {
   subjectId: string;
@@ -34,10 +34,12 @@ function SublayoutEnterAccessCode({
   subjectId: string;
   instanceId: string;
 }) {
+  const [initialCheck, setInitialCheck] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("Login successful!");
   const authRoute = useRPCRoute<TSchemaAuth, string>("auth");
-  const tokenRoute = useRPCRoute<TSchemaToken, TokenClaims>("token",()=>{
+  const tokenRoute = useRPCRoute<TSchemaToken, TokenClaims>("token", () => {
     // const __session = jsCookie.get()["__session"]??""
-    return sessionStorage.getItem("__session")??undefined
+    return sessionStorage.getItem("__session") ?? undefined;
   });
   const loadInstanceDataTask = useAPIData<
     {
@@ -96,30 +98,38 @@ function SublayoutEnterAccessCode({
           await tokenRoute({
             action: "check",
           });
+          setInitialCheck(true);
+          setSuccessMessage("Already logged in!");
           submitAccessCodeTask.setSuccess(null);
           console.info("Existing token is still valid, proceeding with quiz..");
-        } catch(e){
-          if(e instanceof RPCError){
-            if(e.status===401||e.status===403){
-              if(e.cause===InvalidTokenReason.MISSING_TOKEN){
-                console.info("There was no existing login token, opening up login form...")
+        } catch (e) {
+          if (e instanceof RPCError) {
+            if (e.status === 401 || e.status === 403) {
+              if (e.cause === InvalidTokenReason.MISSING_TOKEN) {
+                console.info(
+                  "There was no existing login token, opening up login form..."
+                );
               }
-              if(e.cause===InvalidTokenReason.INVALID_TOKEN){
-                console.info("Existing token is no longer valid, opening up login form...")
+              if (e.cause === InvalidTokenReason.INVALID_TOKEN) {
+                console.info(
+                  "Existing token is no longer valid, opening up login form..."
+                );
               }
-              if(e.cause===InvalidTokenReason.EXPIRED){
-                console.info("Token has expired, opening up login form...")
+              if (e.cause === InvalidTokenReason.EXPIRED) {
+                console.info("Token has expired, opening up login form...");
               }
-              if(e.cause===InvalidTokenReason.INVALID_FORMAT){
-                console.info("Token format is invalid, opening up login form...")
+              if (e.cause === InvalidTokenReason.INVALID_FORMAT) {
+                console.info(
+                  "Token format is invalid, opening up login form..."
+                );
               }
               submitAccessCodeTask.setIdle();
-              return
+              setInitialCheck(true);
+              return;
             }
           }
-          throw e
+          throw e;
         }
-
       } else {
         const __session = await authRoute({
           accessCode,
@@ -127,7 +137,7 @@ function SublayoutEnterAccessCode({
           instanceId,
         });
         // jsCookie.set("__session",__session)
-        sessionStorage.setItem("__session",__session)
+        sessionStorage.setItem("__session", __session);
       }
       submitAccessCodeTask.setSuccess(null);
     } catch (e) {
@@ -135,10 +145,12 @@ function SublayoutEnterAccessCode({
     }
   }
   useEffect(() => {
-    submitAccessCode(null);
-  }, []);
+    if (!initialCheck) {
+      submitAccessCode(null);
+    }
+  }, [initialCheck]);
   return (
-    <VStack height="100%" justifyContent="center">
+    <VStack width="min(30em,100%)" justifyContent="center">
       <LoadingOverlay
         task={loadInstanceDataTask}
         {...theme.pages.quiz.panel}
@@ -148,18 +160,28 @@ function SublayoutEnterAccessCode({
       >
         <VStack
           gap={theme.gutters.lg}
-          opacity={loadInstanceDataTask.state !== "success" ? 0 : 1}
-          transition="all 0.25 ease"
+          // opacity={loadInstanceDataTask.state !== "success" ? 0 : 1}
+          // transition="all 0.25 ease"
         >
-          <H1 fontSize="16px" margin={0} padding={0}>
-            Welcome, {instanceData?.fullName ?? <LoadingEllipses />}, to the "
-            {instanceData?.quizName ?? <LoadingEllipses />}" quiz!
-          </H1>
-          <p>Enter the access code you recieved in your email.</p>
-          <p>
-            If you cannot locate the email, you will have to register again at:
-          </p>
-          <a href={registerLink}>{registerLink}</a>
+          {loadInstanceDataTask.state === "success" ? (
+            <>
+              <H1 fontSize="16px" margin={0} padding={0}>
+                Welcome, {instanceData?.fullName}, to the "
+                {instanceData?.quizName}" quiz!
+              </H1>
+              <p>Enter the access code you recieved in your email.</p>
+              <p>
+                If you cannot locate the email, you will have to register again
+                at:
+              </p>
+              <a href={registerLink}>{registerLink}</a>
+            </>
+          ) : (
+            <>
+              <LoadingEllipses />
+            </>
+          )}
+
           <LoadingOverlay
             task={submitAccessCodeTask}
             contentProps={{
@@ -172,25 +194,36 @@ function SublayoutEnterAccessCode({
               submitAccessCodeTask.setIdle();
             }}
           >
-            <InputWithValidation
-              type="password"
-              inputState={accessCodeInputState}
-              label="Access Code"
-            />
-            <SemanticButton
-              color="primary"
-              padding="0.5em"
-              onClick={() => {
-                const validationResult = accessCodeInputState.validate();
-                if (validationResult.valid) {
-                  submitAccessCode(validationResult.data!);
-                }
-              }}
-            >
-              Start Quiz
-            </SemanticButton>
+            {initialCheck && submitAccessCodeTask.state !== "success" ? (
+              <Fragment key="AccessCodeForm">
+                <InputWithValidation
+                  type="password"
+                  inputState={accessCodeInputState}
+                  label="Access Code"
+                />
+                <SemanticButton
+                  color="primary"
+                  padding="0.5em"
+                  onClick={() => {
+                    const validationResult = accessCodeInputState.validate();
+                    if (validationResult.valid) {
+                      submitAccessCode(validationResult.data!);
+                    }
+                  }}
+                >
+                  Start Quiz
+                </SemanticButton>
+              </Fragment>
+            ) : (
+              <Fragment key="AccessCodeForm">
+                <Div width="100%" height="4em">
+                  hello hello hello
+                </Div>
+              </Fragment>
+            )}
+
             {submitAccessCodeTask.state === "success" && (
-              <Div background="lightgreen">Login successful.</Div>
+              <Div background="lightgreen">{successMessage}</Div>
             )}
           </LoadingOverlay>
         </VStack>

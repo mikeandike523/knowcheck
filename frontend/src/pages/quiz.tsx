@@ -53,9 +53,12 @@ export default function Quiz() {
       width="100%"
       height="100%"
       background={theme.page.background}
-      gap={theme.gutters.lg}
+      // gap={theme.gutters.lg}
     >
       <HStack
+        position="fixed"
+        top={0}
+        left={0}
         width="100%"
         background={theme.navbar.background}
         gap={theme.gutters.lg}
@@ -95,7 +98,7 @@ export default function Quiz() {
           />
         </SemanticButton>
       </HStack>
-      <VStack width={theme.page.width}>
+      <VStack width={theme.page.width} height="100%" justifyContent="center">
         <SwitchQuizAction key="ActionLayout" action={action} subjectId={subjectId!} instanceId={instanceId}/>
       </VStack>
     </VStack>

@@ -87,7 +87,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(webpack@5.93.0(@swc/core@1.6.13)(webpack-cli@5.1.4))
       svg-designer:
-        specifier: file:/home/rusty/Projects/svg-designer
+        specifier: file:../../svg-designer
         version: file:../../svg-designer(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       zod:
         specifier: ^3.23.8
