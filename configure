@@ -1,5 +1,10 @@
 #!/bin/bash
 
+cd ../svg-designer
+rm -rf node_modules
+pnpm install
+cd ../knowcheck
+
 git config core.autocrlf false
 git config core.eol lf
 

@@ -46,7 +46,6 @@ function SwitchQuizAction({
 export default function Quiz() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { subjectId, action, instanceId } = useParams();
-  console.log(subjectId, action, instanceId);
   const navigate = useNavigate();
   return (
     <VStack

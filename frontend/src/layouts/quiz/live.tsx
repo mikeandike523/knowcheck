@@ -21,6 +21,7 @@ import { z } from "zod";
 import { RPCError } from "@/utils/rpc";
 import { InvalidTokenReason } from "@/common/api-types";
 import jsCookie from "js-cookie";
+import usePeriodicTokenRefresh from "@/hooks/usePeriodicTokenRefresh";
 
 export interface LiveProps {
   subjectId: string;
@@ -30,15 +31,15 @@ export interface LiveProps {
 function SublayoutEnterAccessCode({
   subjectId,
   instanceId,
+  onLogin,
 }: {
   subjectId: string;
   instanceId: string;
+  onLogin: () => void
 }) {
-  const [initialCheck, setInitialCheck] = useState(false);
   const [successMessage, setSuccessMessage] = useState("Login successful!");
   const authRoute = useRPCRoute<TSchemaAuth, string>("auth");
   const tokenRoute = useRPCRoute<TSchemaToken, TokenClaims>("token", () => {
-    // const __session = jsCookie.get()["__session"]??""
     return sessionStorage.getItem("__session") ?? undefined;
   });
   const loadInstanceDataTask = useAPIData<
@@ -84,23 +85,24 @@ function SublayoutEnterAccessCode({
   const registerLink =
     typeof window.location !== "undefined"
       ? window.location.protocol +
-        "//" +
-        window.location.host +
-        "/quiz/" +
-        subjectId +
-        "/register/"
+      "//" +
+      window.location.host +
+      "/quiz/" +
+      subjectId +
+      "/register/"
       : "";
   async function submitAccessCode(accessCode: string | null) {
     try {
       submitAccessCodeTask.setLoading();
       if (accessCode === null) {
+
         try {
           await tokenRoute({
             action: "check",
           });
-          setInitialCheck(true);
           setSuccessMessage("Already logged in!");
           submitAccessCodeTask.setSuccess(null);
+          onLogin()
           console.info("Existing token is still valid, proceeding with quiz..");
         } catch (e) {
           if (e instanceof RPCError) {
@@ -124,7 +126,6 @@ function SublayoutEnterAccessCode({
                 );
               }
               submitAccessCodeTask.setIdle();
-              setInitialCheck(true);
               return;
             }
           }
@@ -140,15 +141,16 @@ function SublayoutEnterAccessCode({
         sessionStorage.setItem("__session", __session);
       }
       submitAccessCodeTask.setSuccess(null);
+      onLogin()
     } catch (e) {
       submitAccessCodeTask.setError(e);
     }
   }
+
   useEffect(() => {
-    if (!initialCheck) {
-      submitAccessCode(null);
-    }
-  }, [initialCheck]);
+    submitAccessCode(null)
+  }, [])
+
   return (
     <VStack width="min(30em,100%)" justifyContent="center">
       <LoadingOverlay
@@ -160,8 +162,8 @@ function SublayoutEnterAccessCode({
       >
         <VStack
           gap={theme.gutters.lg}
-          // opacity={loadInstanceDataTask.state !== "success" ? 0 : 1}
-          // transition="all 0.25 ease"
+        // opacity={loadInstanceDataTask.state !== "success" ? 0 : 1}
+        // transition="all 0.25 ease"
         >
           {loadInstanceDataTask.state === "success" ? (
             <>
@@ -169,11 +171,11 @@ function SublayoutEnterAccessCode({
                 Welcome, {instanceData?.fullName}, to the "
                 {instanceData?.quizName}" quiz!
               </H1>
-              <p>Enter the access code you recieved in your email.</p>
-              <p>
+              <Div>Enter the access code you recieved in your email.</Div>
+              <Div>
                 If you cannot locate the email, you will have to register again
                 at:
-              </p>
+              </Div>
               <a href={registerLink}>{registerLink}</a>
             </>
           ) : (
@@ -194,37 +196,29 @@ function SublayoutEnterAccessCode({
               submitAccessCodeTask.setIdle();
             }}
           >
-            {initialCheck && submitAccessCodeTask.state !== "success" ? (
-              <Fragment key="AccessCodeForm">
-                <InputWithValidation
-                  type="password"
-                  inputState={accessCodeInputState}
-                  label="Access Code"
-                />
-                <SemanticButton
-                  color="primary"
-                  padding="0.5em"
-                  onClick={() => {
-                    const validationResult = accessCodeInputState.validate();
-                    if (validationResult.valid) {
-                      submitAccessCode(validationResult.data!);
-                    }
-                  }}
-                >
-                  Start Quiz
-                </SemanticButton>
-              </Fragment>
-            ) : (
-              <Fragment key="AccessCodeForm">
-                <Div width="100%" height="4em">
-                  hello hello hello
-                </Div>
-              </Fragment>
-            )}
 
-            {submitAccessCodeTask.state === "success" && (
-              <Div background="lightgreen">{successMessage}</Div>
-            )}
+
+            {submitAccessCodeTask.state === "success" ? (
+              <Fragment key="AccessCodeForm"><Div background="lightgreen">{successMessage}</Div></Fragment>
+            ) : <Fragment key="AccessCodeForm">
+              <InputWithValidation
+                type="password"
+                inputState={accessCodeInputState}
+                label="Access Code"
+              />
+              <SemanticButton
+                color="primary"
+                padding="0.5em"
+                onClick={() => {
+                  const validationResult = accessCodeInputState.validate();
+                  if (validationResult.valid) {
+                    submitAccessCode(validationResult.data!);
+                  }
+                }}
+              >
+                Start Quiz
+              </SemanticButton>
+            </Fragment>}
           </LoadingOverlay>
         </VStack>
       </LoadingOverlay>
@@ -256,6 +250,10 @@ type SublayoutState =
   | "general-error";
 
 export default function Live({ subjectId, instanceId }: LiveProps) {
+  const tokenRefresher = usePeriodicTokenRefresh({
+    intervalMinutes: 0.5,
+    onFailure: () => { }
+  })
   const [sublayoutState, setSublayoutState] =
     useState<SublayoutState>("enter-access-code");
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -287,6 +285,7 @@ export default function Live({ subjectId, instanceId }: LiveProps) {
         <SublayoutEnterAccessCode
           subjectId={subjectId}
           instanceId={instanceId!}
+          onLogin={() => tokenRefresher.start()}
         />
       );
     case "read-instructions":

@@ -1,5 +1,5 @@
 import { Firestore } from "firebase-admin/firestore";
-import { verify } from "jsonwebtoken";
+import { verify, sign } from "jsonwebtoken";
 
 import {
   schema,
@@ -58,15 +58,17 @@ async function refreshToken(claims: TokenClaims,token: string, db: Firestore) {
     maxAge: 30 * 60 * 1000,
     timestamp: Date.now(),
   }
-  await db.collection("__sessions").add(newClaims);
-  return newClaims;
+  const newTokenText = sign(newClaims,process.env.JWT_SECRET!)
+
+  await db.collection("__sessions").doc(newTokenText).set(newClaims);
+  return newTokenText;
 }
 
 export default function createHandlerToken(db: Firestore) {
   return async function token(
     args: TSchema,
     cookieEngine: CookieEngine
-  ): Promise<TokenClaims> {
+  ): Promise<string> {
     // All data in the token claims, in the case o this specific application, is public/not privelaged data
     // Even isntanceId and subejctId are public as its present in the url
     // This would NOT necessarily be true of every single app
@@ -112,10 +114,10 @@ export default function createHandlerToken(db: Firestore) {
       await checkToken(__session, db);
       switch (action) {
         case "refresh":
-          const newClaims = await refreshToken(parsedClaims,__session, db);
-          return newClaims;
+          const newTokenText = await refreshToken(parsedClaims,__session, db);
+          return newTokenText;
         case "check":
-          return parsedClaims;
+          return __session;
       }
   
     }

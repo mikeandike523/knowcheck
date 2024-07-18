@@ -1,5 +1,6 @@
+
 import { QuizRegistration } from "@/common/api-types";
-import {schema} from "@/common/validators/handlers/registerForQuiz";
+import { schema } from "@/common/validators/handlers/registerForQuiz";
 import InputWithValidation, {
   useInputWithValidationState,
 } from "@/components/InputWithValidation";
@@ -117,7 +118,7 @@ export default function Register({ subjectId }: RegisterProps) {
                 <Div background="lightgreen">
                   <Div>Succesfully registered for the quiz.</Div>
                   <Div>
-                    Check your email for the access link and access code.
+                    Check your email for the access code.
                   </Div>
                   <Div>
                     If you did not recieve the email, check for typos in the
@@ -125,6 +126,7 @@ export default function Register({ subjectId }: RegisterProps) {
                     registering again.
                   </Div>
                 </Div>
+                <a color="light" href={`/quiz/${registerTask.data?.subjectId}/live/${registerTask.data?.instanceId}`}>Go To Quiz Login Page</a>
               </>
             )}
           </VStack>
