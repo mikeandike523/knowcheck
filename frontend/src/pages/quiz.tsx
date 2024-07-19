@@ -1,6 +1,6 @@
 import { FaHouse } from "react-icons/fa6";
 import { useNavigate, useParams } from "react-router-dom";
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 
 import SemanticButton from "@/components/SemanticButton";
 import HStack from "@/fwk/components/HStack";
@@ -15,35 +15,35 @@ import LayoutQuizLive from "@/layouts/quiz/live";
 function SwitchQuizAction({
   action,
   subjectId,
-  instanceId
+  instanceId,
 }: {
   action: string | undefined;
   subjectId: string;
-  instanceId: string | undefined
+  instanceId: string | undefined;
 }) {
+  useEffect(()=>{
+    console.log("SwitchQuizAction has mounted")
+  },[])
   switch (action) {
     case "register":
-      return (
-        <Fragment key="ActionLayout">
-          <LayoutQuizRegister subjectId={subjectId}/>
-        </Fragment>
-      );
+      return <LayoutQuizRegister key="ActionLayout" subjectId={subjectId} />;
     case "live":
       return (
-        <Fragment key="ActionLayout">
-          <LayoutQuizLive subjectId={subjectId} instanceId={instanceId}/>
-        </Fragment>
+        <LayoutQuizLive
+          key="ActionLayout"
+          subjectId={subjectId}
+          instanceId={instanceId}
+        />
       );
     default:
-      return (
-        <Fragment key="ActionLayout">
-          <LayoutQuizInvalidAction action={action} />
-        </Fragment>
-      );
+      return <LayoutQuizInvalidAction key="ActionLayout" action={action} />;
   }
 }
 
 export default function Quiz() {
+  useEffect(()=>{
+    console.log("Quiz has mounted")
+  },[])
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { subjectId, action, instanceId } = useParams();
   const navigate = useNavigate();
@@ -98,7 +98,11 @@ export default function Quiz() {
         </SemanticButton>
       </HStack>
       <VStack width={theme.page.width} height="100%" justifyContent="center">
-        <SwitchQuizAction key="ActionLayout" action={action} subjectId={subjectId!} instanceId={instanceId}/>
+        <SwitchQuizAction
+          action={action}
+          subjectId={subjectId!}
+          instanceId={instanceId}
+        />
       </VStack>
     </VStack>
   );

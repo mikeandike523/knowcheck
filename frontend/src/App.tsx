@@ -8,12 +8,16 @@ import "@fontsource/roboto-mono/400.css"; // Specify weight 400
 import "@fontsource/roboto-mono/700.css"; // Specify weight 700
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
 
 import PagesIndex from "@/pages/index";
 import PagesQuiz from "@/pages/quiz";
 import PageNotFound from "./page-not-found";
 
 const App: React.FC = () => {
+  useEffect(() => {
+    console.log("App has mounted")
+  },[])
   return (
     <BrowserRouter>
       <Routes>
