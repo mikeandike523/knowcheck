@@ -40,7 +40,6 @@ async function clearCollection(collectionName) {
 }
 
 async function main() {
-  // Step 1: List the subjects and their corresponding files
 
   await clearCollection("questions");
   await clearCollection("subjects");

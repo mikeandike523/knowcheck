@@ -2,22 +2,14 @@ export const values = {
   colors: {
     brand: "hsla(10, 79%, 51%, 1)",
     semantic: {
-      // A form of blue typically
       primary: "hsla(207, 90%, 54%, 1)", // Blue
-      // Typically green
       success: "hsla(145, 63%, 49%, 1)", // Green
-      // Typically yellow
       warning: "hsla(45, 100%, 51%, 1)", // Yellow
-      // typically red
       danger: "hsla(0, 78%, 62%, 1)", // Red
-      // Typically lighter blue
       info: "hsla(200, 80%, 70%, 1)", // Light Blue
-      // Typically silver or white
       light: "hsla(0, 0%, 96%, 1)", // Light Gray / Silver
-      // Typically grey
       cancel: "hsla(0, 0%, 50%, 1)", // Grey
     },
-    // Typically used for text inside buttons
     semanticContrast: {
       primary: "white",
       success: "white",

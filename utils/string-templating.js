@@ -18,14 +18,12 @@
 function fillTemplate(template, data) {
   let orderIndex = 0;
 
-  // Handle the raw regions first
   let rawRegions = [];
   template = template.replace(/:!(.*?)!:/gs, (match, p1) => {
     rawRegions.push(p1);
     return `__RAW${rawRegions.length - 1}__`;
   });
 
-  // Process the template
   template = template.replace(/:(\+|::|\w+)/g, (match, p1) => {
     if (p1 === "::") {
       return ":";
@@ -50,7 +48,6 @@ function fillTemplate(template, data) {
     }
   });
 
-  // Restore the raw regions
   template = template.replace(
     /__RAW(\d+)__/g,
     (match, p1) => rawRegions[parseInt(p1, 10)],

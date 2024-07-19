@@ -2,8 +2,6 @@ import { css, SerializedStyles } from "@emotion/react";
 import { HTMLAttributes, HTMLInputTypeAttribute, useId, useState } from "react";
 
 import { Div, Span } from "@/fwk/html";
-// A function to sanitize any object that might have been thrown
-// for use with JSON.sßtringify
 import { styleEngine, stylesToCssString } from "@/fwk/B";
 import VStack from "@/fwk/components/VStack";
 import formatError from "@/utils/formatError";

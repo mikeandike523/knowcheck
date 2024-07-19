@@ -34,12 +34,10 @@ async function getCurrentPage(browser) {
   return null;
 }
 
-// Read URLs from browser.json
 const urls = JSON.parse(readFileSync("browser.json", "utf-8")).urls;
 
 const env = process.env.NODE_ENV || "development";
 
-// Validate environment type
 if (!["development", "production"].includes(env)) {
   console.error(
     'Invalid environment type. Choose "development" or "production".'
@@ -47,7 +45,6 @@ if (!["development", "production"].includes(env)) {
   process.exit(1);
 }
 
-// Get the URL for the specified environment
 const url = urls[env];
 
 async function main() {
@@ -68,7 +65,6 @@ async function main() {
 
   globalTd = td
 
-  // Launch Puppeteer
   const browser = await puppeteer.launch({
     headless: false,
     userDataDir: td,

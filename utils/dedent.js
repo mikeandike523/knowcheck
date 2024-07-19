@@ -39,13 +39,10 @@ function dedent(parts, ...values) {
   if (nonBlankOrAllWhitespaceLines.length === 0) {
     return normalized;
   }
-  // This should also handle the edge case gracefully
-  // Where there is only one line with some leading whitespace, and no other significant lines
+
   const leadingWhitespaceData = nonBlankOrAllWhitespaceLines.map((line) =>
     captureLeadingWhitespace(line),
   );
-  // Clever solution -- use an existing common prefix algorithm
-  // These algorithms are usually used for thigns such as filepath analysis, but it is also useful to detect common indentation
 
   const leadingWhitespaces = leadingWhitespaceData.map(
     (data) => data.leadingWhitespace,

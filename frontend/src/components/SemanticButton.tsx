@@ -2,8 +2,6 @@ import { css } from "@emotion/react";
 import { ReactNode } from "react";
 
 import { ButtonProps } from "@/fwk/html";
-// Comes from another project I am wporking on
-// Don't feel like rewriting the code
 import { styleEngine, stylesToCssString } from "@/fwk/B";
 import theme from "@/themes/main";
 import ColorUtil from "../utils/ColorUtil";

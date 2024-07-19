@@ -5,7 +5,7 @@ module.exports = {
   mode:"development",
   entry: './api.ts',
   target: 'node',
-  externals: [nodeExternals()], // Exclude node_modules from the bundle
+  externals: [nodeExternals()],
   module: {
     rules: [
       {
@@ -13,7 +13,7 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            configFile: path.resolve(__dirname, '.babelrc') // Specify the path to your .babelrc file
+            configFile: path.resolve(__dirname, '.babelrc')
           }
         },
         exclude: /node_modules/
@@ -28,8 +28,5 @@ module.exports = {
     filename: 'api.js',
     path: path.resolve(__dirname),
     libraryTarget: 'commonjs2'
-  },
-  experiments: {
-    // outputModule: true // Enable output as ES module
   }
 };

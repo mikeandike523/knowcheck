@@ -20,7 +20,6 @@ import ColorDebug from "../../utils/ColorDebug";
 
 async function checkToken(token: string, db: Firestore) {
 
-  // Partial just in case
   const doc = await db.collection("__sessions").doc(token).get()
   if(!doc.exists){
     throw new RPCError({
@@ -69,16 +68,10 @@ export default function createHandlerToken(db: Firestore) {
     args: TSchema,
     cookieEngine: CookieEngine
   ): Promise<string> {
-    // All data in the token claims, in the case o this specific application, is public/not privelaged data
-    // Even isntanceId and subejctId are public as its present in the url
-    // This would NOT necessarily be true of every single app
-    // Some app smay need to return only info about login date and expiry, or none at all
     const parsedArgs = parseObjectSchema<TSchema>(args, schema);
     const action = parsedArgs.action;
-    // const __session = cookieEngine.getCookie("__session");
-    console.log("__session", cookieEngine.getBearer())
-    // const __session = JSON.parse(cookieEngine.getBearer()??JSON.stringify(null))
     const __session = cookieEngine.getBearer()
+    
 
     if (!__session) {
       throw new RPCError({

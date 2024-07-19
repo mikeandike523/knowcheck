@@ -83,7 +83,6 @@ ${userFacingMessage}
     return obj instanceof RPCError;
   }
   static isLike(obj) {
-    // Oversimplified but will only improve it if needed
     return (
       RPCError.is(obj) || (typeof obj === "object" && obj.name === "RPCError")
     );

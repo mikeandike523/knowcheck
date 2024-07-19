@@ -1,5 +1,3 @@
-// !! copy-to-frontend
-
 function formatError(e) {
   const visited = new Set();
   const recursion = (e1) => {

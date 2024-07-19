@@ -8,7 +8,8 @@
  * As well as a list of supporting information unique to the question at hand
  */
 
-// pure ts imports
+import admin from "firebase-admin"
+
 import createRoute from "./lib/createRoute";
 import createHandlerGetQuizInstanceData from "./src/handlers/getQuizInstanceData";
 import createHandlerRegisterForQuiz from "./src/handlers/registerForQuiz";
@@ -16,12 +17,6 @@ import createHandlerListSubjects from "./src/handlers/listSubjects";
 import createHandlerGetSubjectConfig from "./src/handlers/getSubjectConfig";
 import createHandlerAuth from "./src/handlers/auth";
 import createHandlerToken from "./src/handlers/token";
-
-// static js/ts imports
-// Because firebase is the cause of needing cjs compatibility
-// it can generally be assumed that imports from firebase libraries
-// are either true cjs or cjs compatible out of the box
-import admin from "firebase-admin"
 
 admin.initializeApp();
 const db = admin.firestore();

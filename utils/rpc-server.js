@@ -17,7 +17,6 @@ import CookieEngine from "./CookieEngine.js";
 async function fileError(route, error) {
   const TICKET_NUMBER_LENGTH = 15;
 
-  // Step 1: Generate a unique ticket number (15 digits numeric string)
   const generateTicketNumber = () => {
     let ticketNumber = "";
     const digits = "0123456789";
@@ -29,28 +28,24 @@ async function fileError(route, error) {
 
   const ticketNumber = generateTicketNumber();
 
-  // Step 2: Construct the error if it's a function, otherwise assume it's an RPCError
   const constructError =
     typeof error === "function" ? error(ticketNumber) : error;
 
-  // Step 3: Ensure the error is wrapped in an RPCError
   const rpcError = RPCError.wrap(constructError);
 
-  // Step 4: Convert the error to JSON
   const errorData = rpcError.toJSON();
 
-  // Step 5: Add the route and ticket number to the error data
   errorData.route = route;
   errorData.ticketNumber = ticketNumber;
 
   await logger.write({ severity: "ERROR", ...errorData });
 
-  // Step 7: Return the original error for "rethrow"
   return rpcError;
 }
 
 async function simulateRPC(request, response, callback, routeName = "") {
-  const args = request.body; // Auto-parsed
+  const args = request.body
+  
   try {
     let resultOrPromise = callback(args, new CookieEngine(request,response));
     if (resultOrPromise instanceof Promise) {

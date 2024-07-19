@@ -34,7 +34,6 @@ export default function createHandlerRegisterForQuiz(db: Firestore) {
       });
     }
 
-    // Generate an access code of 10 capital characters and digits
     const generateAccessCode = (length: number) => {
       const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
       let result = "";
@@ -49,13 +48,11 @@ export default function createHandlerRegisterForQuiz(db: Firestore) {
     const accessCodeHash = await hash(accessCode);
 
 
-    // Create a new document in the registrations collection
     const newRegistration = await db.collection("registrations").add({
       subjectId,
       email,
       fullName,
       accessCodeHash,
-      // Epoch millis
       timestamp: Date.now(),
     });
 

@@ -203,7 +203,6 @@ export function createApiInputShapeChecker<TApiInput>(
   };
   return (value: unknown) => {
     switch (rootType) {
-      // Handle easy cases first
       case "undefined":
         if (typeof value !== "undefined") {
           return failResult(

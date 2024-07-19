@@ -1,8 +1,3 @@
-// !! copy-to-frontend
-
-// Takes an value, including types such as `Error` or recursive types,
-// and safely converts it to its nearest useful plain object representation
-
 import * as fe from "./formatError.js";
 const formatError = fe.default;
 
@@ -16,7 +11,6 @@ ${text}
     this.name = "FetchError";
     this.statusCode = statusCode;
     this.text = text;
-    // If the response data is json, might as well try to parse it
     try {
       this.data = JSON.parse(text);
     } catch (e) {
@@ -78,7 +72,6 @@ class SmartFetch {
       finalUrl += new URLSearchParams(args).toString();
     }
     const response = await fetch(finalUrl, {
-      // credentials: "include",
       mode: "cors",
       method,
       headers: {

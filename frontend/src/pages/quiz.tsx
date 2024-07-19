@@ -52,7 +52,6 @@ export default function Quiz() {
       width="100%"
       height="100%"
       background={theme.page.background}
-      // gap={theme.gutters.lg}
     >
       <HStack
         position="fixed"

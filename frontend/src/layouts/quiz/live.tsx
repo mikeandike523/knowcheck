@@ -65,8 +65,7 @@ function SublayoutEnterAccessCode({
     },
     []
   ).task;
-  // The access token is stored in an http only cookie so the loading task data type is null
-  // Access token needs to be exchanged for a new one every 10 minutes
+
   const accessCodeInputState = useInputWithValidationState({
     initialDOMValue: "",
     validator: zodToSimple(
