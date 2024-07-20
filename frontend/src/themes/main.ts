@@ -2,13 +2,13 @@ export const values = {
   colors: {
     brand: "hsla(10, 79%, 51%, 1)",
     semantic: {
-      primary: "hsla(207, 90%, 54%, 1)", // Blue
-      success: "hsla(145, 63%, 49%, 1)", // Green
-      warning: "hsla(45, 100%, 51%, 1)", // Yellow
-      danger: "hsla(0, 78%, 62%, 1)", // Red
-      info: "hsla(200, 80%, 70%, 1)", // Light Blue
-      light: "hsla(0, 0%, 96%, 1)", // Light Gray / Silver
-      cancel: "hsla(0, 0%, 50%, 1)", // Grey
+      primary: "hsla(207, 90%, 54%, 1)",
+      success: "hsla(145, 63%, 49%, 1)",
+      warning: "hsla(45, 100%, 51%, 1)",
+      danger: "hsla(0, 78%, 62%, 1)",
+      info: "hsla(200, 80%, 70%, 1)",
+      light: "hsla(0, 0%, 96%, 1)",
+      cancel: "hsla(0, 0%, 50%, 1)",
     },
     semanticContrast: {
       primary: "white",
@@ -33,11 +33,11 @@ export const theme = {
   pages: {
     quiz: {
       panel: {
-        background:"white",
+        background: "white",
         borderRadius: "16px",
         padding: values.gutters.lg,
         boxShadow: "0px 0px 16px 0px rgba(0,0,0,0.25)",
-      }
+      },
     },
     index: {
       subjectListItem: {
@@ -69,7 +69,7 @@ export const theme = {
   },
   gutters: values.gutters,
   form: {
-    borderRadius:"16px"
+    borderRadius: "16px",
   },
   card: {
     text: {

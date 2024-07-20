@@ -4,10 +4,6 @@ module.exports = {
     Test your knowledge of Point-of-Care ultrasound (POCUS) theory and technique
     `.trim(),
   unlisted: false,
-  // For dev testing only
-  // Were designed by gpt-4o
-  // Not accurate or final
-  // It is easier to test with real-looking data instead of random characters
   questions: [
     {
       body: `

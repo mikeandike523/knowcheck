@@ -140,7 +140,6 @@ function SublayoutEnterAccessCode({
           subjectId,
           instanceId,
         });
-        // jsCookie.set("__session",__session)
         sessionStorage.setItem("__session", __session);
       }
       loginTask.setSuccess(null);

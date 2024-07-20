@@ -19,7 +19,6 @@ import { forwardRef as fwdRef } from "react";
 // summary -- HTMLElement
 // b -- HTMLElement
 // i -- HTMLElement
-// a -- HTMLAnchorElement
 // abbr -- HTMLElement
 // address -- HTMLElement
 // area -- HTMLAreaElement

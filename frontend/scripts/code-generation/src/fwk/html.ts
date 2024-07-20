@@ -8,7 +8,6 @@ if (process.platform === "win32") {
 }
 const __dirname = path.dirname(__filename);
 
-// Extract the keys from asMapping to use for generating components
 const elementTypes = Object.keys(asMapping) as (keyof typeof asMapping)[];
 
 const imports = `
@@ -37,10 +36,7 @@ export const ${capitalizedElement}=forwardRef<AsElementType['${element}'],${capi
 
 const components = elementTypes.map(generateComponent).join("\n");
 
-// Combine imports and components into a single string
 const fileContent = `${imports}\n${components}`;
-
-// Write the file content to a new file
 fs.writeFileSync(
   path.resolve(__dirname, "..", "..", "..", "..", "src", "fwk", "html.tsx"),
   fileContent,
