@@ -2,16 +2,17 @@
     "compilerOptions": {
       "target": "ESNext",
       "module": "NodeNext",
-      "declaration": true,
-      "emitDeclarationOnly": true,
-      "rootDir": ".",
-      "outDir":".",
       "allowJs": true,
       "checkJs": true,
       "noEmitOnError": true,
-      "moduleResolution": "NodeNext"
+      "moduleResolution": "NodeNext",
+      "noEmit": true,
+      "lib":[
+        "DOM",
+        "DOM.Iterable"
+      ]
     },
-    "include": ["./**/*.js","./*.js"],
+    "include": ["./**/*.js","./**/*.mjs","./**/*.cjs","./**/*.ts"],
     "exclude": ["node_modules"]
   }
   

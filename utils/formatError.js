@@ -1,4 +1,8 @@
-function formatError(e) {
+/**s 
+ * @param {unknown} e 
+ * @returns 
+ */
+export default  function formatError(e) {
   const visited = new Set();
   const recursion = (e1) => {
     if (typeof e1 === "undefined") {
@@ -32,5 +36,3 @@ function formatError(e) {
   };
   return recursion(e);
 }
-
-export default formatError;

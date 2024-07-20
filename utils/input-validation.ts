@@ -1,6 +1,6 @@
 import { z, ZodError } from "zod";
 
-import formatError from "./formatError";
+import formatError from "./formatError.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type SignificantValue = Exclude<any, null | undefined>;
@@ -233,14 +233,14 @@ export function createApiInputShapeChecker<TApiInput>(
         }
         if (typeof value !== rootType) {
           return failResult(
-            `Api input must be of type \"${rootType}\", got \"${typeof value}\"`
+            `Api input must be of type "${rootType}", got "${typeof value}"`
           );
         }
         break;
       case "array":
         if (typeof value !== "object") {
           return failResult(
-            `Api input must be an array, got javascript type \"${typeof value}\"`
+            `Api input must be an array, got javascript type "${typeof value}"`
           );
         }
         if (!Array.isArray(value)) {
@@ -249,11 +249,11 @@ export function createApiInputShapeChecker<TApiInput>(
           );
         }
         if (typeof arrayOptions.fixedLength === "number") {
-          if ((value as Array<any>).length !== arrayOptions.fixedLength) {
+          if ((value as Array<unknown>).length !== arrayOptions.fixedLength) {
             return failResult(
               `
 Api must be an array of length ${arrayOptions.fixedLength},
-got an array of length ${(value as Array<any>).length}`.trim()
+got an array of length ${(value as Array<unknown>).length}`.trim()
             );
           }
         }
@@ -261,7 +261,7 @@ got an array of length ${(value as Array<any>).length}`.trim()
       case "object":
         if (typeof value !== "object") {
           return failResult(
-            `Api input must be a regular obejct, got javascript type \"${typeof value}\"`
+            `Api input must be a regular obejct, got javascript type "${typeof value}"`
           );
         }
         if (Array.isArray(value)) {
@@ -329,7 +329,9 @@ export function parseObjectSchema<TSchema>(
 }
 
 export type ValidatorSchemaUnwrap<TValidatorSchema extends {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: Validator<any, any>;
 }> = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [K in keyof TValidatorSchema]:TValidatorSchema[K] extends Validator<any, infer T>? T : never;
 }

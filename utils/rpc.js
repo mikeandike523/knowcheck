@@ -27,7 +27,12 @@ ${logMessage}
 
 User Facing Message:
 ${userFacingMessage}
+
+Cause:
+${formatError(cause)}}
     `;
+
+
   }
 
   constructor({
@@ -105,6 +110,12 @@ ${userFacingMessage}
 }
 
 class TyipcalUserFacingErrorMessages extends Error {
+  /**
+   * 
+   * @param {string} explanation 
+   * @param {string} ticketNumber 
+   * @returns 
+   */
   static GeneralServerError(explanation, ticketNumber) {
     const template = dedentTrim`
 
@@ -161,6 +172,12 @@ class TypicalRPCErrors {
     });
   }
 
+  /**
+   * 
+   * @param {unknown} cause 
+   * @param {string} ticketNumber 
+   * @returns 
+   */
   static UnknownServerError(cause, ticketNumber) {
     return new RPCError({
       cause,
@@ -173,6 +190,12 @@ class TypicalRPCErrors {
     });
   }
 
+  /**
+   * 
+   * @param {unknown} cause 
+   * @param {string} ticketNumber 
+   * @returns 
+   */
   static MissingDataError(cause, ticketNumber) {
     return new RPCError({
       cause,
@@ -185,6 +208,12 @@ class TypicalRPCErrors {
     });
   }
 
+  /**
+   * 
+   * @param {unknown} cause 
+   * @param {string} ticketNumber 
+   * @returns 
+   */
   static UnauthorizedError(cause, ticketNumber) {
     return new RPCError({
       cause,

@@ -1,5 +1,4 @@
-import * as fe from "./formatError.js";
-const formatError = fe.default;
+import formatError from "./formatError.js";
 
 class FetchError extends Error {
   constructor(url, method, statusCode, statusText, text) {
@@ -96,7 +95,7 @@ class SmartFetch {
         method,
         response.status,
         response.statusText,
-        responseText,
+        responseText
       );
     }
   }
