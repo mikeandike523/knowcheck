@@ -7,7 +7,8 @@
     "moduleResolution": "NodeNext",
     "noEmit": true,
     "lib": ["DOM", "DOM.Iterable"],
-    "rootDir": "."
+    "rootDir": ".",
+    "strictNullChecks": true
   },
   "include": [
     "**/*.js",

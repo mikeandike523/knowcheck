@@ -69,7 +69,7 @@ export default class CookieManager {
     this.req = req;
     this.res = res;
     this.cookieChanges = new Map();
-    this.existingCookies = parseCookieHeader(this.req.headers.cookie);
+    this.existingCookies = parseCookieHeader(this.req.headers.cookie??"");
   }
 
   /**

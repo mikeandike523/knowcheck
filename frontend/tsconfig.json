@@ -25,7 +25,8 @@
     "jsxImportSource": "@emotion/react", // allow the emotion css prop in html elements
     "paths": {
       "@/*": ["./src/*"] // Single pattern for absoltue imports
-    }
+    },
+    "strictNullChecks": true
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["src/**/*.template.tsx"]

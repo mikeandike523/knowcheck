@@ -56,7 +56,7 @@ export function useRPCRoute<
             throw new RPCError({
               status: 400,
               userFacingMessage: "Something went wrong in your browser.",
-              logMessage: e.text,
+              logMessage: e.text??"Unknown client error",
               cause: e,
             });
           }
@@ -64,7 +64,7 @@ export function useRPCRoute<
           throw new RPCError({
             status: e.statusCode,
             userFacingMessage: "Something went wrong in your browser.",
-            logMessage: e.text,
+            logMessage: e.text??"Unknown client error",
             cause: e
           });
         }

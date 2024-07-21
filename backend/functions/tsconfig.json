@@ -10,7 +10,8 @@
     "skipLibCheck": true,
     "noEmit": true,
     "allowJs": true,
-    "checkJs": true
+    "checkJs": true,
+    "strictNullChecks": true
   },
   "include": ["./src/**/*.ts",
 "./lib/**/*.ts", "./common/api-types/handlers/auth.ts"],

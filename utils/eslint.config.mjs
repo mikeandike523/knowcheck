@@ -29,6 +29,8 @@ export default [
         console: "readonly",
         fetch: "readonly",
         process: "writeable",
+        URLSearchParams:"readonly"
+        
       },
       parser: tsParser,
       ecmaVersion: "latest",

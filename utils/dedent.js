@@ -1,5 +1,9 @@
 import rebuildTaggedTemplateLiteral from "./rebuildTaggedTemplateLiteral.js";
 
+/**
+ * @param {Array<string>} strings 
+ * @returns 
+ */
 function commonPrefix(strings) {
   const minLength = Math.min(...strings.map((s) => s.length));
   for (let i = 0; i < minLength; i++) {
@@ -9,8 +13,13 @@ function commonPrefix(strings) {
   }
   return strings[0].slice(0, minLength);
 }
+/**
+ * 
+ * @param {string} line 
+ * @returns 
+ */
 function captureLeadingWhitespace(line) {
-  const leadingWhitespace = line.match(/^\s*/)[0];
+  const leadingWhitespace = ((line.match(/^\s*/))??[""])[0];
   return {
     leadingWhitespace,
     remaining: line.slice(leadingWhitespace.length),

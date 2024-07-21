@@ -198,7 +198,6 @@ export function createApiInputShapeChecker<TApiInput>(
     }
     return {
       valid: true,
-      // @ts-expect-error TS(2352): Conversion of type 'object' to type 'TApiInput' ma... Remove this comment to see the full error message
       data: obj as TApiInput,
     };
   };

@@ -88,7 +88,7 @@ function textStyleToCss(textStyle) {
             "strike": "line-through",
             "underline": "underline"
         }).map(([key, syntax]) => {
-            const value = textStyle[key]
+            const value = Reflect.get(textStyle, key)
             return value && syntax
         }).filter((x) => x).join(" ")
         }`,

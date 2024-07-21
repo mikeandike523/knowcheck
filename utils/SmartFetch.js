@@ -1,6 +1,14 @@
 import formatError from "./formatError.js";
 
 class FetchError extends Error {
+  /**
+   * 
+   * @param {string} url 
+   * @param {string} method 
+   * @param {number} statusCode 
+   * @param {string|undefined} statusText 
+   * @param {string|undefined} text
+   */
   constructor(url, method, statusCode, statusText, text) {
     super(`
 Request to ${url} using method ${method} failed with status code ${statusCode} (${statusText}):
@@ -11,7 +19,10 @@ ${text}
     this.statusCode = statusCode;
     this.text = text;
     try {
-      this.data = JSON.parse(text);
+      if(text){
+        this.data = JSON.parse(text)
+      
+      }
     } catch (e) {
       console.warn(`
 Got a bad response from the server and the text was not JSON parsable.
@@ -46,23 +57,46 @@ class InvalidJSONError extends Error {
 }
 
 class SmartFetch {
+
+  /**
+   * @param {string} baseUrl 
+   */
   constructor(baseUrl) {
     this.baseUrl = baseUrl.replace(/\/$/, "");
     this.token = undefined;
   }
+
+  /**
+   * 
+   * @param {string} path 
+   * @returns 
+   */
   route(path) {
     this.baseUrl = `${this.baseUrl}/${path}`;
     return this;
   }
 
+  /**
+   * 
+   * @param {string|undefined} [token=undefined] 
+   * @returns 
+   */
   bearer(token) {
-    this.token = token;
-    return this;
+    if(token){
+      this.token = token
+    }
+    return this
   }
 
+  /**
+   * 
+   * @param {string} method 
+   * @param {any} args 
+   * @returns 
+   */
   async request(method, args) {
     let finalUrl = this.baseUrl;
-    if (method === "get" || method === "delete") {
+    if (method.toLowerCase() === "get" || method.toLowerCase() === "delete") {
       if (!finalUrl.includes("?")) {
         finalUrl += "?";
       } else {
@@ -72,10 +106,14 @@ class SmartFetch {
     }
     const response = await fetch(finalUrl, {
       mode: "cors",
-      method,
+      method:method.toLowerCase(),
       headers: {
         "Content-Type": "application/json",
-        Authorization: this.token ? `Bearer ${this.token}` : undefined,
+        ...(this.token
+          ? {
+              Authorization: `Bearer ${this.token}`,
+            }
+          : {}),
       },
       body:
         method.toUpperCase() !== "GET" && method.toUpperCase() !== "DELETE"
@@ -100,15 +138,38 @@ class SmartFetch {
     }
   }
 
+  /**
+   *
+   * @param {any} args
+   * @returns {Promise<any>}
+   */
   async get(args) {
     return await this.request("GET", args);
   }
+
+  /**
+   *
+   * @param {any} args
+   * @returns {Promise<any>}
+   */
   async post(args) {
     return await this.request("POST", args);
   }
+
+  /**
+   *
+   * @param {any} args
+   * @returns {Promise<any>}
+   */
   async put(args) {
     return await this.request("PUT", args);
   }
+
+  /**
+   *
+   * @param {any} args
+   * @returns {Promise<any>}
+   */
   async delete(args) {
     return await this.request("DELETE", args);
   }

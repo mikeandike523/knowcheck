@@ -40,6 +40,13 @@ async function fileError(route, error) {
   return rpcError;
 }
 
+/**
+ * 
+ * @param {import('express').Request} request 
+ * @param {import('express').Response} response 
+ * @param {(args: any, cookieEngine: any)=>any} callback 
+ * @param {*} routeName 
+ */
 async function simulateRPC(request, response, callback, routeName = "") {
   const args = request.body;
 
