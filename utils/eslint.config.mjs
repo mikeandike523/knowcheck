@@ -31,9 +31,6 @@ export default [
         process: "writeable",
       },
       parser: tsParser,
-      parserOptions: {
-        project: path.resolve(__dirname, "./tsconfig.json"),
-      },
       ecmaVersion: "latest",
       sourceType: "module",
     },

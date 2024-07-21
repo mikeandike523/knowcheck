@@ -1,18 +1,23 @@
 {
-    "compilerOptions": {
-      "target": "ESNext",
-      "module": "NodeNext",
-      "allowJs": true,
-      "checkJs": true,
-      "noEmitOnError": true,
-      "moduleResolution": "NodeNext",
-      "noEmit": true,
-      "lib":[
-        "DOM",
-        "DOM.Iterable"
-      ]
-    },
-    "include": ["./**/*.js","./**/*.mjs","./**/*.cjs","./**/*.ts"],
-    "exclude": ["node_modules"]
-  }
-  
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "NodeNext",
+    "allowJs": true,
+    "checkJs": true,
+    "moduleResolution": "NodeNext",
+    "noEmit": true,
+    "lib": ["DOM", "DOM.Iterable"],
+    "rootDir": "."
+  },
+  "include": [
+    "**/*.js",
+    "**/*.mjs",
+    "**/*.cjs",
+    "**/*.ts",
+    "*.js",
+    "*.mjs",
+    "*.cjs",
+    "*.ts"
+  ],
+  "exclude": ["node_modules"]
+}

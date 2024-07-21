@@ -18,44 +18,76 @@
 function fillTemplate(template, data) {
   let orderIndex = 0;
 
+  /**
+   * @type {Array<string>}
+   *
+   */
   let rawRegions = [];
-  template = template.replace(/:!(.*?)!:/gs, (match, p1) => {
-    rawRegions.push(p1);
-    return `__RAW${rawRegions.length - 1}__`;
-  });
+  template = template.replace(
+    /:!(.*?)!:/gs,
+    /**
+     *
+     * @param {string} match
+     * @param {string} p1
+     * @returns
+     */
+    (match, p1) => {
+      rawRegions.push(p1);
+      return `__RAW${rawRegions.length - 1}__`;
+    }
+  );
 
-  template = template.replace(/:(\+|::|\w+)/g, (match, p1) => {
-    if (p1 === "::") {
-      return ":";
-    } else if (p1 === "+") {
-      if (Array.isArray(data)) {
-        return data[orderIndex++];
+  template = template.replace(
+    /:(\+|::|\w+)/g,
+    /**
+     * @param {string} match
+     * @param {string} p1
+     * @returns
+     */
+    (match, p1) => {
+      if (p1 === "::") {
+        return ":";
+      } else if (p1 === "+") {
+        if (Array.isArray(data)) {
+          return data[orderIndex++];
+        } else {
+          throw new Error("Data must be an array when using :+ syntax");
+        }
+      } else if (!isNaN(parseInt(p1,10))) {
+        if (Array.isArray(data)) {
+          return data[parseInt(p1, 10)];
+        } else {
+          throw new Error("Data must be an array when using :index syntax");
+        }
       } else {
-        throw new Error("Data must be an array when using :+ syntax");
-      }
-    } else if (!isNaN(p1)) {
-      if (Array.isArray(data)) {
-        return data[parseInt(p1, 10)];
-      } else {
-        throw new Error("Data must be an array when using :index syntax");
-      }
-    } else {
-      if (typeof data === "object" && data !== null) {
-        return data[p1];
-      } else {
-        throw new Error("Data must be an object when using :name syntax");
+        if (typeof data === "object" && data !== null) {
+          return data[p1];
+        } else {
+          throw new Error("Data must be an object when using :name syntax");
+        }
       }
     }
-  });
+  );
 
   template = template.replace(
     /__RAW(\d+)__/g,
-    (match, p1) => rawRegions[parseInt(p1, 10)],
+    /**
+     *
+     * @param {string} match
+     * @param {string} p1
+     * @returns
+     */
+    (match, p1) => rawRegions[parseInt(p1, 10)]
   );
 
   return template;
 }
 
+/**
+
+ * @param {string} text 
+ * @returns 
+ */
 function escapeForTemplate(text) {
   if (typeof text !== "string") {
     return text;
