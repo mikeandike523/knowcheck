@@ -1,5 +1,5 @@
 import { RPCError, TypicalRPCErrors } from "./rpc.js";
-import * as logger from 'firebase-functions/logger';
+import * as logger from "firebase-functions/logger";
 import CookieEngine from "./CookieEngine.js";
 
 /**
@@ -35,19 +35,16 @@ async function fileError(route, error) {
 
   const errorData = rpcError.toJSON();
 
-  errorData.route = route;
-  errorData.ticketNumber = ticketNumber;
-
-  await logger.write({ severity: "ERROR", ...errorData });
+  await logger.write({ severity: "ERROR", ...errorData, route, ticketNumber });
 
   return rpcError;
 }
 
 async function simulateRPC(request, response, callback, routeName = "") {
-  const args = request.body
-  
+  const args = request.body;
+
   try {
-    let resultOrPromise = callback(args, new CookieEngine(request,response));
+    let resultOrPromise = callback(args, new CookieEngine(request, response));
     if (resultOrPromise instanceof Promise) {
       resultOrPromise = await resultOrPromise;
     }
@@ -57,9 +54,17 @@ async function simulateRPC(request, response, callback, routeName = "") {
       response.status(e.status).json(RPCError.wrap(e).toJSON());
     } else {
       response.status(500).json(
-        await fileError(routeName, (ticketNumber) => {
-          return TypicalRPCErrors.UnknownServerError(e, ticketNumber);
-        }),
+        await fileError(
+          routeName,
+          /**
+           *
+           * @param {string|undefined} ticketNumber
+           * @returns
+           */
+          (ticketNumber) => {
+            return TypicalRPCErrors.UnknownServerError(e, ticketNumber);
+          }
+        )
       );
     }
   }

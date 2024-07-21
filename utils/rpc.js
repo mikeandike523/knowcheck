@@ -9,8 +9,31 @@ import * as st from "./string-templating.js";
 const fillTemplate = st.fillTemplate;
 const escapeForTemplate = st.escapeForTemplate;
 
-class RPCError extends Error {
+/**
+ * @typedef {object} RPCErrorParams
+ *
+ * @property {number} status - The HTTP status code.
+ * @property {string} logMessage - A brief description of the error.
+ * @property {any|undefined} [cause=undefined] - The original error that caused this error.
+ * @property {string|undefined} [userFacingMessage=undefined] - A more user-friendly message for the client
+ */
 
+/**
+ * @typedef {object} RPCErrorData
+ * 
+ * @property {number} status
+ * @property {string} logMessage
+ * @property {string|undefined} [userFacingMessage=undefined]
+ * @property {any|undefined} [cause=undefined]
+ * @property {string} message
+ * @property {"RPCError"} name
+ */
+
+class RPCError extends Error {
+  /**
+   *
+   * @param {RPCErrorParams} params
+   */
   static buildMessage({
     status,
     logMessage,
@@ -31,10 +54,12 @@ ${userFacingMessage}
 Cause:
 ${formatError(cause)}}
     `;
-
-
   }
 
+  /**
+   *
+   * @param {RPCErrorParams} params
+   */
   constructor({
     status,
     logMessage,
@@ -47,7 +72,7 @@ ${formatError(cause)}}
         logMessage,
         cause,
         userFacingMessage,
-      }),
+      })
     );
     this.logMessage = logMessage;
     this.name = "RPCError";
@@ -56,46 +81,78 @@ ${formatError(cause)}}
     this.userFacingMessage = userFacingMessage;
   }
 
+  /**
+   * @returns {boolean}
+   */
   isUserFacing() {
     return typeof this.userFacingMessage === "string";
   }
 
+  /**
+   *
+   * @returns {string}
+   */
   getLogMessage() {
     return this.logMessage;
   }
 
+  /**
+   *
+   * @returns {string|undefined}
+   */
   getUserFacingMessage() {
     return this.userFacingMessage;
   }
 
+  /**
+   * @returns {RPCErrorData}
+   */
   toJSON() {
     return {
-      name: this.name,
+      name: "RPCError",
       message: this.message,
       logMessage: this.logMessage,
       status: this.status,
       cause: this.cause,
       userFacingMessage: this.userFacingMessage,
-      isUserFacing: this.isUserFacing(),
     };
   }
 
+  /**
+   *
+   * @returns {string}
+   */
   toString() {
     return this.message;
   }
 
+  /**
+   * @param {any} obj
+   * @returns
+   */
   static is(obj) {
     return obj instanceof RPCError;
   }
+
+  /**
+   * @param {any} obj
+   * @returns {obj is RPCErrorData}
+   */
   static isLike(obj) {
     return (
       RPCError.is(obj) || (typeof obj === "object" && obj.name === "RPCError")
     );
   }
+  /**
+   *
+   * @param {any} obj
+   * @param {number} [status=500]
+   * @returns
+   */
   static wrap(obj, status = 500) {
     if (RPCError.isLike(obj)) {
       return new RPCError({
-        status:obj.status??status,
+        status: obj.status ?? status,
         logMessage: obj.logMessage,
         cause: obj.cause,
         userFacingMessage: obj.userFacingMessage,
@@ -111,10 +168,10 @@ ${formatError(cause)}}
 
 class TyipcalUserFacingErrorMessages extends Error {
   /**
-   * 
-   * @param {string} explanation 
-   * @param {string} ticketNumber 
-   * @returns 
+   *
+   * @param {string} explanation
+   * @param {string|undefined} [ticketNumber=undefined]
+   * @returns
    */
   static GeneralServerError(explanation, ticketNumber) {
     const template = dedentTrim`
@@ -126,17 +183,22 @@ class TyipcalUserFacingErrorMessages extends Error {
         Please try again later.
 
         You can also file a bug report if the problem persists.
-        ${escapeForTemplate(process.env.BUG_REPORT_URL)}
+        ${escapeForTemplate(process.env.BUG_REPORT_UR ?? "")}
 
-        For pressing issues, contact ${escapeForTemplate(process.env.SUPPORT_EMAIL)}
+        For pressing issues, contact ${escapeForTemplate(process.env.SUPPORT_EMAIL ?? "")}
 
-        Ticket #: ${escapeForTemplate(ticketNumber)}
+        Ticket #: ${escapeForTemplate(ticketNumber ?? "")}
         `;
     return fillTemplate(template, [indent(explanation, 4)]);
   }
 }
 
 class TypicalRPCErrors {
+  /**
+   * @param {any} cause
+   * @param {string|undefined} [ticketNumber=undefined]
+   * @returns
+   */
   static InvalidAPIInputError(cause, ticketNumber) {
     return new RPCError({
       cause,
@@ -144,11 +206,16 @@ class TypicalRPCErrors {
       logMessage: `Invalid input to API`,
       userFacingMessage: TyipcalUserFacingErrorMessages.GeneralServerError(
         `Invalid API Request`,
-        ticketNumber,
+        ticketNumber
       ),
     });
   }
 
+  /**
+   * @param {any} cause
+   * @param {string|undefined} [ticketNumber=undefined]
+   * @returns
+   */
   static APIRouteNotFoundError(cause, ticketNumber) {
     return new RPCError({
       cause,
@@ -156,10 +223,17 @@ class TypicalRPCErrors {
       logMessage: `API Route Not Found`,
       userFacingMessage: TyipcalUserFacingErrorMessages.GeneralServerError(
         `The client made a request to a non-existent API route`,
-        ticketNumber,
+        ticketNumber
       ),
     });
   }
+
+  /**
+   * @param {string} service
+   * @param {any} cause
+   * @param {string|undefined} [ticketNumber=undefined]
+   * @returns
+   */
   static ThirdPartyConnectionError(service, cause, ticketNumber) {
     return new RPCError({
       cause,
@@ -167,16 +241,15 @@ class TypicalRPCErrors {
       logMessage: `Failure to connect to third party service: ${service}`,
       userFacingMessage: TyipcalUserFacingErrorMessages.GeneralServerError(
         "The application server is experiencing a network error",
-        ticketNumber,
+        ticketNumber
       ),
     });
   }
 
   /**
-   * 
-   * @param {unknown} cause 
-   * @param {string} ticketNumber 
-   * @returns 
+   * @param {any} cause
+   * @param {string|undefined} [ticketNumber=undefined]
+   * @returns
    */
   static UnknownServerError(cause, ticketNumber) {
     return new RPCError({
@@ -185,16 +258,15 @@ class TypicalRPCErrors {
       logMessage: `Unknown Server Error`,
       userFacingMessage: TyipcalUserFacingErrorMessages.GeneralServerError(
         "Unknown Error",
-        ticketNumber,
+        ticketNumber
       ),
     });
   }
 
   /**
-   * 
-   * @param {unknown} cause 
-   * @param {string} ticketNumber 
-   * @returns 
+   * @param {any} cause
+   * @param {string|undefined} [ticketNumber=undefined]
+   * @returns
    */
   static MissingDataError(cause, ticketNumber) {
     return new RPCError({
@@ -203,16 +275,15 @@ class TypicalRPCErrors {
       logMessage: `Missing Data`,
       userFacingMessage: TyipcalUserFacingErrorMessages.GeneralServerError(
         "Some requested data is missing.",
-        ticketNumber,
+        ticketNumber
       ),
     });
   }
 
   /**
-   * 
-   * @param {unknown} cause 
-   * @param {string} ticketNumber 
-   * @returns 
+   * @param {any} cause
+   * @param {string|undefined} [ticketNumber=undefined]
+   * @returns
    */
   static UnauthorizedError(cause, ticketNumber) {
     return new RPCError({
@@ -221,7 +292,7 @@ class TypicalRPCErrors {
       logMessage: `Unauthorized`,
       userFacingMessage: TyipcalUserFacingErrorMessages.GeneralServerError(
         "You are not authorized to access this resource.",
-        ticketNumber,
+        ticketNumber
       ),
     });
   }
