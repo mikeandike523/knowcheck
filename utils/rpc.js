@@ -195,6 +195,22 @@ class TyipcalUserFacingErrorMessages extends Error {
 
 class TypicalRPCErrors {
   /**
+   * @param {any} cause 
+   * @param {string} ticketNumber 
+   * @returns 
+   */
+  static GeneralServerError(cause, ticketNumber) {
+    return new RPCError({
+      cause,
+      status: 500,
+      logMessage: `General Server Error`,
+      userFacingMessage: TyipcalUserFacingErrorMessages.GeneralServerError(
+        `General Server Error`,
+        ticketNumber
+      ),
+    });
+  }
+  /**
    * @param {any} cause
    * @param {string|undefined} [ticketNumber=undefined]
    * @returns
