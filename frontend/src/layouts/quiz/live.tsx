@@ -12,7 +12,7 @@ import LoadingEllipses from "@/components/LoadingEllipses";
 import LoadingOverlay from "@/components/LoadingOverlay";
 import SemanticButton from "@/components/SemanticButton";
 import VStack from "@/fwk/components/VStack";
-import { Div, H1 } from "@/fwk/html";
+import { Div, H1, H2 } from "@/fwk/html";
 import { LoadingTask, useLoadingTask } from "@/lib/loading";
 import { useAPIData, useRPCRoute } from "@/lib/rpc-client";
 import theme from "@/themes/main";
@@ -21,7 +21,6 @@ import nonempty from "@/utils/zod-refiners/nonempty";
 import { z } from "zod";
 import { RPCError } from "@/utils/rpc";
 import { InvalidTokenReason } from "@/common/api-types";
-import jsCookie from "js-cookie";
 import usePeriodicTokenRefresh from "@/hooks/usePeriodicTokenRefresh";
 
 export interface LiveProps {
@@ -29,16 +28,22 @@ export interface LiveProps {
   instanceId: string | undefined;
 }
 
+type InstanceData = {
+  quizName: string;
+};
+
 function SublayoutEnterAccessCode({
   subjectId,
   instanceId,
   onLogin,
   loginTask,
+  instanceData,
 }: {
   subjectId: string;
   instanceId: string;
   onLogin: () => void;
   loginTask: LoadingTask<null>;
+  instanceData: InstanceData | undefined;
 }) {
   useEffect(() => {
     console.log("SublayoutEnterAccessCode has mounted");
@@ -48,23 +53,6 @@ function SublayoutEnterAccessCode({
   const tokenRoute = useRPCRoute<TSchemaToken, TokenClaims>("token", () => {
     return sessionStorage.getItem("__session") ?? undefined;
   });
-  const loadInstanceDataTask = useAPIData<
-    {
-      subjectId: string;
-      instanceId: string;
-    },
-    {
-      fullName: string;
-      quizName: string;
-    }
-  >(
-    "getQuizInstanceData",
-    {
-      subjectId,
-      instanceId,
-    },
-    []
-  ).task;
 
   const accessCodeInputState = useInputWithValidationState({
     initialDOMValue: "",
@@ -85,7 +73,6 @@ function SublayoutEnterAccessCode({
         })
     ),
   });
-  const instanceData = loadInstanceDataTask.data;
   const registerLink =
     typeof window.location !== "undefined"
       ? window.location.protocol +
@@ -102,6 +89,7 @@ function SublayoutEnterAccessCode({
         try {
           await tokenRoute({
             action: "check",
+            instanceId,
           });
           setSuccessMessage("Already logged in!");
           loginTask.setSuccess(null);
@@ -150,89 +138,100 @@ function SublayoutEnterAccessCode({
   }
 
   useEffect(() => {
-    submitAccessCode(null);
-  }, []);
+    if (instanceData) {
+      submitAccessCode(null);
+    }
+  }, [instanceData]);
 
   return (
-    <LoadingOverlay
-      width="min(30em,100%)"
-      task={loadInstanceDataTask}
-      loadingOverlayProps={{
-        borderRadius: theme.pages.quiz.panel.borderRadius,
-      }}
+    <VStack
+      width="clamp(auto,40em,100%)"
+      gap={theme.gutters.lg}
+      padding={theme.gutters.lg}
+      boxSizing="border-box"
     >
-      <VStack gap={theme.gutters.lg}>
-        {loadInstanceDataTask.state === "success" ? (
-          <>
-            <H1 fontSize="16px" margin={0} padding={0}>
-              Welcome, {instanceData?.fullName}, to the "
-              {instanceData?.quizName}" quiz!
-            </H1>
+      <LoadingOverlay
+        display={instanceData ? "block" : "none"}
+        task={loginTask}
+        contentProps={{
+          display: "flex",
+          flexDirection: "column",
+          gap: theme.gutters.lg,
+          alignItems: "center",
+          borderRadius: theme.pages.quiz.panel.borderRadius,
+          backgroundColor: "white",
+          boxSizing: "border-box",
+        }}
+        onDismiss={() => {
+          loginTask.setIdle();
+        }}
+      >
+        {loginTask.state === "success" ? (
+          <Fragment key="AccessCodeForm">
+            <Div background="lightgreen">{successMessage}</Div>
+          </Fragment>
+        ) : (
+          <Fragment key="AccessCodeForm">
             <Div>Enter the access code you recieved in your email.</Div>
             <Div>
               If you cannot locate the email, you will have to register again
               at:
             </Div>
             <a href={registerLink}>{registerLink}</a>
-          </>
-        ) : (
-          <>
-            <LoadingEllipses />
-          </>
+            <InputWithValidation
+              type="password"
+              inputState={accessCodeInputState}
+              label="Access Code"
+            />
+            <SemanticButton
+              color="primary"
+              padding="0.5em"
+              onClick={() => {
+                const validationResult = accessCodeInputState.validate();
+                if (validationResult.valid) {
+                  submitAccessCode(validationResult.data!);
+                }
+              }}
+            >
+              Start Quiz
+            </SemanticButton>
+          </Fragment>
         )}
-
-        <LoadingOverlay
-          task={loginTask}
-          contentProps={{
-            display: "flex",
-            flexDirection: "column",
-            gap: theme.gutters.lg,
-            alignItems: "center",
-          }}
-          onDismiss={() => {
-            loginTask.setIdle();
-          }}
-        >
-          {loginTask.state === "success" ? (
-            <Fragment key="AccessCodeForm">
-              <Div background="lightgreen">{successMessage}</Div>
-            </Fragment>
-          ) : (
-            <Fragment key="AccessCodeForm">
-              <InputWithValidation
-                type="password"
-                inputState={accessCodeInputState}
-                label="Access Code"
-              />
-              <SemanticButton
-                color="primary"
-                padding="0.5em"
-                onClick={() => {
-                  const validationResult = accessCodeInputState.validate();
-                  if (validationResult.valid) {
-                    submitAccessCode(validationResult.data!);
-                  }
-                }}
-              >
-                Start Quiz
-              </SemanticButton>
-            </Fragment>
-          )}
-        </LoadingOverlay>
-      </VStack>
-    </LoadingOverlay>
+      </LoadingOverlay>
+    </VStack>
   );
 }
 
 function SublayoutMainQuiz() {
   useEffect(() => {}, [console.log("SublayoutMainQuiz has mounted")]);
-  return <Div>Main Quiz Layout</Div>;
+  return (
+    <VStack
+      width="clamp(auto,40em,100%)"
+      gap={theme.gutters.lg}
+      padding={theme.gutters.lg}
+      boxSizing="border-box"
+    >Main quiz layout ... todo</VStack>
+  )
 }
 
 type SublayoutState = "enter-access-code" | "main-quiz";
 
 export default function Live({ subjectId, instanceId }: LiveProps) {
   const loginTask = useLoadingTask<null>();
+  const loadInstanceDataTask = useAPIData<
+    {
+      subjectId: string;
+      instanceId: string;
+    },
+    InstanceData
+  >(
+    "getQuizInstanceData",
+    {
+      subjectId,
+      instanceId: instanceId ?? "",
+    },
+    []
+  ).task;
   const tokenRefresher = usePeriodicTokenRefresh({
     intervalMinutes: 0.5,
     onFailure: (reason, from) => {
@@ -261,31 +260,61 @@ export default function Live({ subjectId, instanceId }: LiveProps) {
 
   return (
     <Div
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      justifyContent="center"
-      height="100%"
+      {...{
+        display: "flex",
+        flexDirection: "column",
+        width: "100%",
+        height: "100%",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
     >
-      <Div {...theme.pages.quiz.panel}>
-        {sublayoutState === "enter-access-code" && (
-          <Div key="sublayout">
-            <SublayoutEnterAccessCode
-              loginTask={loginTask}
-              subjectId={subjectId}
-              instanceId={instanceId!}
-              onLogin={() => {
-                setSublayoutState("main-quiz");
-                tokenRefresher.start();
-              }}
-            />
-          </Div>
-        )}
-        {sublayoutState === "main-quiz" && (
-          <Div key="sublayout">
-            <SublayoutMainQuiz />
-          </Div>
-        )}
+      <Div minHeight="48px" {...theme.pages.quiz.panel}>
+        <LoadingOverlay
+          task={loadInstanceDataTask}
+          loadingOverlayProps={{
+            borderRadius: theme.pages.quiz.panel.borderRadius,
+          }}
+        >
+          {loadInstanceDataTask.state === "success" && (
+            <>
+              <H1
+                textAlign="center"
+                fontSize="24px"
+                margin={0}
+                padding={theme.gutters.md}
+                width="100%"
+                background={theme.navbar.background}
+                borderTopLeftRadius={theme.pages.quiz.panel.borderRadius}
+                borderTopRightRadius={theme.pages.quiz.panel.borderRadius}
+                boxSizing="border-box"
+                color="white"
+              >
+                {loadInstanceDataTask.data?.quizName}
+              </H1>
+            </>
+          )}
+          <Div></Div>
+          {sublayoutState === "enter-access-code" && (
+            <Fragment key="sublayout">
+              <SublayoutEnterAccessCode
+                instanceData={loadInstanceDataTask.data}
+                loginTask={loginTask}
+                subjectId={subjectId}
+                instanceId={instanceId!}
+                onLogin={() => {
+                  setSublayoutState("main-quiz");
+                  tokenRefresher.start();
+                }}
+              />
+            </Fragment>
+          )}
+          {sublayoutState === "main-quiz" && (
+            <Fragment key="sublayout">
+              <SublayoutMainQuiz />
+            </Fragment>
+          )}
+        </LoadingOverlay>
       </Div>
     </Div>
   );

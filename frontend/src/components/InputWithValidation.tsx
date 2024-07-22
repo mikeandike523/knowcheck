@@ -161,7 +161,6 @@ export default function InputWithValidation({
     background: white;
     box-sizing: border-box;
     max-width: 100%;
-
     border: ${validationState === "error"
       ? "1px solid red"
       : "1px solid black"};
@@ -191,7 +190,7 @@ export default function InputWithValidation({
         type={type}
         {...nonStylePropsRest}
       />
-      <VStack width="100%">
+      <VStack width="100%" boxSizing="border-box">
         {messages.map((message, i) => (
           <Span key={i} color="red">
             {message.toString()}

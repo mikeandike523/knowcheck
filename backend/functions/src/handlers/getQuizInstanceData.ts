@@ -55,7 +55,6 @@ export default function createHandlerGetQuizInstanceData(db: Firestore) {
     }
 
     return {
-      fullName: registration.fullName,
       quizName: data.name,
     };
   };

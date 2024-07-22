@@ -56,7 +56,7 @@ export default function Spinner() {
           z-index: 1;
           position: relative;
           animation: ${spinAnimation} 1s linear infinite;
-          width: 4em;
+          width: 48px;
           aspect-ratio: 1 / 1;
           border-radius: 50%;
           background: conic-gradient(
@@ -82,7 +82,7 @@ export default function Spinner() {
             transform-origin: center;
             transform: scale(0.25);
             background: white;
-          };
+          }
 
           &:after {
             z-index: 2;
@@ -97,7 +97,7 @@ export default function Spinner() {
             transform: scale(0.25);
             border: 12px solid black;
             background: white;
-          };
+          }
         `}
       ></Div>
     </Div>

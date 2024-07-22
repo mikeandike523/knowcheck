@@ -43,6 +43,10 @@ export const stylePropTypeMapping = {
   color: "string",
   border: "string",
   borderRadius: "number | string",
+  borderTopLeftRadius: "number | string",
+  borderTopRightRadius: "number | string",
+  borderBottomLeftRadius: "number | string",
+  borderBottomRightRadius: "number | string",
   boxShadow: "string",
   opacity: "number",
   cursor:
