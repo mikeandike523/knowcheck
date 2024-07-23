@@ -6,16 +6,29 @@ import { QuizRegistration } from "../../common/api-types";
 import { TypicalRPCErrors } from "../../utils/rpc";
 import { fileError } from "../../utils/rpc-server";
 import { parseObjectSchema } from "../../utils/input-validation";
-import { schema, TSchema } from "../../common/validators/handlers/quiz";
+import { schema, TSchema,Action as QuizAction } from "../../common/validators/handlers/quiz";
 import dedentTrim from "../../utils/dedentTrim";
 
-export interface QuizState {
-  subjectId: string;
-  instanceId: string;
+export type QuizQuestionReponse = {
+  questionId: string;
+  questionText: string;
+  submission: string;
+  gptScore: number;
+  gptExplanation: string;
+
 }
 
+export type QuizState = {
+  subjectId: string;
+  instanceId: string;
+  responses:{
+    [questionId: string]: QuizQuestionReponse;
+  }
+}
+
+
 export default function createHandlderQuiz(db: Firestore) {
-  return async function quiz(args: TSchema): Promise<null> {
+  return async function quiz(args: TSchema) {
     const parsedArgs = parseObjectSchema<TSchema>(args, schema);
     const instanceId = parsedArgs.instanceId;
     const registration = await db
@@ -53,6 +66,7 @@ export default function createHandlderQuiz(db: Firestore) {
       const initialState: QuizState = {
         subjectId,
         instanceId,
+        responses: {}
       };
       await db.collection("quiz_states").doc(instanceId).set(initialState);
     }

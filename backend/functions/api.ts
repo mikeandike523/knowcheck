@@ -17,6 +17,7 @@ import createHandlerListSubjects from "./src/handlers/listSubjects";
 import createHandlerGetSubjectConfig from "./src/handlers/getSubjectConfig";
 import createHandlerAuth from "./src/handlers/auth";
 import createHandlerToken from "./src/handlers/token";
+import createHandlerQuiz from "./src/handlers/quiz";
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -46,4 +47,9 @@ export const auth = createRoute(
 export const token = createRoute(
   "/token",
   createHandlerToken(db)
+)
+
+export const quiz = createRoute(
+  "/quiz",
+  createHandlerQuiz(db)
 )
