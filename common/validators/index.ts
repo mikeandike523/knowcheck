@@ -1,6 +1,6 @@
-import {z} from 'zod'
+import { z } from 'zod'
 
-import { ValidatorSchemaUnwrap, zodToSimple } from "../../utils/input-validation"
+import { zodToSimple } from "../../utils/input-validation"
 import nonempty from '../../utils/zod-refiners/nonempty'
 
 export const schemaTokenClaims = {

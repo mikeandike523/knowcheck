@@ -1,8 +1,8 @@
 import { z } from 'zod'
 
-import {zodToSimple,ValidatorSchemaUnwrap} from '../../../utils/input-validation'
-import nonempty from '../../../utils/zod-refiners/nonempty'
+import { zodToSimple } from '../../../utils/input-validation'
 import isEmail from '../../../utils/zod-refiners/isEmail'
+import nonempty from '../../../utils/zod-refiners/nonempty'
 
 export const schema = {
     email: zodToSimple(z.string().transform(email => email.trim().toLowerCase()).superRefine(nonempty(
@@ -22,5 +22,10 @@ export const schema = {
     )))
 }
 
-export type TSchema = ValidatorSchemaUnwrap<typeof schema>
+export type TSchema = {
+    email: string;
+    fullName: string;
+    subjectId: string;
+    baseUrl: string;
+}
 

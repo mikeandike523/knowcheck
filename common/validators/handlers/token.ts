@@ -1,8 +1,7 @@
 import { z } from "zod";
 
 import {
-  zodToSimple,
-  ValidatorSchemaUnwrap,
+  zodToSimple
 } from "../../../utils/input-validation";
 import isOneOfStrings from "../../../utils/zod-refiners/isOneOfStrings";
 import nonempty from "../../../utils/zod-refiners/nonempty";
@@ -28,4 +27,7 @@ export const schema = {
   ),
 };
 
-export type TSchema = ValidatorSchemaUnwrap<typeof schema>;
+export type TSchema = {
+  action: Action;
+  instanceId: string;
+}

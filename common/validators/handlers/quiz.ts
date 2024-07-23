@@ -2,7 +2,6 @@ import { z } from "zod";
 
 import {
   Validator,
-  ValidatorSchemaUnwrap,
   zodToSimple
 } from "../../../utils/input-validation";
 import isOneOfStrings from "../../../utils/zod-refiners/isOneOfStrings";
@@ -17,7 +16,7 @@ export const schema = {
   instanceId: zodToSimple(
     z.string().superRefine(nonempty(false, "instance ID is required."))
   ),
-  action: zodToSimple(z.any().superRefine(isOneOfStrings<Action>(actions))),
+  action: zodToSimple<Action>(z.any().superRefine(isOneOfStrings<Action>(actions))),
   payload: ((value: unknown)=>{
     if(typeof value === "object" && value!== null){
       return {
@@ -32,6 +31,10 @@ export const schema = {
   } ) as Validator<unknown,QuizEndpointArg>,
 };
 
-export type TSchema = ValidatorSchemaUnwrap<typeof schema>;
+export type TSchema = {
+  instanceId: string;
+  action: Action;
+  payload: QuizEndpointArg
+}
 
 export type TReturn = QuizEndpointReturn

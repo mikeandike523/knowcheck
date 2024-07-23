@@ -7,6 +7,8 @@ import dedentTrim from "../../utils/dedentTrim";
 import { parseObjectSchema } from "../../utils/input-validation";
 import { TypicalRPCErrors } from "../../utils/rpc";
 import { fileError } from "../../utils/rpc-server";
+import createHandlerLoadNextQuestion from "./quizActions/loadNextQuestion";
+import createHandlerSubmitAnswer from "./quizActions/submitAnswer";
 
 export type QuizState = {
   subjectId: string;
@@ -18,6 +20,8 @@ export type QuizState = {
 
 
 export default function createHandlderQuiz(db: Firestore) {
+  const loadNextQuestionHandler = createHandlerLoadNextQuestion(db);
+  const submitAnswerHandler = createHandlerSubmitAnswer(db);
   return async function quiz(args: TSchema,cookieEngine: CookieEngine): Promise<TReturn> {
     const parsedArgs = parseObjectSchema<TSchema>(args, schema);
     const instanceId = parsedArgs.instanceId;
@@ -61,7 +65,12 @@ export default function createHandlderQuiz(db: Firestore) {
       await db.collection("quiz_states").doc(instanceId).set(initialState);
     }
 
-    // todo
+    switch (parsedArgs.action) {
+      case "loadNextQuestion":
+        return await loadNextQuestionHandler(parsedArgs, cookieEngine);
+      case "submitAnswer":
+        return await submitAnswerHandler(parsedArgs, cookieEngine);
+    }
 
   };
 }

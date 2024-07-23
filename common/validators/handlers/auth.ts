@@ -1,6 +1,6 @@
 import { z } from "zod";
 import nonempty from "../../../utils/zod-refiners/nonempty";
-import {zodToSimple,ValidatorSchemaUnwrap} from '../../../utils/input-validation'
+import {zodToSimple} from '../../../utils/input-validation'
 
 export const schema = {
   subjectId: zodToSimple(z
@@ -14,4 +14,8 @@ export const schema = {
     .superRefine<string>(nonempty(false, "Access code is required."))),
 };
 
-export type TSchema = ValidatorSchemaUnwrap<typeof schema>
+export type TSchema = {
+  subjectId: string;
+  instanceId: string;
+  accessCode: string;
+}

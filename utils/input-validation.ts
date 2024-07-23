@@ -327,11 +327,3 @@ export function parseObjectSchema<TSchema>(
   }
   return result.data!;
 }
-
-export type ValidatorSchemaUnwrap<TValidatorSchema extends {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: Validator<any, any>;
-}> = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [K in keyof TValidatorSchema]:TValidatorSchema[K] extends Validator<any, infer T>? T : never;
-}
