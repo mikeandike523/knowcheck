@@ -8,15 +8,7 @@ import { fileError } from "../../utils/rpc-server";
 import { parseObjectSchema } from "../../utils/input-validation";
 import { schema, TSchema,Action as QuizAction } from "../../common/validators/handlers/quiz";
 import dedentTrim from "../../utils/dedentTrim";
-
-export type QuizQuestionReponse = {
-  questionId: string;
-  questionText: string;
-  submission: string;
-  gptScore: number;
-  gptExplanation: string;
-
-}
+import {QuizQuestionReponse} from "../../common/api-types/handlers/quiz";
 
 export type QuizState = {
   subjectId: string;
