@@ -7,6 +7,8 @@ import { TypicalRPCErrors } from "../../utils/rpc";
 import { fileError } from "../../utils/rpc-server";
 import {parseObjectSchema} from "../../utils/input-validation"
 import {schema,TSchema} from "../../common/validators/handlers/registerForQuiz"
+import * as handlerTypesLoadNextQuestion from "../../common/api-types/handlers/quizActions/loadNextQuestion"
+import * as handlerTypesSubmitAnswer from "../../common/api-types/handlers/quizActions/submitAnswer"
 
 
 export default function createHandlerRegisterForQuiz(db: Firestore) {

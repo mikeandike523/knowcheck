@@ -15,13 +15,18 @@ export default function createHandlerSubmitAnswer(db: Firestore) {
     cookieEngine: CookieEngine
   ): Promise<TReturn> {
 
-      const parsedArgs = parseObjectSchema(args, argsSchema);
       const claims = await protect({
-        instanceId: parsedArgs.instanceId,
+        instanceId: args.instanceId,
         db,
         cookieEngine,
       });
+
       // todo
+
+      return {
+        gptScore: 0,
+        gptExplanation: "",
+      }
 
   };
 }

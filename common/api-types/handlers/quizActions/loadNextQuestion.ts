@@ -15,6 +15,4 @@ export type TArgs = {
   instanceId: string;
 }
 
-export type TReturn = {
-    questionText: string;
-}
+export type TReturn = string | null

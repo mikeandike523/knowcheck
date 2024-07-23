@@ -1,4 +1,4 @@
-import * as typesQuizActionsLoadNextQuest from "../handlers/quizActions/loadNextQuestion";
+import * as typesQuizActionsLoadNextQuestion from "../handlers/quizActions/loadNextQuestion";
 import * as typesQuizActionsSubmitAnswer from "../handlers/quizActions/submitAnswer";
 import { Action } from "../../validators/handlers/quiz";
 
@@ -14,11 +14,11 @@ export type QuizQuestionReponse = {
 
 
 export type QuizApiPayloadMapping = {
-    "loadNextQuestion": typesQuizActionsLoadNextQuest.TArgs;
+    "loadNextQuestion": typesQuizActionsLoadNextQuestion.TArgs;
     "submitAnswer": typesQuizActionsSubmitAnswer.TArgs;
 }
 export type QuizApiReturnMapping = {
-    "loadNextQuestion": typesQuizActionsLoadNextQuest.TReturn;
+    "loadNextQuestion": typesQuizActionsLoadNextQuestion.TReturn;
     "submitAnswer": typesQuizActionsSubmitAnswer.TReturn;
 }
 

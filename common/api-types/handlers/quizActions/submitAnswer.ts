@@ -24,4 +24,4 @@ export type TArgs = {
   instanceId: string;
 }
 
-export type TReturn = QuizQuestionReponse
+export type TReturn = Pick<QuizQuestionReponse, "gptScore" | "gptExplanation">
