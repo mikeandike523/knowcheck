@@ -1,11 +1,13 @@
 import { z } from "zod";
 
 import {
-  zodToSimple,
+  Validator,
   ValidatorSchemaUnwrap,
+  zodToSimple
 } from "../../../utils/input-validation";
-import nonempty from "../../../utils/zod-refiners/nonempty";
 import isOneOfStrings from "../../../utils/zod-refiners/isOneOfStrings";
+import nonempty from "../../../utils/zod-refiners/nonempty";
+import { QuizEndpointArg, QuizEndpointReturn } from "../../api-types/handlers/quiz";
 
 export const actions = ["loadNextQuestion", "submitAnswer"] as const;
 
@@ -16,7 +18,20 @@ export const schema = {
     z.string().superRefine(nonempty(false, "instance ID is required."))
   ),
   action: zodToSimple(z.any().superRefine(isOneOfStrings<Action>(actions))),
-  payload: zodToSimple(z.object({}).passthrough().nullable()),
+  payload: ((value: unknown)=>{
+    if(typeof value === "object" && value!== null){
+      return {
+        valid: true,
+        data: value as QuizEndpointArg,
+      }
+    }
+    return {
+      valid: false,
+      message: "Payload must be an object or null"
+    }
+  } ) as Validator<unknown,QuizEndpointArg>,
 };
 
 export type TSchema = ValidatorSchemaUnwrap<typeof schema>;
+
+export type TReturn = QuizEndpointReturn

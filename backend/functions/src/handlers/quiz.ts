@@ -1,14 +1,12 @@
 import { Firestore } from "firebase-admin/firestore";
-import { createTransport } from "nodemailer";
-import { hash } from "argon2";
 
-import { QuizRegistration } from "../../common/api-types";
+import { QuizQuestionReponse } from "../../common/api-types/handlers/quiz";
+import { schema, TReturn, TSchema } from "../../common/validators/handlers/quiz";
+import CookieEngine from "../../utils/CookieEngine";
+import dedentTrim from "../../utils/dedentTrim";
+import { parseObjectSchema } from "../../utils/input-validation";
 import { TypicalRPCErrors } from "../../utils/rpc";
 import { fileError } from "../../utils/rpc-server";
-import { parseObjectSchema } from "../../utils/input-validation";
-import { schema, TSchema,Action as QuizAction } from "../../common/validators/handlers/quiz";
-import dedentTrim from "../../utils/dedentTrim";
-import {QuizQuestionReponse} from "../../common/api-types/handlers/quiz";
 
 export type QuizState = {
   subjectId: string;
@@ -20,7 +18,7 @@ export type QuizState = {
 
 
 export default function createHandlderQuiz(db: Firestore) {
-  return async function quiz(args: TSchema) {
+  return async function quiz(args: TSchema,cookieEngine: CookieEngine): Promise<TReturn> {
     const parsedArgs = parseObjectSchema<TSchema>(args, schema);
     const instanceId = parsedArgs.instanceId;
     const registration = await db
@@ -63,6 +61,7 @@ export default function createHandlderQuiz(db: Firestore) {
       await db.collection("quiz_states").doc(instanceId).set(initialState);
     }
 
-    return null;
+    // todo
+
   };
 }
