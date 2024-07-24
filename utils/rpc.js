@@ -20,7 +20,7 @@ const escapeForTemplate = st.escapeForTemplate;
 
 /**
  * @typedef {object} RPCErrorData
- * 
+ *
  * @property {number} status
  * @property {string} logMessage
  * @property {string|undefined} [userFacingMessage=undefined]
@@ -52,7 +52,7 @@ User Facing Message:
 ${userFacingMessage}
 
 Cause:
-${formatError(cause)}}
+${JSON.stringify(formatError(cause), null, 2)}
     `;
   }
 
@@ -195,9 +195,27 @@ class TyipcalUserFacingErrorMessages extends Error {
 
 class TypicalRPCErrors {
   /**
-   * @param {any} cause 
-   * @param {string} ticketNumber 
-   * @returns 
+   *
+   * @param {any} cause
+   * @param {string} ticketNumber
+   * @returns
+   */
+  static GenerativeAIFailure(cause, ticketNumber) {
+    return new RPCError({
+      cause,
+      status: 500,
+      logMessage: `Generative AI Failure`,
+      userFacingMessage: TyipcalUserFacingErrorMessages.GeneralServerError(
+        `Error Generating AI Response`,
+        ticketNumber
+      ),
+    });
+  }
+
+  /**
+   * @param {any} cause
+   * @param {string} ticketNumber
+   * @returns
    */
   static GeneralServerError(cause, ticketNumber) {
     return new RPCError({
@@ -257,6 +275,25 @@ class TypicalRPCErrors {
       logMessage: `Failure to connect to third party service: ${service}`,
       userFacingMessage: TyipcalUserFacingErrorMessages.GeneralServerError(
         "The application server is experiencing a network error",
+        ticketNumber
+      ),
+    });
+  }
+
+
+  /**
+   * @param {string} service
+   * @param {any} cause
+   * @param {string|undefined} [ticketNumber=undefined]
+   * @returns
+   */
+  static ThirdPartyInvalidResponse(service,cause, ticketNumber) {
+    return new RPCError({
+      cause,
+      status: 500,
+      logMessage: `Recieved a bad or invalid response from: ${service}`,
+      userFacingMessage: TyipcalUserFacingErrorMessages.GeneralServerError(
+        "Data from a third part was invalid.",
         ticketNumber
       ),
     });

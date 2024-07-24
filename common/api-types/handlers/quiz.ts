@@ -6,7 +6,7 @@ import { Action } from "../../validators/handlers/quiz";
 export type QuizQuestionReponse = {
     questionId: string;
     questionText: string;
-    submission: string;
+    answer: string;
     gptScore: number;
     gptExplanation: string;
 }

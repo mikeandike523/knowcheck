@@ -6,8 +6,8 @@ import {
 } from "../../../common/api-types/handlers/quizActions/loadNextQuestion";
 import { DocumentResult } from "../../../lib/firestore";
 import CookieEngine from "../../../utils/CookieEngine";
-import CollectionTypeQuestions from "../../collection-types/questions";
-import CollectionTypeRegistrations from "../../collection-types/registrations";
+import {QuestionData} from "../../models/Question";
+import {RegistrationData} from "../../models/Registration";
 import protect from "../../lib/protect";
 
 export default function createHandlerLoadNextQuestion(db: Firestore) {
@@ -22,7 +22,7 @@ export default function createHandlerLoadNextQuestion(db: Firestore) {
       cookieEngine,
     });
     console.log(claims)
-    const registration = DocumentResult.expect<CollectionTypeRegistrations>(await db.collection("registrations").doc(args.instanceId).get());
+    const registration = DocumentResult.expect<RegistrationData>(await db.collection("registrations").doc(args.instanceId).get());
     const subjectId = registration.subjectId;
     const instanceId = claims.instanceId;
     const existingResponses = (await db.collection("responses").where("instanceId", "==", instanceId).get()).docs.map(doc => doc.data());
@@ -37,7 +37,7 @@ export default function createHandlerLoadNextQuestion(db: Firestore) {
     }
     const randomIndex = Math.floor(Math.random() * unansweredQuestionIds.length);
     const randomQuestionId = unansweredQuestionIds[randomIndex];
-    const randomQuestion = DocumentResult.expect<CollectionTypeQuestions>(await db.collection("questions").doc(randomQuestionId).get());
+    const randomQuestion = DocumentResult.expect<QuestionData>(await db.collection("questions").doc(randomQuestionId).get());
     return randomQuestion.body;
   };
 }
