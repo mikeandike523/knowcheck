@@ -11,8 +11,11 @@ export const argsSchema = {
   )
 } as const;
 
-export type TArgs = {
-  instanceId: string;
-}
+export type TArgs = null
 
-export type TReturn = string | null
+/**
+ * Either the question body text, or a number reflecting how many questions are in the subject
+ * In the case where there are no more questions left to answer
+ * This can be used to construct messages to the end user
+ */
+export type TReturn = string | number

@@ -22,6 +22,11 @@ import { z } from "zod";
 import { RPCError } from "@/utils/rpc";
 import { InvalidTokenReason } from "@/common/api-types";
 import usePeriodicTokenRefresh from "@/hooks/usePeriodicTokenRefresh";
+import useQuizApi from "@/hooks/useQuizApi";
+import { TReturn as TReturnLoadNextQuestion } from "@/common/api-types/handlers/quizActions/loadNextQuestion";
+import { TReturn as TReturnSubmitAnswer } from "@/common/api-types/handlers/quizActions/submitAnswer";
+import ColorDebug from "@/utils/ColorDebug";
+import formatError from "@/utils/formatError";
 
 export interface LiveProps {
   subjectId: string;
@@ -202,16 +207,52 @@ function SublayoutEnterAccessCode({
   );
 }
 
-function SublayoutMainQuiz() {
+function SublayoutMainQuiz({ instanceId }: { instanceId: string }) {
   useEffect(() => {}, [console.log("SublayoutMainQuiz has mounted")]);
+  const routeLoadNextQuestion = useQuizApi("loadNextQuestion");
+  const routeSubmitAnswer = useQuizApi("submitAnswer");
+  const loadingTaskLoadNextQuestion = useLoadingTask<TReturnLoadNextQuestion>();
+  const loadingTaskSubmitAnswer = useLoadingTask<TReturnSubmitAnswer>();
+  const currentQuestion = loadingTaskLoadNextQuestion.data ?? "";
+  async function loadNextQuestion() {
+    try {
+      loadingTaskLoadNextQuestion.setLoading();
+      const result = await routeLoadNextQuestion(instanceId, null);
+      loadingTaskLoadNextQuestion.setSuccess(result);
+    } catch (e) {
+      loadingTaskLoadNextQuestion.setError(e);
+      ColorDebug.browser().error(JSON.stringify(formatError(e), null, 2), {
+        textColor: "red",
+      });
+    }
+  }
+  useEffect(() => {
+    if (loadingTaskLoadNextQuestion.state === "idle") {
+      loadNextQuestion();
+    }
+  }, [loadingTaskLoadNextQuestion.state]);
   return (
     <VStack
       width="clamp(auto,40em,100%)"
       gap={theme.gutters.lg}
       padding={theme.gutters.lg}
       boxSizing="border-box"
-    >Main quiz layout ... todo</VStack>
-  )
+    >
+      <LoadingOverlay
+        task={loadingTaskLoadNextQuestion}
+        background={theme.card.background}
+        onDismiss={() => {
+          loadingTaskLoadNextQuestion.setIdle();
+        }}
+      >
+        {currentQuestion ? (
+          <Div>{currentQuestion}</Div>
+        ) : (
+          <Div height="48px"></Div>
+        )}
+      </LoadingOverlay>
+    </VStack>
+  );
 }
 
 type SublayoutState = "enter-access-code" | "main-quiz";
@@ -252,14 +293,42 @@ export default function Live({ subjectId, instanceId }: LiveProps) {
   });
   const [sublayoutState, setSublayoutState] =
     useState<SublayoutState>("enter-access-code");
-  const [errorMessage, setErrorMessage] = useState<string>("");
 
   useEffect(() => {
     console.log("Live has mounted");
   }, []);
 
+  if (!instanceId) {
+    return (
+      <Div
+        key="QuizOrMissingInstanceId"
+        background="white"
+        color="red"
+        border="2px solid red"
+        fontSize="24px"
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        gap="8px"
+      >
+        <Div>Missing Instance ID</Div>
+        <Div>Check the url in the address bar.</Div>
+        {typeof window !== "undefined" && (
+          <Div>
+            The url should follow the format:{" "}
+            <b>
+              {window.location.protocol}//{window.location.host}
+              /quiz/&lt;SUBJECT ID&gt;/live/&lt;INSTANCE ID&gt;
+            </b>
+          </Div>
+        )}
+      </Div>
+    );
+  }
+
   return (
     <Div
+      key="QuizOrMissingInstanceId"
       {...{
         display: "flex",
         flexDirection: "column",
@@ -311,7 +380,7 @@ export default function Live({ subjectId, instanceId }: LiveProps) {
           )}
           {sublayoutState === "main-quiz" && (
             <Fragment key="sublayout">
-              <SublayoutMainQuiz />
+              <SublayoutMainQuiz instanceId={instanceId} />
             </Fragment>
           )}
         </LoadingOverlay>

@@ -8,7 +8,6 @@ import { DocumentResult } from "../../../lib/firestore";
 import CookieEngine from "../../../utils/CookieEngine";
 import CollectionTypeQuestions from "../../collection-types/questions";
 import CollectionTypeRegistrations from "../../collection-types/registrations";
-import CollectionTypeSubjects from "../../collection-types/subjects";
 import protect from "../../lib/protect";
 
 export default function createHandlerLoadNextQuestion(db: Firestore) {
@@ -31,7 +30,7 @@ export default function createHandlerLoadNextQuestion(db: Firestore) {
     if(unansweredQuestionIds.length === 0) {
       // There are no more questions left to answer in the pool of questions for this subject
       // This is an ultra rare case but still must be handled
-      return null
+      return allQuestionIds.length
     }
     const randomIndex = Math.floor(Math.random() * unansweredQuestionIds.length);
     const randomQuestionId = unansweredQuestionIds[randomIndex];
