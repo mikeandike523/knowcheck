@@ -8,9 +8,6 @@ import PagesQuiz from "@/pages/quiz";
 import PageNotFound from "./page-not-found";
 
 const App: React.FC = () => {
-  useEffect(() => {
-    console.log("App has mounted")
-  },[])
   return (
     <BrowserRouter>
       <Routes>

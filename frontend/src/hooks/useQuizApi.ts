@@ -11,18 +11,15 @@ export default function useQuizApi<TAction extends QuizAction>(
 ) {
   const quizEndpoint = useRPCRoute<
     {
-      instanceId: string;
       action: TAction;
       payload: QuizApiPayloadMapping[TAction];
     },
     QuizEndpointReturn
-  >("quiz");
+  >("quiz", () => sessionStorage.getItem("__session") ?? undefined);
   return async function api(
-    instanceId: string,
     payload: QuizApiPayloadMapping[TAction]
   ): Promise<QuizApiReturnMapping[TAction]> {
     return (await quizEndpoint({
-      instanceId,
       action,
       payload,
     })) as QuizApiReturnMapping[TAction];

@@ -26,23 +26,6 @@ export default function createHandlderQuiz(db: Firestore) {
     cookieEngine: CookieEngine
   ): Promise<TReturn> {
     const parsedArgs = parseObjectSchema<TSchema>(args, schema);
-    const registration = DocumentResult.expect<CollectionTypeRegistrations>(
-      await db.collection("registrations").doc(parsedArgs.instanceId).get()
-    );
-
-    const subjectId = registration.subjectId;
-    if (!subjectId) {
-      throw await fileError("quiz", (ticketNumber: string) =>
-        TypicalRPCErrors.MissingDataError(
-          dedentTrim`
-            Subject ID is missing from the registration data.
-            There may be a system error, or a problem with the URL in your address bar.
-            Consider reopening the quiz fromt the link you recieved in your eamil.
-            `,
-          ticketNumber
-        )
-      );
-    }
 
     switch (parsedArgs.action) {
       case "loadNextQuestion":

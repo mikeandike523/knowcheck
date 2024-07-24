@@ -11,7 +11,10 @@ export const argsSchema = {
   )
 } as const;
 
-export type TArgs = null
+export type TArgs = {
+  instanceId: string
+  
+}
 
 /**
  * Either the question body text, or a number reflecting how many questions are in the subject

@@ -21,9 +21,6 @@ function SwitchQuizAction({
   subjectId: string;
   instanceId: string | undefined;
 }) {
-  useEffect(()=>{
-    console.log("SwitchQuizAction has mounted")
-  },[])
   switch (action) {
     case "register":
       return <LayoutQuizRegister key="ActionLayout" subjectId={subjectId} />;
@@ -41,9 +38,6 @@ function SwitchQuizAction({
 }
 
 export default function Quiz() {
-  useEffect(()=>{
-    console.log("Quiz has mounted")
-  },[])
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { subjectId, action, instanceId } = useParams();
   const navigate = useNavigate();

@@ -15,17 +15,20 @@ export default function createHandlerLoadNextQuestion(db: Firestore) {
     args: TArgs,
     cookieEngine: CookieEngine
   ): Promise<TReturn> {
+    console.log(args)
     const claims = await protect({
       instanceId: args.instanceId,
       db,
       cookieEngine,
     });
-    const registration = DocumentResult.expect<CollectionTypeRegistrations>(await db.collection("registrations").doc(claims.instanceId).get());
+    console.log(claims)
+    const registration = DocumentResult.expect<CollectionTypeRegistrations>(await db.collection("registrations").doc(args.instanceId).get());
     const subjectId = registration.subjectId;
     const instanceId = claims.instanceId;
     const existingResponses = (await db.collection("responses").where("instanceId", "==", instanceId).get()).docs.map(doc => doc.data());
     const completedQuestionIds = existingResponses.map(response => response.questionId);
     const allQuestionIds = (await db.collection("questions").where("subjectId", "==", subjectId).get()).docs.map(doc => doc.id);
+    console.log(allQuestionIds)
     const unansweredQuestionIds = allQuestionIds.filter(questionId =>!completedQuestionIds.includes(questionId));
     if(unansweredQuestionIds.length === 0) {
       // There are no more questions left to answer in the pool of questions for this subject

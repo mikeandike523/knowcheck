@@ -50,9 +50,6 @@ function SublayoutEnterAccessCode({
   loginTask: LoadingTask<null>;
   instanceData: InstanceData | undefined;
 }) {
-  useEffect(() => {
-    console.log("SublayoutEnterAccessCode has mounted");
-  }, []);
   const [successMessage, setSuccessMessage] = useState("Login successful!");
   const authRoute = useRPCRoute<TSchemaAuth, string>("auth");
   const tokenRoute = useRPCRoute<TSchemaToken, TokenClaims>("token", () => {
@@ -208,7 +205,6 @@ function SublayoutEnterAccessCode({
 }
 
 function SublayoutMainQuiz({ instanceId }: { instanceId: string }) {
-  useEffect(() => {}, [console.log("SublayoutMainQuiz has mounted")]);
   const routeLoadNextQuestion = useQuizApi("loadNextQuestion");
   const routeSubmitAnswer = useQuizApi("submitAnswer");
   const loadingTaskLoadNextQuestion = useLoadingTask<TReturnLoadNextQuestion>();
@@ -217,7 +213,9 @@ function SublayoutMainQuiz({ instanceId }: { instanceId: string }) {
   async function loadNextQuestion() {
     try {
       loadingTaskLoadNextQuestion.setLoading();
-      const result = await routeLoadNextQuestion(instanceId, null);
+      const result = await routeLoadNextQuestion({
+        instanceId,
+      });
       loadingTaskLoadNextQuestion.setSuccess(result);
     } catch (e) {
       loadingTaskLoadNextQuestion.setError(e);
@@ -240,17 +238,40 @@ function SublayoutMainQuiz({ instanceId }: { instanceId: string }) {
     >
       <LoadingOverlay
         task={loadingTaskLoadNextQuestion}
-        background={theme.card.background}
         onDismiss={() => {
           loadingTaskLoadNextQuestion.setIdle();
         }}
       >
         {currentQuestion ? (
-          <Div>{currentQuestion}</Div>
+          <Div fontWeight="bold" fontSize="18px" textAlign="center">
+            {currentQuestion}
+          </Div>
         ) : (
           <Div height="48px"></Div>
         )}
       </LoadingOverlay>
+      <textarea
+        css={css`
+          width: 100%;
+          max-width: 40em;
+        `}
+        rows={5}
+        disabled={
+          loadingTaskLoadNextQuestion.state === "loading" ||
+          loadingTaskSubmitAnswer.state === "loading"
+        }
+        placeholder={
+          loadingTaskLoadNextQuestion.state === "loading"
+            ? "Loading..."
+            : loadingTaskSubmitAnswer.state === "loading"
+              ? "Processing..."
+              : "Write a short answer..."
+
+        }
+      ></textarea>
+      <SemanticButton color="primary" padding="0.5em" onClick={() => {}}>
+        Submit
+      </SemanticButton>
     </VStack>
   );
 }
@@ -274,6 +295,7 @@ export default function Live({ subjectId, instanceId }: LiveProps) {
     []
   ).task;
   const tokenRefresher = usePeriodicTokenRefresh({
+    instanceId,
     intervalMinutes: 0.5,
     onFailure: (reason, from) => {
       if (reason === InvalidTokenReason.INVALID_TOKEN) {
@@ -293,10 +315,6 @@ export default function Live({ subjectId, instanceId }: LiveProps) {
   });
   const [sublayoutState, setSublayoutState] =
     useState<SublayoutState>("enter-access-code");
-
-  useEffect(() => {
-    console.log("Live has mounted");
-  }, []);
 
   if (!instanceId) {
     return (
