@@ -27,6 +27,7 @@ import { TReturn as TReturnLoadNextQuestion } from "@/common/api-types/handlers/
 import { TReturn as TReturnSubmitAnswer } from "@/common/api-types/handlers/quizActions/submitAnswer";
 import ColorDebug from "@/utils/ColorDebug";
 import formatError from "@/utils/formatError";
+import HStack from "@/fwk/components/HStack";
 
 export interface LiveProps {
   subjectId: string;
@@ -209,7 +210,15 @@ function SublayoutMainQuiz({ instanceId }: { instanceId: string }) {
   const routeSubmitAnswer = useQuizApi("submitAnswer");
   const loadingTaskLoadNextQuestion = useLoadingTask<TReturnLoadNextQuestion>();
   const loadingTaskSubmitAnswer = useLoadingTask<TReturnSubmitAnswer>();
-  const currentQuestion = loadingTaskLoadNextQuestion.data ?? "";
+  const currentQuestion = loadingTaskLoadNextQuestion.data?.body ?? "";
+  const currentQuestionId = loadingTaskLoadNextQuestion.data?.id ?? "";
+  const numCompletedQuestions =
+    loadingTaskLoadNextQuestion.data?.numCompletedQuestions ?? 0;
+  const showOutOfQuestionsMessage =
+    loadingTaskLoadNextQuestion.state === "success" && !currentQuestionId;
+  const lastScore = loadingTaskSubmitAnswer.data?.gptScore ?? 0;
+  const lastExplanation = loadingTaskSubmitAnswer.data?.gptExplanation ?? "";
+  const [answer, setAnswer] = useState("");
   async function loadNextQuestion() {
     try {
       loadingTaskLoadNextQuestion.setLoading();
@@ -219,6 +228,29 @@ function SublayoutMainQuiz({ instanceId }: { instanceId: string }) {
       loadingTaskLoadNextQuestion.setSuccess(result);
     } catch (e) {
       loadingTaskLoadNextQuestion.setError(e);
+      ColorDebug.browser().error(JSON.stringify(formatError(e), null, 2), {
+        textColor: "red",
+      });
+    }
+  }
+  async function submitAnswer() {
+    if (
+      loadingTaskLoadNextQuestion.state === "loading" ||
+      loadingTaskSubmitAnswer.state === "loading"
+    ) {
+      return;
+    }
+    try {
+      loadingTaskSubmitAnswer.setLoading();
+      const result = await routeSubmitAnswer({
+        answer,
+        instanceId,
+        questionId: currentQuestionId,
+      });
+      loadingTaskSubmitAnswer.setSuccess(result);
+      loadNextQuestion();
+    } catch (e) {
+      loadingTaskSubmitAnswer.setError(e);
       ColorDebug.browser().error(JSON.stringify(formatError(e), null, 2), {
         textColor: "red",
       });
@@ -236,10 +268,27 @@ function SublayoutMainQuiz({ instanceId }: { instanceId: string }) {
       padding={theme.gutters.lg}
       boxSizing="border-box"
     >
+      {showOutOfQuestionsMessage && (
+        <Div
+          color={theme.colors.semantic.success}
+          fontSize="18px"
+          textAlign="center"
+        >
+          Congratualations!
+          <br />
+          You answered all {numCompletedQuestions} available questions for this
+          subject.
+          <br />
+          Check back later for more!
+        </Div>
+      )}
       <LoadingOverlay
         task={loadingTaskLoadNextQuestion}
         onDismiss={() => {
           loadingTaskLoadNextQuestion.setIdle();
+        }}
+        contentProps={{
+          display: showOutOfQuestionsMessage ? "none" : "flex",
         }}
       >
         {currentQuestion ? (
@@ -250,28 +299,75 @@ function SublayoutMainQuiz({ instanceId }: { instanceId: string }) {
           <Div height="48px"></Div>
         )}
       </LoadingOverlay>
-      <textarea
-        css={css`
-          width: 100%;
-          max-width: 40em;
-        `}
-        rows={5}
-        disabled={
-          loadingTaskLoadNextQuestion.state === "loading" ||
-          loadingTaskSubmitAnswer.state === "loading"
-        }
-        placeholder={
-          loadingTaskLoadNextQuestion.state === "loading"
-            ? "Loading..."
-            : loadingTaskSubmitAnswer.state === "loading"
-              ? "Processing..."
-              : "Write a short answer..."
+      <LoadingOverlay task={loadingTaskSubmitAnswer}>
+        <VStack
+          width="100%"
+          gap={theme.gutters.lg}
+          padding={theme.gutters.lg}
+          boxSizing="border-box"
+        >
+          <textarea
+            value={answer}
+            onChange={(e) => setAnswer(e.target.value)}
+            css={css`
+              width: 100%;
+              max-width: 40em;
+              display: ${showOutOfQuestionsMessage ? "none" : "block"};
+            `}
+            rows={5}
+            disabled={
+              loadingTaskLoadNextQuestion.state === "loading" ||
+              loadingTaskSubmitAnswer.state === "loading"
+            }
+            placeholder={
+              loadingTaskLoadNextQuestion.state === "loading"
+                ? "Loading..."
+                : loadingTaskSubmitAnswer.state === "loading"
+                  ? "Processing..."
+                  : "Write a short answer..."
+            }
+          ></textarea>
+          <SemanticButton
+            color="primary"
+            padding="0.5em"
+            display={showOutOfQuestionsMessage ? "none" : "block"}
+            onClick={()=>{
+              submitAnswer()
 
-        }
-      ></textarea>
-      <SemanticButton color="primary" padding="0.5em" onClick={() => {}}>
-        Submit
-      </SemanticButton>
+            }}
+          >
+            Submit
+          </SemanticButton>
+          {loadingTaskSubmitAnswer.state === "success" && (
+            <>
+              <HStack
+                width="100%"
+                border="2px solid black"
+                gap={theme.gutters.lg}
+                padding={theme.gutters.lg}
+              >
+                <Div padding="4px" fontSize="16px" aspectRatio={1.0}>
+                  {lastScore}
+                </Div>
+                <Div flex={1} textAlign="left">
+                  {lastExplanation}
+                </Div>
+              </HStack>
+              <SemanticButton
+                color="primary"
+                padding="0.5em"
+                onClick={() => {
+                  setAnswer("");
+                  loadingTaskSubmitAnswer.setIdle();
+                  loadNextQuestion()
+                }}
+              >
+                Next Question
+              </SemanticButton>
+            </>
+          )}
+        </VStack>
+      </LoadingOverlay>
     </VStack>
   );
 }
