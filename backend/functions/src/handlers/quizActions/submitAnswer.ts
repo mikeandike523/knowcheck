@@ -13,7 +13,40 @@ import SubjectModel from "../../models/Subject";
 import { SmartFetch } from "../../../utils/SmartFetch";
 import { TypicalRPCErrors } from "../../../utils/rpc";
 import { fileError } from "../../../utils/rpc-server";
-import { ResponseData } from "../../models/Response"
+import { ResponseData } from "../../models/Response";
+
+const contextPromptTemplate = `
+Know/Check is a dynamic quiz application for students in medicine.
+
+You will be tasked with scoring user's answers based on your general knowledge of medicine
+as well as a list of pre-determined supporting evidence.
+
+Here is specific info on the specific quiz the user is currently taking:
+
+    Quiz Name: [QUIZ_NAME]
+    Quiz Description: "[QUIZ_BLURB]"
+
+You will provide a score of 1 to 10, focusing on quality, completeness, and accuracy
+You will also provide a short explanation for your score
+
+Use the following format precisely:
+
+Score:
+<SCORE>
+
+Explanation:
+<EXPLANATION>
+`;
+const userPromptTemplate = `
+Question Text:
+[QUESTION_BODY]
+
+User Response:
+[USER_RESPONSE]
+
+Supporting Evidence:
+[SUPPORTING_INFO]
+`;
 
 export default function createHandlerSubmitAnswer(db: Firestore) {
   return async function (
@@ -31,13 +64,15 @@ export default function createHandlerSubmitAnswer(db: Firestore) {
     ).unwrap();
     const subjectId = question.subjectId;
     const subject = (await SubjectModel.connect(db).getOne(subjectId)).unwrap();
-    const contextPrompt = subject.contextPrompt;
-    const userPromptTemplate = subject.userPromptTemplate;
+    const contextPrompt = contextPromptTemplate
+      .replace(/\[QUIZ_NAME\]/g, subject.name)
+      .replace(/\[QUIZ_BLURB\]/g, subject.blurb);
+
     const userPrompt = userPromptTemplate
-      .replace(/<QUESTION_BODY>/g, question.body)
-      .replace(/<USER_RESPONSE>/g, args.answer)
+      .replace(/\[QUESTION_BODY\]/g, question.body)
+      .replace(/\[USER_RESPONSE\]/g, args.answer)
       .replace(
-        /<CRITERIA_LIST>/g,
+        /\[CRITERIA_LIST\]/g,
         question.supportingInfo
           .map((item, index) => {
             return `${index + 1}.\n\n${item}`;
@@ -215,19 +250,21 @@ export default function createHandlerSubmitAnswer(db: Firestore) {
     const explanation = explanationLines.join("\n").trim();
 
     const submissionEntry: ResponseData = {
-      instanceId:args.instanceId,
+      instanceId: args.instanceId,
       questionId: args.questionId,
       answer: args.answer,
       gptScore: score,
       gptExplanation: explanation,
       questionText: question.body,
-    }
+      supportingInfo: question.supportingInfo,
+    };
 
     await db.collection("responses").doc().set(submissionEntry);
 
     return {
       gptScore: score,
       gptExplanation: explanation,
+      supportingInfo: question.supportingInfo,
     };
   };
 }

@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState, KeyboardEvent } from "react";
 import { css } from "@emotion/react";
 
 import { TSchema as TSchemaAuth } from "@/common/validators/handlers/auth";
@@ -28,6 +28,7 @@ import { TReturn as TReturnSubmitAnswer } from "@/common/api-types/handlers/quiz
 import ColorDebug from "@/utils/ColorDebug";
 import formatError from "@/utils/formatError";
 import HStack from "@/fwk/components/HStack";
+import dedentTrim from "@/utils/dedentTrim";
 
 export interface LiveProps {
   subjectId: string;
@@ -148,7 +149,7 @@ function SublayoutEnterAccessCode({
 
   return (
     <VStack
-      width="clamp(auto,40em,100%)"
+      width="100%"
       gap={theme.gutters.lg}
       padding={theme.gutters.lg}
       boxSizing="border-box"
@@ -218,7 +219,9 @@ function SublayoutMainQuiz({ instanceId }: { instanceId: string }) {
     loadingTaskLoadNextQuestion.state === "success" && !currentQuestionId;
   const lastScore = loadingTaskSubmitAnswer.data?.gptScore ?? 0;
   const lastExplanation = loadingTaskSubmitAnswer.data?.gptExplanation ?? "";
+  const lastSupportingInfo = loadingTaskSubmitAnswer.data?.supportingInfo ?? [];
   const [answer, setAnswer] = useState("");
+  const answerLineCount = answer.split("\n").length;
   async function loadNextQuestion() {
     try {
       loadingTaskLoadNextQuestion.setLoading();
@@ -261,9 +264,26 @@ function SublayoutMainQuiz({ instanceId }: { instanceId: string }) {
       loadNextQuestion();
     }
   }, [loadingTaskLoadNextQuestion.state]);
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === "Tab") {
+      const textarea = event.target as HTMLTextAreaElement | null | undefined;
+      if (!textarea) {
+        return;
+      }
+      event.preventDefault();
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+
+      textarea.selectionStart = textarea.selectionEnd = start + 4;
+
+      // Set textarea value to: text before caret + 4 spaces + text after caret
+      setAnswer(answer.substring(0, start) + "    " + answer.substring(end));
+    }
+  };
   return (
     <VStack
-      width="clamp(auto,40em,100%)"
+      width="100%"
       gap={theme.gutters.lg}
       padding={theme.gutters.lg}
       boxSizing="border-box"
@@ -310,11 +330,16 @@ function SublayoutMainQuiz({ instanceId }: { instanceId: string }) {
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
             css={css`
+              font-size: 1em;
+              line-height: 1.5em;
+              min-height: 6em;
+              height: ${(answerLineCount + 1) * 1.5}em;
               width: 100%;
-              max-width: 40em;
-              display: ${showOutOfQuestionsMessage ? "none" : "block"};
+              display: ${showOutOfQuestionsMessage ||
+              loadingTaskSubmitAnswer.state === "success"
+                ? "none"
+                : "block"};
             `}
-            rows={5}
             disabled={
               loadingTaskLoadNextQuestion.state === "loading" ||
               loadingTaskSubmitAnswer.state === "loading"
@@ -326,14 +351,30 @@ function SublayoutMainQuiz({ instanceId }: { instanceId: string }) {
                   ? "Processing..."
                   : "Write a short answer..."
             }
+            onKeyDown={handleKeyDown}
           ></textarea>
+          <Div
+            whiteSpace="pre-wrap"
+            minHeight="6em"
+            display={
+              loadingTaskSubmitAnswer.state === "success" ? "block" : "none"
+            }
+            background="lightgray"
+            width="1005"
+          >
+            {answer}
+          </Div>
           <SemanticButton
             color="primary"
             padding="0.5em"
-            display={showOutOfQuestionsMessage ? "none" : "block"}
-            onClick={()=>{
-              submitAnswer()
-
+            display={
+              showOutOfQuestionsMessage ||
+              loadingTaskSubmitAnswer.state === "success"
+                ? "none"
+                : "block"
+            }
+            onClick={() => {
+              submitAnswer();
             }}
           >
             Submit
@@ -342,16 +383,91 @@ function SublayoutMainQuiz({ instanceId }: { instanceId: string }) {
             <>
               <HStack
                 width="100%"
-                border="2px solid black"
                 gap={theme.gutters.lg}
                 padding={theme.gutters.lg}
               >
-                <Div padding="4px" fontSize="16px" aspectRatio={1.0}>
-                  {lastScore}
-                </Div>
-                <Div flex={1} textAlign="left">
-                  {lastExplanation}
-                </Div>
+                <VStack alignItems="stretch">
+                  <Div
+                    padding="4px"
+                    fontSize="16px"
+                    border="2px dotted black"
+                    borderBottom="none"
+                    textAlign="center"
+                    fontWeight="bold"
+                  >
+                    Score (1-10)
+                  </Div>
+                  <Div
+                    aspectRatio={1.0}
+                    boxSizing="border-box"
+                    display="flex"
+                    flexDirection="row"
+                    alignItems="center"
+                    justifyContent="center"
+                    border="2px dotted black"
+                  >
+                    <Div fontSize="48px" boxSizing="border-box">
+                      {lastScore}
+                    </Div>
+                  </Div>
+                </VStack>
+
+                <VStack flex={1} textAlign="left" alignItems="stretch">
+                  <Div
+                    padding="4px"
+                    fontSize="16px"
+                    border="2px dotted black"
+                    borderBottom="none"
+                    textAlign="center"
+                    fontWeight="bold"
+                  >
+                    Explanation
+                  </Div>
+                  <Div
+                    whiteSpace="pre-wrap"
+                    padding="4px"
+                    display="flex"
+                    flexDirection="row"
+                    alignItems="center"
+                    justifyContent="center"
+                    border="2px dotted black"
+                  >
+                    <Div>{lastExplanation}</Div>
+                  </Div>
+                </VStack>
+                <VStack flex={1} textAlign="left" alignItems="stretch">
+                  <Div
+                    padding="4px"
+                    fontSize="16px"
+                    border="2px dotted black"
+                    borderBottom="none"
+                    textAlign="center"
+                    fontWeight="bold"
+                  >
+                    Supporting Evidence
+                  </Div>
+                  <Div
+                    whiteSpace="pre-wrap"
+                    padding="4px"
+                    display="flex"
+                    flexDirection="row"
+                    alignItems="center"
+                    justifyContent="center"
+                    border="2px dotted black"
+                  >
+                    <Div>
+                      <ul>
+                        {lastSupportingInfo.map((info, index) => {
+                          return (
+                            <li key={index}>
+                              <Div whiteSpace="pre-wrap">{info}</Div>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </Div>
+                  </Div>
+                </VStack>
               </HStack>
               <SemanticButton
                 color="primary"
@@ -359,7 +475,7 @@ function SublayoutMainQuiz({ instanceId }: { instanceId: string }) {
                 onClick={() => {
                   setAnswer("");
                   loadingTaskSubmitAnswer.setIdle();
-                  loadNextQuestion()
+                  loadNextQuestion();
                 }}
               >
                 Next Question
@@ -452,11 +568,23 @@ export default function Live({ subjectId, instanceId }: LiveProps) {
         justifyContent: "center",
       }}
     >
-      <Div minHeight="48px" {...theme.pages.quiz.panel}>
+      <Div
+        minHeight="48px"
+        style={{
+          maxHeight: dedentTrim`
+          calc(
+            100vh - ( 2 * ${theme.navbar.height} ) - ( 2* ${theme.gutters.lg} )
+          )`.replace(/\n/g, ""),
+        }}
+        {...theme.pages.quiz.panel}
+      >
         <LoadingOverlay
           task={loadInstanceDataTask}
           loadingOverlayProps={{
             borderRadius: theme.pages.quiz.panel.borderRadius,
+          }}
+          contentProps={{
+            overflowY: "auto",
           }}
         >
           {loadInstanceDataTask.state === "success" && (

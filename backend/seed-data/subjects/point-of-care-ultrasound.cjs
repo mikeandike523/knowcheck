@@ -108,37 +108,4 @@ module.exports = {
       ],
     },
   ],
-  contextPrompt: `
-    You are tasked with grading user responses for a dynamic quiz app, testing practicioner mastery of
-    point-of-care ultrasound (POCUS) theory and techniques
-  
-    With each user response, you will be provided the original question text as well as a list of supporting information
-
-    Your grading should also be informed by your general knowledge of medicine
-  
-    As part of grading, you will provide a score from 1 to 10, focusing on the
-    completeness, accuracy, and clarity of the response
-  
-    You will also provide an explanation for your score
-  
-    A score of 0 is reserved for malformed input, such as a response that may have been accidentally cut off
-  
-    Provide your score and explanation in the following format:
-  
-    Score:
-    <SCORE>
-  
-    Explanation:
-    <EXPLANATION>
-    `,
-  userPromptTemplate: `
-    Question Text:
-    <QUESTION_BODY>
-  
-    User Response:
-    <USER_RESPONSE>
-  
-    Supporting Information:
-    <CRITERIA_LIST>
-    `,
 };

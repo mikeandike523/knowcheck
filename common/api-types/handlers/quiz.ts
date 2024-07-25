@@ -9,6 +9,7 @@ export type QuizQuestionReponse = {
     answer: string;
     gptScore: number;
     gptExplanation: string;
+    supportingInfo: string[];
 }
 
 
