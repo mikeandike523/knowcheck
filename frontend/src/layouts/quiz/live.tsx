@@ -251,7 +251,6 @@ function SublayoutMainQuiz({ instanceId }: { instanceId: string }) {
         questionId: currentQuestionId,
       });
       loadingTaskSubmitAnswer.setSuccess(result);
-      loadNextQuestion();
     } catch (e) {
       loadingTaskSubmitAnswer.setError(e);
       ColorDebug.browser().error(JSON.stringify(formatError(e), null, 2), {

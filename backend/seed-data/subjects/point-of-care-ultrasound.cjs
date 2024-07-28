@@ -3,7 +3,7 @@ module.exports = {
   blurb: `
     Test your knowledge of Point-of-Care ultrasound (POCUS) theory and technique
     `.trim(),
-  unlisted: false,
+  unlisted: true,
   questions: [
     {
       body: `

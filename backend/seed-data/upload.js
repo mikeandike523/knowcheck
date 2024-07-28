@@ -1,5 +1,4 @@
 import admin from "firebase-admin";
-
 import path from "path";
 import fs from "fs";
 
@@ -21,6 +20,23 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
+// Implement listCollections
+async function listCollections() {
+  const collections = await db.listCollections();
+  collections.forEach((collection) => {
+    console.log('Collection ID:', collection.id);
+  });
+}
+
+// Implement clearAllCollections
+async function clearAllCollections() {
+  const collections = await db.listCollections();
+  for (const collection of collections) {
+    await clearCollection(collection.id);
+  }
+  console.log("Cleared all collections");
+}
+
 async function clearCollection(collectionName) {
   const collectionRef = db.collection(collectionName);
   const snapshot = await collectionRef.get();
@@ -40,9 +56,7 @@ async function clearCollection(collectionName) {
 }
 
 async function main() {
-
-  await clearCollection("questions");
-  await clearCollection("subjects");
+  await clearAllCollections()
 
   const subjectsDir = path.join(__dirname, "subjects");
 
@@ -60,13 +74,9 @@ async function main() {
     const subjectId = path.basename(dataFile, ".cjs");
     const subjectName = subjectData.name;
     const subjectBlurb = subjectData.blurb;
-    const subjectContextPrompt = subjectData.contextPrompt;
-    const subjectUserPromptTemplate = subjectData.userPromptTemplate;
     await db.collection("subjects").doc(subjectId).set({
       name: subjectName,
       blurb: subjectBlurb,
-      contextPrompt: subjectContextPrompt,
-      userPromptTemplate: subjectUserPromptTemplate,
       unlisted: subjectData.unlisted,
     });
 
@@ -82,4 +92,4 @@ async function main() {
   }
 }
 
-await main();
+await main()
