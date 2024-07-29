@@ -1,12 +1,14 @@
+import lodash from "lodash";
+
 import formatError from "./formatError.js";
 
 class FetchError extends Error {
   /**
-   * 
-   * @param {string} url 
-   * @param {string} method 
-   * @param {number} statusCode 
-   * @param {string|undefined} statusText 
+   *
+   * @param {string} url
+   * @param {string} method
+   * @param {number} statusCode
+   * @param {string|undefined} statusText
    * @param {string|undefined} text
    */
   constructor(url, method, statusCode, statusText, text) {
@@ -19,9 +21,8 @@ ${text}
     this.statusCode = statusCode;
     this.text = text;
     try {
-      if(text){
-        this.data = JSON.parse(text)
-      
+      if (text) {
+        this.data = JSON.parse(text);
       }
     } catch (e) {
       console.warn(`
@@ -57,9 +58,8 @@ class InvalidJSONError extends Error {
 }
 
 class SmartFetch {
-
   /**
-   * @param {string} baseUrl 
+   * @param {string} baseUrl
    */
   constructor(baseUrl) {
     this.baseUrl = baseUrl.replace(/\/$/, "");
@@ -67,9 +67,9 @@ class SmartFetch {
   }
 
   /**
-   * 
-   * @param {string} path 
-   * @returns 
+   *
+   * @param {string} path
+   * @returns
    */
   route(path) {
     this.baseUrl = `${this.baseUrl}/${path}`;
@@ -77,48 +77,85 @@ class SmartFetch {
   }
 
   /**
-   * 
-   * @param {string|undefined} [token=undefined] 
-   * @returns 
+   *
+   * @param {string|undefined} [token=undefined]
+   * @returns
    */
   bearer(token) {
-    if(token){
-      this.token = token
+    if (token) {
+      this.token = token;
     }
-    return this
+    return this;
   }
 
   /**
-   * 
-   * @param {string} method 
-   * @param {any} args 
-   * @returns 
+   *
+   * @param {string} method
+   * @param {any} args
+   * @param {RequestInit} [options={}]
+   * @returns
    */
-  async request(method, args) {
-    let finalUrl = this.baseUrl;
-    if (method.toLowerCase() === "get" || method.toLowerCase() === "delete") {
-      if (!finalUrl.includes("?")) {
-        finalUrl += "?";
-      } else {
-        finalUrl += "&";
-      }
-      finalUrl += new URLSearchParams(args).toString();
+  async request(method, args, options = {}) {
+    if (
+      !["GET", "POST", "PUT", "DELETE", "OPTIONS"].includes(
+        method.toUpperCase()
+      )
+    ) {
+      throw new Error(`Unsupported method: ${method}`);
     }
+    let finalUrl = this.baseUrl;
+    /**
+     * Whether the body is supported/included in the request
+     *
+     * @remarks
+     * technically any request can have a body, here we make an OPINION about typical use cases
+     */
+    const bodyIsSupported =
+      method.toUpperCase() === "PUT" || method.toUpperCase() === "POST";
+    /**
+     * If the request should ot hav ea body, we do allow args to serve as query parameters
+     * if it is present and is a valid object
+     */
+    if (!bodyIsSupported) {
+      if (typeof args === "object" && args!==null) {
+        if (!finalUrl.includes("?")) {
+          finalUrl += "?";
+        } else {
+          finalUrl += "&";
+        }
+        finalUrl += new URLSearchParams(args).toString();
+      }
+    }
+    const contentType = options.headers?.["Content-Type"] ?? "application/json";
     const response = await fetch(finalUrl, {
       mode: "cors",
-      method:method.toLowerCase(),
+      method: method.toLowerCase(),
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": contentType,
         ...(this.token
           ? {
               Authorization: `Bearer ${this.token}`,
             }
           : {}),
+        ...lodash.omit(options.headers ?? {}, "Content-Type","Authorization"),
       },
-      body:
-        method.toUpperCase() !== "GET" && method.toUpperCase() !== "DELETE"
-          ? JSON.stringify(args ?? {})
-          : undefined,
+      // Logic
+      // If body is supported
+      // If the content type is JSON (default)
+      // We simply attempt to stringgify it
+      // In other cases
+      // If args is a string, then it becomes the body
+      // If args is undefined, then we attempt to look for a body in options
+      // In all other cases, leave the body undefined
+
+      body: bodyIsSupported
+        ? contentType === "application/json"
+          ? JSON.stringify(args)
+          : typeof args === "string"
+            ? args
+              : (options.body ?? undefined)
+        : undefined,
+      ...lodash.omit(options, ["headers","mode","body"]),
     });
     const responseText = await response.text();
     if (response.ok) {
@@ -141,37 +178,41 @@ class SmartFetch {
   /**
    *
    * @param {any} args
+   * @param {RequestInit} [options={}]
    * @returns {Promise<any>}
    */
-  async get(args) {
-    return await this.request("GET", args);
+  async get(args, options = {}) {
+    return await this.request("GET", args, options);
   }
 
   /**
    *
    * @param {any} args
+   * @param {RequestInit} [options={}]
    * @returns {Promise<any>}
    */
-  async post(args) {
-    return await this.request("POST", args);
+  async post(args, options = {}) {
+    return await this.request("POST", args, options);
   }
 
   /**
    *
    * @param {any} args
+   * @param {RequestInit} [options={}]
    * @returns {Promise<any>}
    */
-  async put(args) {
-    return await this.request("PUT", args);
+  async put(args, options = {}) {
+    return await this.request("PUT", args, options);
   }
 
   /**
    *
    * @param {any} args
+   * @param {RequestInit} [options={}]
    * @returns {Promise<any>}
    */
-  async delete(args) {
-    return await this.request("DELETE", args);
+  async delete(args, options = {}) {
+    return await this.request("DELETE", args, options);
   }
 }
 
