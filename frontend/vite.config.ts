@@ -16,11 +16,6 @@ const { html: spinnerHtml, styles: spinnerStyles } = prerenderComponent(
   React.createElement(Spinner),
 );
 
-fs.writeFileSync("./spinnerHtml.html",spinnerHtml)
-fs.writeFileSync("./spinnerStyles.html",spinnerStyles)
-
-
-
 
 export default defineConfig(({ mode }) => {
   return {
