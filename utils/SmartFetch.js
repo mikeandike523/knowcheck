@@ -117,7 +117,7 @@ class SmartFetch {
      * if it is present and is a valid object
      */
     if (!bodyIsSupported) {
-      if (typeof args === "object" && args!==null) {
+      if (typeof args === "object" && args !== null) {
         if (!finalUrl.includes("?")) {
           finalUrl += "?";
         } else {
@@ -126,7 +126,15 @@ class SmartFetch {
         finalUrl += new URLSearchParams(args).toString();
       }
     }
-    const contentType = options.headers?.["Content-Type"] ?? "application/json";
+    /**
+     * @type {Record<string,string>}
+     */
+    const givenHeaders = {}
+    if(typeof options.headers === "object" && options.headers!== null) {
+      Object.assign(givenHeaders, options.headers);
+    }
+    const contentType = givenHeaders["Content-Type"] ?? "application/json";
+    const remainingHeaders = lodash.omit(givenHeaders, ["Content-Type", "Authorization"]);
     const response = await fetch(finalUrl, {
       mode: "cors",
       method: method.toLowerCase(),
@@ -137,7 +145,7 @@ class SmartFetch {
               Authorization: `Bearer ${this.token}`,
             }
           : {}),
-        ...lodash.omit(options.headers ?? {}, "Content-Type","Authorization"),
+        ...remainingHeaders,
       },
       // Logic
       // If body is supported
@@ -153,9 +161,9 @@ class SmartFetch {
           ? JSON.stringify(args)
           : typeof args === "string"
             ? args
-              : (options.body ?? undefined)
+            : (options.body ?? undefined)
         : undefined,
-      ...lodash.omit(options, ["headers","mode","body"]),
+      ...lodash.omit(options, ["headers", "mode", "body"]),
     });
     const responseText = await response.text();
     if (response.ok) {
