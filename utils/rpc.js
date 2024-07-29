@@ -293,7 +293,7 @@ class TypicalRPCErrors {
       status: 500,
       logMessage: `Recieved a bad or invalid response from: ${service}`,
       userFacingMessage: TyipcalUserFacingErrorMessages.GeneralServerError(
-        "Data from a third part was invalid.",
+        "Data from an external service was invalid.",
         ticketNumber
       ),
     });
