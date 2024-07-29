@@ -158,7 +158,7 @@ class SmartFetch {
 
       body: bodyIsSupported
         ? contentType === "application/json"
-          ? JSON.stringify(args)
+          ? JSON.stringify(args??{})
           : typeof args === "string"
             ? args
             : (options.body ?? undefined)
