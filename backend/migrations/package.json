@@ -1,14 +1,15 @@
 {
-  "name": "seed-data",
+  "name": "migrations",
   "version": "1.0.0",
-  "description": "comprehensive uploader for seed data for knowcheck project",
   "main": "upload.js",
   "author": "Adam",
   "license": "MIT",
   "dependencies": {
+    "chalk": "^5.3.0",
     "firebase": "^10.12.2",
     "firebase-admin": "^12.1.1",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "prompts": "^2.4.2"
   },
   "type": "module"
 }

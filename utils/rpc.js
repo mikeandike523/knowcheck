@@ -51,8 +51,8 @@ ${logMessage}
 User Facing Message:
 ${userFacingMessage}
 
-Cause:
-${JSON.stringify(formatError(cause), null, 2)}
+typeof Cause: ${typeof cause}
+
     `;
   }
 

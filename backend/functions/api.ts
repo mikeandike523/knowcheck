@@ -10,6 +10,8 @@
 
 import admin from "firebase-admin"
 
+import initializeAndGetDB from "./utils/firebase/initializeAndGetDB";
+
 import createRoute from "./lib/createRoute";
 import createHandlerGetQuizInstanceData from "./src/handlers/getQuizInstanceData";
 import createHandlerRegisterForQuiz from "./src/handlers/registerForQuiz";
@@ -19,8 +21,7 @@ import createHandlerAuth from "./src/handlers/auth";
 import createHandlerToken from "./src/handlers/token";
 import createHandlerQuiz from "./src/handlers/quiz";
 
-admin.initializeApp();
-const db = admin.firestore();
+const db = initializeAndGetDB()
 
 export const listSubjects = createRoute(
   "/listSubjects",

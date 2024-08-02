@@ -1,4 +1,15 @@
 {
+  "emulators": {
+    "firestore": {
+      "port": 8080,
+      "host": "localhost",
+      "import": "./firestore-data",
+      "exportOnExit": true
+    },
+    "functions": {
+      "port": 5001
+    }
+  },
   "functions": [
     {
       "source": "functions",

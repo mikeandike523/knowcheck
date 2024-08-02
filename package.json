@@ -3,14 +3,15 @@
     "link-code": "bash link-code.sh",
     "link-projects": "bash link-projects.sh",
     "dev": "export PORT=5371 && concurrently --kill-others-on-fail \"pnpm run backend:dev\" \"pnpm run frontend:dev\"",
-    "backend:dev": "cd backend && export GOOGLE_APPLICATION_CREDENTIALS=\"$(pwd)/service-account-key.json\" && ./node_modules/.bin/firebase emulators:start --only functions",
+    "backend:dev": "cd backend && export GOOGLE_APPLICATION_CREDENTIALS=\"$(pwd)/service-account-key.json\" && ./node_modules/.bin/firebase emulators:start",
     "frontend:dev": "cd frontend && pnpm run dev",
     "all-install": "bash all-install.sh",
     "browser": "node browser.js",
     "functions:compile": "rm -rf backend/hosting && mkdir backend/hosting && cd backend/functions && node_modules/.bin/webpack",
     "frontend:build": "cd frontend && pnpm run build",
     "firebase:login-reauth": "cd backend && ./node_modules/.bin/firebase login --reauth",
-    "firebase:deploy":"cd backend && ./node_modules/.bin/firebase deploy"
+    "firebase:deploy":"cd backend && ./node_modules/.bin/firebase deploy",
+    "migrations:seed":"node backend/migrations/seed.js"
   },
   "dependencies": {
     "puppeteer": "^22.13.0",
