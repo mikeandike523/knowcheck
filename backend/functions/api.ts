@@ -21,36 +21,38 @@ import createHandlerAuth from "./src/handlers/auth";
 import createHandlerToken from "./src/handlers/token";
 import createHandlerQuiz from "./src/handlers/quiz";
 
-const db = initializeAndGetDB()
+const getDB = ()=>{
+  return initializeAndGetDB(undefined,true)
+}
 
 export const listSubjects = createRoute(
   "/listSubjects",
-  createHandlerListSubjects(db)
+  createHandlerListSubjects(getDB)
 );
 export const getSubjectConfig = createRoute(
   "/getSubjectConfig",
-  createHandlerGetSubjectConfig(db)
+  createHandlerGetSubjectConfig(getDB)
 );
 export const registerForQuiz = createRoute(
   "/registerForQuiz",
-  createHandlerRegisterForQuiz(db)
+  createHandlerRegisterForQuiz(getDB)
 );
 export const getQuizInstanceData = createRoute(
   "/getQuizInstanceData",
-  createHandlerGetQuizInstanceData(db)
+  createHandlerGetQuizInstanceData(getDB)
 );
 
 export const auth = createRoute(
   "/auth",
-  createHandlerAuth(db)
+  createHandlerAuth(getDB)
 )
 
 export const token = createRoute(
   "/token",
-  createHandlerToken(db)
+  createHandlerToken(getDB)
 )
 
 export const quiz = createRoute(
   "/quiz",
-  createHandlerQuiz(db)
+  createHandlerQuiz(getDB)
 )

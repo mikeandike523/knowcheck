@@ -3,11 +3,12 @@ import { Firestore } from "firebase-admin/firestore";
 import { fileError } from "../../utils/rpc-server";
 import { TypicalRPCErrors } from "../../utils/rpc";
 
-export default function createHandlerGetQuizInstanceData(db: Firestore) {
+export default function createHandlerGetQuizInstanceData(getDB: ()=>Firestore) {
   return async function getQuizInstanceData(args: {
     subjectId: string;
     instanceId: string;
   }) {
+    const db = getDB();
 
     const subjectId = args.subjectId;
     const instanceId = args.instanceId;

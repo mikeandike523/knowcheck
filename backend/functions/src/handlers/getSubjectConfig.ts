@@ -5,9 +5,10 @@ import { TypicalRPCErrors } from "../../utils/rpc";
 
 
 export default function createHandlerGetSubjectConfig(
-    db: Firestore
+    getDB: ()=>Firestore
 ) {
     return async function getSubjectConfig (args: { id: string }) {
+      const db = getDB();
         const subjectId = args.id;
         const subjectConfig = await db.collection("subjects").doc(subjectId).get();
         if (!subjectConfig.exists) {

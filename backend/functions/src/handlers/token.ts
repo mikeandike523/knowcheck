@@ -29,11 +29,12 @@ async function refreshToken(claims: TokenClaims, token: string, db: Firestore) {
   return newTokenText;
 }
 
-export default function createHandlerToken(db: Firestore) {
+export default function createHandlerToken(getDB: ()=>Firestore) {
   return async function token(
     args: TSchema,
     cookieEngine: CookieEngine
   ): Promise<string> {
+    const db = getDB();
     const parsedArgs = parseObjectSchema<TSchema>(args, schema);
     const action = parsedArgs.action;
     const instanceId = parsedArgs.instanceId;

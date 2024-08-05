@@ -4,7 +4,7 @@ const productionFunctionsUrl = `https://us-central1-knowcheck-4cbab.cloudfunctio
 const emulatorFunctionsUrl = `http://localhost:5001/knowcheck-4cbab/us-central1/`;
 
 export default function appConfig() {
-    const nodeEnv = process.env.NODE_ENV || "development";
+    const nodeEnv = import.meta.env.MODE || "development";
     return {
       RPC_URL: (nodeEnv === "development"
         ? emulatorFunctionsUrl

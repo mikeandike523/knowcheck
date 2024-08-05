@@ -57,6 +57,8 @@ async function simulateRPC(request, response, callback, routeName = "") {
     }
     response.status(200).json(resultOrPromise);
   } catch (e) {
+    console.error("Server Error (rpc server try catch):")
+    console.error(e)
     if (RPCError.isLike(e)) {
       response.status(e.status).json(RPCError.wrap(e).toJSON());
     } else {

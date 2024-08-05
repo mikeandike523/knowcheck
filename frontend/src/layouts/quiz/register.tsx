@@ -116,7 +116,17 @@ export default function Register({ subjectId }: RegisterProps) {
             {registerTask.state === "success" && (
               <>
                 <Div background="lightgreen">
-                  <Div>Succesfully registered for the quiz.</Div>
+
+                  {
+                    registerTask?.data?.isDuplicate??false ? <>
+                                      <Div>
+                                        You have registered for this quiz before. <br/>
+                                        Instead of creating a new registration, <br/>
+                                        A new access code and link have been generated and emailed to you.
+                                      </Div>
+                    </> :<>
+                                      <Div>Succesfully registered for the quiz.</Div></>
+                  }
                   <Div>
                     Check your email for the access link and access code.
                   </Div>

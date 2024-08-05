@@ -9,11 +9,12 @@ import { fileError } from "../../utils/rpc-server.js";
 import { schema, TSchema } from "../../common/validators/handlers/auth";
 import { TokenClaims } from "../../common/api-types/index.js";
 
-export default function createHandlerAuth(db: Firestore) {
+export default function createHandlerAuth(getDB: ()=>Firestore) {
   return async function auth(
     args: TSchema,
     cookieEngine: CookieEngine
   ): Promise<string> {
+    const db = getDB();
     const parsedArgs = parseObjectSchema(args, schema);
 
     const { subjectId, instanceId, accessCode } = parsedArgs;

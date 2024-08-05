@@ -10,12 +10,12 @@ import { sendHTMLEmail } from "../../lib/emailing";
 import { parseObjectSchema } from "../../utils/input-validation";
 import { TypicalRPCErrors } from "../../utils/rpc";
 import { fileError } from "../../utils/rpc-server";
-import dedentTrim from "../../utils/dedentTrim";
 
-export default function createHandlerRegisterForQuiz(db: Firestore) {
+export default function createHandlerRegisterForQuiz(getDB: ()=>Firestore) {
   return async function registerForQuiz(
     args: TSchema
   ): Promise<QuizRegistration> {
+    const db = getDB();
     const parsedArgs = parseObjectSchema<TSchema>(args, schema);
     const subjectId = parsedArgs.subjectId;
     const email = args.email;
@@ -52,28 +52,71 @@ export default function createHandlerRegisterForQuiz(db: Firestore) {
 
     const accessCodeHash = await hash(accessCode);
 
-    const newRegistration = await db.collection("registrations").add({
-      subjectId,
-      email,
-      fullName,
-      accessCodeHash,
-      timestamp: Date.now(),
-    });
+    let isDuplicate = false
+    
+    const existingRegistrations = await db
+      .collection("registrations")
+      .where("email", "==", email.toLowerCase())
+      .where("subjectId", "==", subjectId)
+      .get();
 
-    const liveLink = `${parsedArgs.baseUrl.replace(/\/$/, "")}/quiz/${subjectId}/live/${newRegistration.id}`;
+    const existingRegistration =
+      existingRegistrations.docs.length > 0
+        ? existingRegistrations.docs[0]
+        : null;
 
-    // const htmlContent = dedentTrim`
-    // <div style="display:flex;flex-direction:column;width:100%;align-items:center;gap:0.5em">
-    //   <div style="align-self:flex-start;border:1px solid black;">
-    //         <div style="font-size:150%;font-weight:bold;color:hsla(10, 79%, 51%, 1)">Know/Check</div>
-    //         <i>By Wired Hyena LLC</i>
-    //   </div>
-    //   <h1>Welcome to Know/Check!</h1>
-    //   <p>You have been registered for the "${data.name}" quiz.</p>
-    //   <p>Your access code is: <b>${accessCode}</b></p>
-    //   <p>Please visit <a href="${liveLink}">${liveLink}</a> to take the quiz.</p>
-    // </div>
-    // `
+    if (existingRegistration) {
+      isDuplicate = true;
+    }
+
+    existingRegistration?(await db
+      .collection("registrations")
+      .doc( existingRegistration.id )
+      .set({
+        subjectId,
+        email,
+        fullName,
+        accessCodeHash,
+        timestamp: Date.now(),
+      })):(
+        await db
+         .collection("registrations")
+         .add({
+            subjectId,
+            email,
+            fullName,
+            accessCodeHash,
+            timestamp: Date.now(),
+          })
+      )
+
+    const allRegistrations = await db.collection("registrations").where(
+      "subjectId",
+      "==",
+      subjectId
+    ).where(
+      "email",
+      "==",
+      email.toLowerCase()
+    ).orderBy(
+      "timestamp",
+      "desc"
+    ).get();
+
+    const latestRegistration = allRegistrations.docs.length > 0 ? allRegistrations.docs[0] : null
+
+    if(!latestRegistration) {
+      throw await fileError("/registerForQuiz", (ticketNumber: string) => {
+        return TypicalRPCErrors.MissingDataError(
+          `Could not retrieve id of created or updated registration.`,
+          ticketNumber
+        );
+      });
+    }
+
+    const newId = latestRegistration.id
+
+    const liveLink = `${parsedArgs.baseUrl.replace(/\/$/, "")}/quiz/${subjectId}/live/${newId}`;
 
     const htmlContent = `
 <!DOCTYPE html>
@@ -151,7 +194,7 @@ export default function createHandlerRegisterForQuiz(db: Firestore) {
 `;
 
     await sendHTMLEmail(
-      `knowcheck-quiz-registration-${newRegistration.id}@wiredhyena.com`,
+      `knowcheck-quiz-registration-${newId}@wiredhyena.com`,
       "service@wiredhyena.com",
       "Wired Hyena LLC Product Services",
       email,
@@ -162,7 +205,8 @@ export default function createHandlerRegisterForQuiz(db: Firestore) {
 
     return {
       subjectId,
-      instanceId: newRegistration.id,
+      instanceId: newId,
+      isDuplicate,
     };
   };
 }

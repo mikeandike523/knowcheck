@@ -10,8 +10,7 @@
     "functions:compile": "rm -rf backend/hosting && mkdir backend/hosting && cd backend/functions && node_modules/.bin/webpack",
     "frontend:build": "cd frontend && pnpm run build",
     "firebase:login-reauth": "cd backend && ./node_modules/.bin/firebase login --reauth",
-    "firebase:deploy":"cd backend && ./node_modules/.bin/firebase deploy",
-    "migrations:seed":"node backend/migrations/seed.js"
+    "firebase:deploy":"cd backend && ./node_modules/.bin/firebase deploy"
   },
   "dependencies": {
     "puppeteer": "^22.13.0",

@@ -1,9 +1,10 @@
 import {Firestore} from 'firebase-admin/firestore'
 
 export default function createHandlerListSubjects (
-    db:Firestore
+    getDB:()=>Firestore
 ) {
     return async function listSubjects () {
+        const db = getDB();
         const subjects = await db
         .collection("subjects")
         .where("unlisted", "==", false)

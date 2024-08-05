@@ -12,13 +12,15 @@ import { parseObjectSchema } from "../../utils/input-validation";
 import createHandlerLoadNextQuestion from "./quizActions/loadNextQuestion";
 import createHandlerSubmitAnswer from "./quizActions/submitAnswer";
 
-export default function createHandlderQuiz(db: Firestore) {
-  const loadNextQuestionHandler = createHandlerLoadNextQuestion(db);
-  const submitAnswerHandler = createHandlerSubmitAnswer(db);
+export default function createHandlderQuiz(getDB: ()=>Firestore) {
+
   return async function quiz(
     args: TSchema,
     cookieEngine: CookieEngine
   ): Promise<TReturn> {
+    const db = getDB();
+    const loadNextQuestionHandler = createHandlerLoadNextQuestion(db);
+    const submitAnswerHandler = createHandlerSubmitAnswer(db);
     const parsedArgs = parseObjectSchema<TSchema>(args, schema);
 
     switch (parsedArgs.action) {
