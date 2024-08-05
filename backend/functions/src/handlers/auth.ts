@@ -85,20 +85,9 @@ export default function createHandlerAuth(getDB: ()=>Firestore) {
 
     const token = jwt.sign(claims, process.env.JWT_SECRET);
 
-    // Add it to the "__sessions" collection as a new document with a new random/unique id
-    await db.collection("__sessions").doc(token).set(claims);
+    await db.collection("__sessions").doc(token).set(claims)
 
-    // cookieEngine.setCookie("__session", token, {
-    //   expires: new Date(now + expiresIn),
-    //   // httpOnly: true,
-    //   httpOnly: false, // sercurity concession due to firebase stupidity
-    //   secure: process.env.NODE_ENV === "production",
-    //   sameSite: true,
-    //   path: "/quiz/"+subjectId+"/live/"+instanceId,
-    // });
-
-    // cookieEngine.commit();
-
+    
     return token;
   };
 }
