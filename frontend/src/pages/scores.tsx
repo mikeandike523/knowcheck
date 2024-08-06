@@ -9,13 +9,11 @@ import { Div, H1 } from "@/fwk/html";
 import theme from "@/themes/main";
 import dedentTrim from "@/utils/dedentTrim";
 import { Fragment } from "react";
-import SublayoutView from "@/layouts/scores/view"
-import SublayoutPrint from "@/layouts/scores/print"
+import SublayoutView from "@/layouts/scores/view";
+import SublayoutPrint from "@/layouts/scores/print";
 
 const actions = ["view", "print"] as const;
 type Action = (typeof actions)[number];
-
-
 
 function MainContent({
   subjectId,

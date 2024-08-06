@@ -2,6 +2,8 @@ import LoadingOverlay from "@/components/LoadingOverlay";
 import { Div, H1 } from "@/fwk/html";
 import { useAPIData } from "@/lib/rpc-client";
 import theme from "@/themes/main";
+import useAccessCodeBarrierState from "@/hooks/useAccessCodeBarrierState"
+import AccessCodeBarrier from "@/components/AccessCodeBarrier";
 
 export default function SublayoutView({
   subjectId,
@@ -25,7 +27,11 @@ export default function SublayoutView({
       instanceId: instanceId ?? "",
     },
     []
-  ).task;
+  ).task
+  const accessCodeBarrierState = useAccessCodeBarrierState({
+    subjectId,
+    instanceId
+  })
   return (
     <>
       <LoadingOverlay task={loadInstanceDataTask}>
@@ -47,6 +53,10 @@ export default function SublayoutView({
             </H1>
           </>
         )}
+        <AccessCodeBarrier  state={accessCodeBarrierState}>
+          This is placeholder user interface for /scores/[Subject Id]/view/[Instance Id]<br/>
+          Subject Id: {subjectId}, Instance Id: {instanceId}
+        </AccessCodeBarrier>
       </LoadingOverlay>
     </>
   );

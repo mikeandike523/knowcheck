@@ -92,12 +92,12 @@ export default function Register({ subjectId }: RegisterProps) {
         >
           <VStack width="100%" gap={theme.gutters.lg}>
             <InputWithValidation
-              label="Email"
+              placeholder="Email"
               type="email"
               inputState={emailInputState}
             />
             <InputWithValidation
-              label="Full Name"
+              placeholder="Full Name"
               type="text"
               inputState={fullNameInputState}
             />

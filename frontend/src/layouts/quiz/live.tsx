@@ -1,34 +1,35 @@
-import { Fragment, useEffect, useRef, useState, KeyboardEvent } from "react";
 import { css } from "@emotion/react";
+import { Fragment, KeyboardEvent, useEffect, useState } from "react";
 
+import { TokenClaims } from "@/common/api-types";
 import { TSchema as TSchemaAuth } from "@/common/validators/handlers/auth";
 import { TSchema as TSchemaToken } from "@/common/validators/handlers/token";
-import { TokenClaims } from "@/common/api-types";
 
+import { InvalidTokenReason } from "@/common/api-types";
+import { TReturn as TReturnLoadNextQuestion } from "@/common/api-types/handlers/quizActions/loadNextQuestion";
+import { TReturn as TReturnSubmitAnswer } from "@/common/api-types/handlers/quizActions/submitAnswer";
 import InputWithValidation, {
   useInputWithValidationState,
 } from "@/components/InputWithValidation";
-import LoadingEllipses from "@/components/LoadingEllipses";
 import LoadingOverlay from "@/components/LoadingOverlay";
 import SemanticButton from "@/components/SemanticButton";
+import HStack from "@/fwk/components/HStack";
 import VStack from "@/fwk/components/VStack";
-import { Div, H1, H2 } from "@/fwk/html";
+import { Div, H1 } from "@/fwk/html";
+import usePeriodicTokenRefresh from "@/hooks/usePeriodicTokenRefresh";
+import useQuizApi from "@/hooks/useQuizApi";
 import { LoadingTask, useLoadingTask } from "@/lib/loading";
 import { useAPIData, useRPCRoute } from "@/lib/rpc-client";
 import theme from "@/themes/main";
+import ColorDebug from "@/utils/ColorDebug";
+import dedentTrim from "@/utils/dedentTrim";
+import formatError from "@/utils/formatError";
 import { zodToSimple } from "@/utils/input-validation";
+import { RPCError } from "@/utils/rpc";
 import nonempty from "@/utils/zod-refiners/nonempty";
 import { z } from "zod";
-import { RPCError } from "@/utils/rpc";
-import { InvalidTokenReason } from "@/common/api-types";
-import usePeriodicTokenRefresh from "@/hooks/usePeriodicTokenRefresh";
-import useQuizApi from "@/hooks/useQuizApi";
-import { TReturn as TReturnLoadNextQuestion } from "@/common/api-types/handlers/quizActions/loadNextQuestion";
-import { TReturn as TReturnSubmitAnswer } from "@/common/api-types/handlers/quizActions/submitAnswer";
-import ColorDebug from "@/utils/ColorDebug";
-import formatError from "@/utils/formatError";
-import HStack from "@/fwk/components/HStack";
-import dedentTrim from "@/utils/dedentTrim";
+import AccessCodeBarrier from "@/components/AccessCodeBarrier";
+import useAccessCodeBarrierState from "@/hooks/useAccessCodeBarrierState";
 
 export interface LiveProps {
   subjectId: string;
@@ -38,173 +39,6 @@ export interface LiveProps {
 type InstanceData = {
   quizName: string;
 };
-
-function SublayoutEnterAccessCode({
-  subjectId,
-  instanceId,
-  onLogin,
-  loginTask,
-  instanceData,
-}: {
-  subjectId: string;
-  instanceId: string;
-  onLogin: () => void;
-  loginTask: LoadingTask<null>;
-  instanceData: InstanceData | undefined;
-}) {
-  const [successMessage, setSuccessMessage] = useState("Login successful!");
-  const authRoute = useRPCRoute<TSchemaAuth, string>("auth");
-  const tokenRoute = useRPCRoute<TSchemaToken, TokenClaims>("token", () => {
-    return sessionStorage.getItem("__session") ?? undefined;
-  });
-
-  const accessCodeInputState = useInputWithValidationState({
-    initialDOMValue: "",
-    validator: zodToSimple(
-      z
-        .string()
-        .transform((value) => value.trim())
-        .superRefine(nonempty(false, "Please enter an access code"))
-        .superRefine((value, ctx) => {
-          if (value.toLowerCase().match(/^[a-zA-Z0-9]{10}$/) === null) {
-            ctx.addIssue({
-              code: z.ZodIssueCode.custom,
-              message:
-                "Access code must be exactly 10 characters long and contain only letters and numbers.",
-              fatal: true,
-            });
-          }
-        })
-    ),
-  });
-  const registerLink =
-    typeof window.location !== "undefined"
-      ? window.location.protocol +
-        "//" +
-        window.location.host +
-        "/quiz/" +
-        subjectId +
-        "/register/"
-      : "";
-  async function submitAccessCode(accessCode: string | null) {
-    try {
-      loginTask.setLoading();
-      if (accessCode === null) {
-        try {
-          await tokenRoute({
-            action: "check",
-            instanceId,
-          });
-          setSuccessMessage("Already logged in!");
-          loginTask.setSuccess(null);
-          onLogin();
-          console.info("Existing token is still valid, proceeding with quiz..");
-        } catch (e) {
-          if (e instanceof RPCError) {
-            if (e.status === 401 || e.status === 403) {
-              if (e.cause === InvalidTokenReason.MISSING_TOKEN) {
-                console.info(
-                  "There was no existing login token, opening up login form..."
-                );
-              }
-              if (e.cause === InvalidTokenReason.INVALID_TOKEN) {
-                console.info(
-                  "Existing token is no longer valid, opening up login form..."
-                );
-              }
-              if (e.cause === InvalidTokenReason.EXPIRED) {
-                console.info("Token has expired, opening up login form...");
-              }
-              if (e.cause === InvalidTokenReason.INVALID_FORMAT) {
-                console.info(
-                  "Token format is invalid, opening up login form..."
-                );
-              }
-              loginTask.setIdle();
-              return;
-            }
-          }
-          throw e;
-        }
-      } else {
-        const __session = await authRoute({
-          accessCode,
-          subjectId,
-          instanceId,
-        });
-        sessionStorage.setItem("__session", __session);
-      }
-      loginTask.setSuccess(null);
-      onLogin();
-    } catch (e) {
-      loginTask.setError(e);
-    }
-  }
-
-  useEffect(() => {
-    if (instanceData) {
-      submitAccessCode(null);
-    }
-  }, [instanceData]);
-
-  return (
-    <VStack
-      width="100%"
-      gap={theme.gutters.lg}
-      padding={theme.gutters.lg}
-      boxSizing="border-box"
-    >
-      <LoadingOverlay
-        display={instanceData ? "block" : "none"}
-        task={loginTask}
-        contentProps={{
-          display: "flex",
-          flexDirection: "column",
-          gap: theme.gutters.lg,
-          alignItems: "center",
-          borderRadius: theme.pages.quiz.panel.borderRadius,
-          backgroundColor: "white",
-          boxSizing: "border-box",
-        }}
-        onDismiss={() => {
-          loginTask.setIdle();
-        }}
-      >
-        {loginTask.state === "success" ? (
-          <Fragment key="AccessCodeForm">
-            <Div background="lightgreen">{successMessage}</Div>
-          </Fragment>
-        ) : (
-          <Fragment key="AccessCodeForm">
-            <Div>Enter the access code you recieved in your email.</Div>
-            <Div>
-              If you cannot locate the email, you will have to register again
-              at:
-            </Div>
-            <a href={registerLink}>{registerLink}</a>
-            <InputWithValidation
-              type="password"
-              inputState={accessCodeInputState}
-              label="Access Code"
-            />
-            <SemanticButton
-              color="primary"
-              padding="0.5em"
-              onClick={() => {
-                const validationResult = accessCodeInputState.validate();
-                if (validationResult.valid) {
-                  submitAccessCode(validationResult.data!);
-                }
-              }}
-            >
-              Start Quiz
-            </SemanticButton>
-          </Fragment>
-        )}
-      </LoadingOverlay>
-    </VStack>
-  );
-}
 
 function SublayoutMainQuiz({ instanceId }: { instanceId: string }) {
   const routeLoadNextQuestion = useQuizApi("loadNextQuestion");
@@ -487,10 +321,7 @@ function SublayoutMainQuiz({ instanceId }: { instanceId: string }) {
   );
 }
 
-type SublayoutState = "enter-access-code" | "main-quiz";
-
 export default function Live({ subjectId, instanceId }: LiveProps) {
-  const loginTask = useLoadingTask<null>();
   const loadInstanceDataTask = useAPIData<
     {
       subjectId: string;
@@ -505,56 +336,10 @@ export default function Live({ subjectId, instanceId }: LiveProps) {
     },
     []
   ).task;
-  const tokenRefresher = usePeriodicTokenRefresh({
-    instanceId,
-    intervalMinutes: 0.5,
-    onFailure: (reason, from) => {
-      if (reason === InvalidTokenReason.INVALID_TOKEN) {
-        loginTask.setError("Login expired or invalid... Please login again.");
-      }
-      if (reason === InvalidTokenReason.EXPIRED) {
-        loginTask.setError("Login expired... Please login again.");
-      }
-      if (reason === InvalidTokenReason.INVALID_FORMAT) {
-        loginTask.setError("Login token corrupted... Please login again.");
-      }
-      if (reason === InvalidTokenReason.MISSING_TOKEN) {
-        loginTask.setError("No login token found... Please login again.");
-      }
-      console.error("Failed to refresh token", reason, from);
-    },
+  const accessCodeBarrierState = useAccessCodeBarrierState({
+    subjectId,
+    instanceId: instanceId ?? "",
   });
-  const [sublayoutState, setSublayoutState] =
-    useState<SublayoutState>("enter-access-code");
-
-  if (!instanceId) {
-    return (
-      <Div
-        key="QuizOrMissingInstanceId"
-        background="white"
-        color="red"
-        border="2px solid red"
-        fontSize="24px"
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        gap="8px"
-      >
-        <Div>Missing Instance ID</Div>
-        <Div>Check the url in the address bar.</Div>
-        {typeof window !== "undefined" && (
-          <Div>
-            The url should follow the format:{" "}
-            <b>
-              {window.location.protocol}//{window.location.host}
-              /quiz/&lt;SUBJECT ID&gt;/live/&lt;INSTANCE ID&gt;
-            </b>
-          </Div>
-        )}
-      </Div>
-    );
-  }
-
   return (
     <Div
       key="QuizOrMissingInstanceId"
@@ -604,25 +389,9 @@ export default function Live({ subjectId, instanceId }: LiveProps) {
               </H1>
             </>
           )}
-          {sublayoutState === "enter-access-code" && (
-            <Fragment key="sublayout">
-              <SublayoutEnterAccessCode
-                instanceData={loadInstanceDataTask.data}
-                loginTask={loginTask}
-                subjectId={subjectId}
-                instanceId={instanceId!}
-                onLogin={() => {
-                  setSublayoutState("main-quiz");
-                  tokenRefresher.start();
-                }}
-              />
-            </Fragment>
-          )}
-          {sublayoutState === "main-quiz" && (
-            <Fragment key="sublayout">
-              <SublayoutMainQuiz instanceId={instanceId} />
-            </Fragment>
-          )}
+          <AccessCodeBarrier  state={accessCodeBarrierState}>
+            <SublayoutMainQuiz instanceId={instanceId!} />
+          </AccessCodeBarrier>
         </LoadingOverlay>
       </Div>
     </Div>

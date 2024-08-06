@@ -1,9 +1,9 @@
 import { css, SerializedStyles } from "@emotion/react";
-import { HTMLAttributes, HTMLInputTypeAttribute, useId, useState } from "react";
+import { HTMLAttributes, HTMLInputTypeAttribute, useState } from "react";
 
-import { Div, Span } from "@/fwk/html";
 import { styleEngine, stylesToCssString } from "@/fwk/B";
 import VStack from "@/fwk/components/VStack";
+import { Div, Span } from "@/fwk/html";
 import formatError from "@/utils/formatError";
 import {
   SignificantValue,
@@ -26,7 +26,7 @@ export type InputType =
 export interface InputWithValidationProps
   extends HTMLAttributes<HTMLInputElement> {
   type: HTMLInputTypeAttribute;
-  label: string;
+  placeholder: string;
   css?: SerializedStyles | undefined;
   validateOnChange?: boolean;
   validateOnChangeDebounceMillis?: number | undefined;
@@ -109,13 +109,13 @@ ${JSON.stringify(formatError(result.extra), null, 2)}
     if (Array.isArray(messages)) {
       return messages.map((m) => normalizeValidationMessages(m));
     }
-    if(typeof messages === "object") {
-      if(messages===null){
-        return []
+    if (typeof messages === "object") {
+      if (messages === null) {
+        return [];
       }
       return Object.entries(messages).map(([key, value]) => {
         return `${key}: ${normalizeValidationMessages(value)}`;
-      })
+      });
     }
     return [];
   };
@@ -139,7 +139,7 @@ export type InputWithValidationState = ReturnType<
 >;
 
 export default function InputWithValidation({
-  label,
+  placeholder,
   type,
   inputState,
   css: priorCss,
@@ -148,9 +148,7 @@ export default function InputWithValidation({
 }: InputWithValidationProps & {
   inputState: InputWithValidationState;
 }) {
-  const inputUniqueDOMId = useId();
-  const { domValue, setDomValue, validationState, messages } =
-    inputState;
+  const { domValue, setDomValue, validationState, messages } = inputState;
   const { stylePropRest, nonStylePropsRest } = styleEngine(rest);
 
   const baseCss = css`
@@ -173,9 +171,8 @@ export default function InputWithValidation({
   `;
   return (
     <Div width="100%" margin={0} padding={0} boxSizing="border-box">
-      <label htmlFor={inputUniqueDOMId}>{label}</label>
       <input
-        id={inputUniqueDOMId}
+        placeholder={placeholder}
         value={domValue}
         onChange={(e) => {
           setDomValue(e.target.value);

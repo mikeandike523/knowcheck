@@ -19,7 +19,6 @@ export default function usePeriodicTokenRefresh({
     from: RPCError | unknown
   ) => void;
 }) {
-  const timerRef: MutableRefObject<NodeJS.Timeout | null> = useRef(null);
   const intervalMillis = intervalMinutes * 60 * 1000;
   const onFailureWithLogging: typeof onFailure = (reason, from) => {
     if (reason) {
@@ -46,8 +45,11 @@ export default function usePeriodicTokenRefresh({
     return sessionStorage.getItem("__session") ?? undefined;
   };
   const route = useRPCRoute<TSchema, string>("token", getToken);
+  const [running, setRunning] = useState(false);
+
   async function refreshToken() {
     if (!instanceId) return;
+    if (!running) return;
     try {
       ColorDebug.browser().info("Attempting token refresh...", {
         textColor: "green",
@@ -80,20 +82,20 @@ export default function usePeriodicTokenRefresh({
       }
     }
   }
+
   const start = () => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-    const newTimer = setInterval(refreshToken, intervalMillis);
-    timerRef.current = newTimer;
+    setRunning(true);
   };
   const stop = () => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
+    setRunning(false);
   };
+
+  useEffect(() => {
+    const timerObject = setInterval(refreshToken, intervalMillis);
+    return () => {
+      clearInterval(timerObject);
+    };
+  }, []);
 
   return { start, stop };
 }
