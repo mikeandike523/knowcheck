@@ -90,6 +90,7 @@ export default function URLParamsEnsurer({
       display="flex"
       flexDirection="column"
       alignItems="center"
+      background="white"
       gap={theme.gutters.md}
     >
       <H1>Malformed URL</H1>

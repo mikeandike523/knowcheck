@@ -4,9 +4,7 @@ import { Button, ButtonProps, Div, DivProps } from "@/fwk/html";
 import { LoadingTask } from "@/lib/loading";
 import SpinnerOverlay from "@/components/SpinnerOverlay";
 import * as rpc from "@/utils/rpc";
-import * as fe from "@/utils/formatError";
 const RPCError = rpc.RPCError;
-const formatError = fe.default;
 
 export interface LoadingOverlayProps<TData> extends DivProps {
   task: LoadingTask<TData>;
@@ -58,21 +56,29 @@ export default function LoadingOverlay<TData>({
     ? typeof task.error === "string"
       ? task.error
       : RPCError.isLike(task.error)
-        ? (task.error as {
-          userFacingMessage?: string;
-        }).userFacingMessage
+        ? (
+            task.error as {
+              userFacingMessage?: string;
+            }
+          ).userFacingMessage
         : task.error instanceof Error
           ? task.error.message
           : typeof task.error === "object"
-            ? (
+            ? ((
                 task.error as {
                   userFacingMessage?: string;
                 }
-              ).userFacingMessage ?? "Unknown Error"
+              ).userFacingMessage ?? "Unknown Error")
             : "Unknown Error"
     : "Unknown Error";
   return (
-    <Div position={position} width={width} height={height} {...rest}>
+    <Div
+      position={position}
+      width={width}
+      height={height}
+      minHeight={task.state === "loading" ? "48px" : undefined}
+      {...rest}
+    >
       <Div
         position="relative"
         width={width}
@@ -82,12 +88,14 @@ export default function LoadingOverlay<TData>({
         }
         {...contentProps}
       >
-        {exclusiveSuccessComponent&&<Fragment key="content">
-          {task.state === "success" ? exclusiveSuccessComponent : children}
-          </Fragment>}
-        {!exclusiveSuccessComponent&&<Fragment key="content">
-          {children}
-          </Fragment>}
+        {exclusiveSuccessComponent && (
+          <Fragment key="content">
+            {task.state === "success" ? exclusiveSuccessComponent : children}
+          </Fragment>
+        )}
+        {!exclusiveSuccessComponent && (
+          <Fragment key="content">{children}</Fragment>
+        )}
       </Div>
       <Div
         key="SpinnerOverlay"

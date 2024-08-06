@@ -12,7 +12,7 @@ const App: React.FC = () => {
     <BrowserRouter>
       <Routes>
         {/*  */}
-        <Route path="/scores/:subjectId/:instanceId?" Component={PagesScores} />
+        <Route path="/scores/:subjectId/:action?/:instanceId?" Component={PagesScores} />
         <Route
           path="/quiz/:subjectId/:action?/:instanceId?"
           Component={PagesQuiz}

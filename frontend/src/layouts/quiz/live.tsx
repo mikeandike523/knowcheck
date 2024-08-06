@@ -604,7 +604,6 @@ export default function Live({ subjectId, instanceId }: LiveProps) {
               </H1>
             </>
           )}
-          <Div></Div>
           {sublayoutState === "enter-access-code" && (
             <Fragment key="sublayout">
               <SublayoutEnterAccessCode
