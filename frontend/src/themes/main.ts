@@ -80,16 +80,16 @@ export const theme = {
   },
   page: {
     mainContent: {
-      background: "hsla(200, 20%, 67%, 1)",
+      background: "hsla(200, 15%, 70%, 1)",
       text: {
         primary: "white",
       },
     },
     width: "80vw",
-    background: "darkgray",
+    background: "hsla(200, 20%, 67%, 1)",
   },
   navbar: {
-    height: "96px",
+    height: "64px",
     background: "hsla(213, 16%, 57%, 1)",
     text: {
       primary: "white",

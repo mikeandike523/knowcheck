@@ -4,22 +4,21 @@
  * "Know/Check" is dynamic quiz app that draws it's questions from a database and
  * uses the GPT 4 API to serve as a grader for open ended questions
  *
- * The GPT API is instructed (wiht a context prompt) to use it's general knowledge of the subject matter
+ * The GPT API is instructed (with a context prompt) to use it's general knowledge of the subject matter
  * As well as a list of supporting information unique to the question at hand
  */
 
-import admin from "firebase-admin"
 
 import initializeAndGetDB from "./utils/firebase/initializeAndGetDB";
 
 import createRoute from "./lib/createRoute";
-import createHandlerGetQuizInstanceData from "./src/handlers/getQuizInstanceData";
-import createHandlerRegisterForQuiz from "./src/handlers/registerForQuiz";
-import createHandlerListSubjects from "./src/handlers/listSubjects";
-import createHandlerGetSubjectConfig from "./src/handlers/getSubjectConfig";
 import createHandlerAuth from "./src/handlers/auth";
-import createHandlerToken from "./src/handlers/token";
+import createHandlerGetQuizInstanceData from "./src/handlers/getQuizInstanceData";
+import createHandlerGetSubjectConfig from "./src/handlers/getSubjectConfig";
+import createHandlerListSubjects from "./src/handlers/listSubjects";
 import createHandlerQuiz from "./src/handlers/quiz";
+import createHandlerRegisterForQuiz from "./src/handlers/registerForQuiz";
+import createHandlerToken from "./src/handlers/token";
 
 const getDB = ()=>{
   return initializeAndGetDB(undefined,true)

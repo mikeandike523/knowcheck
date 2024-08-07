@@ -11,6 +11,7 @@ import dedentTrim from "@/utils/dedentTrim";
 import { Fragment } from "react";
 import SublayoutView from "@/layouts/scores/view";
 import SublayoutPrint from "@/layouts/scores/print";
+import Navbar from "@/components/Navbar";
 
 const actions = ["view", "print"] as const;
 type Action = (typeof actions)[number];
@@ -71,49 +72,7 @@ export default function Scores() {
   const navigate = useNavigate();
   return (
     <VStack width="100%" height="100%" background={theme.page.background}>
-      <HStack
-        position="fixed"
-        top={0}
-        left={0}
-        width="100%"
-        background={theme.navbar.background}
-        gap={theme.gutters.lg}
-        height={theme.navbar.height}
-      >
-        <H1
-          marginLeft={theme.gutters.lg}
-          position="relative"
-          color={theme.colors.brand}
-          fontSize="32px"
-          margin={0}
-          background="white"
-          padding="0.25em"
-        >
-          Know/Check
-        </H1>
-        <SemanticButton
-          width="48px"
-          aspectRatio="1.0"
-          color="info"
-          borderRadius="50%"
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          justifyContent="center"
-          onClick={() => {
-            navigate("/");
-          }}
-          type="button"
-        >
-          <FaHouse
-            style={{
-              width: "32px",
-              height: "32px",
-              fontSize: "32px",
-            }}
-          />
-        </SemanticButton>
-      </HStack>
+      <Navbar subjectId={subjectId} instanceId={instanceId} />
 
       <Div
         {...{

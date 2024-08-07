@@ -59,6 +59,7 @@ export const stylePropTypeMapping = {
   transform: "string",
   animation: "string",
   fontSize: "number | string",
+  fontStyle:"normal | italic | oblique",
   fontWeight:
     "normal | bold | bolder | lighter | number | inherit | initial | unset",
   lineHeight: "number | string",

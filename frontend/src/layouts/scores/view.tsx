@@ -1,9 +1,9 @@
+import AccessCodeBarrier from "@/components/AccessCodeBarrier";
 import LoadingOverlay from "@/components/LoadingOverlay";
-import { Div, H1 } from "@/fwk/html";
+import { H1 } from "@/fwk/html";
+import useAccessCodeBarrierState from "@/hooks/useAccessCodeBarrierState";
 import { useAPIData } from "@/lib/rpc-client";
 import theme from "@/themes/main";
-import useAccessCodeBarrierState from "@/hooks/useAccessCodeBarrierState"
-import AccessCodeBarrier from "@/components/AccessCodeBarrier";
 
 export default function SublayoutView({
   subjectId,

@@ -1,35 +1,23 @@
 import { css } from "@emotion/react";
-import { Fragment, KeyboardEvent, useEffect, useState } from "react";
+import { KeyboardEvent, useEffect, useState } from "react";
 
-import { TokenClaims } from "@/common/api-types";
-import { TSchema as TSchemaAuth } from "@/common/validators/handlers/auth";
-import { TSchema as TSchemaToken } from "@/common/validators/handlers/token";
-
-import { InvalidTokenReason } from "@/common/api-types";
 import { TReturn as TReturnLoadNextQuestion } from "@/common/api-types/handlers/quizActions/loadNextQuestion";
 import { TReturn as TReturnSubmitAnswer } from "@/common/api-types/handlers/quizActions/submitAnswer";
-import InputWithValidation, {
-  useInputWithValidationState,
-} from "@/components/InputWithValidation";
+import AccessCodeBarrier from "@/components/AccessCodeBarrier";
 import LoadingOverlay from "@/components/LoadingOverlay";
+import Navbar from "@/components/Navbar";
 import SemanticButton from "@/components/SemanticButton";
 import HStack from "@/fwk/components/HStack";
 import VStack from "@/fwk/components/VStack";
 import { Div, H1 } from "@/fwk/html";
-import usePeriodicTokenRefresh from "@/hooks/usePeriodicTokenRefresh";
+import useAccessCodeBarrierState from "@/hooks/useAccessCodeBarrierState";
 import useQuizApi from "@/hooks/useQuizApi";
-import { LoadingTask, useLoadingTask } from "@/lib/loading";
-import { useAPIData, useRPCRoute } from "@/lib/rpc-client";
+import { useLoadingTask } from "@/lib/loading";
+import { useAPIData } from "@/lib/rpc-client";
 import theme from "@/themes/main";
 import ColorDebug from "@/utils/ColorDebug";
 import dedentTrim from "@/utils/dedentTrim";
 import formatError from "@/utils/formatError";
-import { zodToSimple } from "@/utils/input-validation";
-import { RPCError } from "@/utils/rpc";
-import nonempty from "@/utils/zod-refiners/nonempty";
-import { z } from "zod";
-import AccessCodeBarrier from "@/components/AccessCodeBarrier";
-import useAccessCodeBarrierState from "@/hooks/useAccessCodeBarrierState";
 
 export interface LiveProps {
   subjectId: string;
@@ -199,7 +187,8 @@ function SublayoutMainQuiz({ instanceId }: { instanceId: string }) {
             padding="0.5em"
             display={
               showOutOfQuestionsMessage ||
-              loadingTaskSubmitAnswer.state === "success"
+              loadingTaskSubmitAnswer.state === "success" ||
+              !currentQuestion
                 ? "none"
                 : "block"
             }
@@ -348,6 +337,7 @@ export default function Live({ subjectId, instanceId }: LiveProps) {
         justifyContent: "center",
       }}
     >
+      <Navbar subjectId={subjectId} instanceId={instanceId} />
       <Div
         style={{
           maxHeight: dedentTrim`

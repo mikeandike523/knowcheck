@@ -13,7 +13,6 @@ import SemanticButton from "@/components/SemanticButton";
 import DynamicSVG from "svg-designer/lib/react/DynamicSVG";
 import SVGBuilder from "svg-designer/lib/SVGBuilder";
 
-
 interface HoverCardProps extends DivProps {
   onClick?: () => void;
 }
@@ -43,8 +42,8 @@ function HoverCard({ children, ...rest }: HoverCardProps) {
         height: 64px;
       `
     : css`
-        width: 24px;
-        height: 24px;
+        width: 32px;
+        height: 32px;
       `;
   return (
     <>
@@ -120,29 +119,29 @@ function HoverCard({ children, ...rest }: HoverCardProps) {
               viewBox={{
                 x: 0,
                 y: 0,
-                width: 24,
-                height: 24,
+                width: 32,
+                height: 32,
               }}
               css={css`
                 ${baseSizeCss};
                 pointer-events: none;
                 transition: all 0.25s ease;
-                filter: drop-shadow(0px 0px 4px rgba(0,0,0,0.75));
+                filter: drop-shadow(0px 0px 4px rgba(0, 0, 0, 0.75));
               `}
               cssVars={{
                 "--fgcolor": theme.card.background,
                 "--bgcolor": "transparent",
               }}
-              text={new SVGBuilder(24, 24)
+              text={new SVGBuilder(32, 32)
                 .artist("none", 0, "var(--bgcolor)")
-                .rectangle(0, 0, 24, 24)
+                .rectangle(0, 0, 32, 32)
                 .commit()
                 .artist("none", 0, "var(--fgcolor)")
                 .lineSequence(
                   [
-                    [0, 24],
+                    [0, 32],
                     [0, 0],
-                    [24, 0],
+                    [32, 0],
                   ],
                   false
                 )
@@ -175,59 +174,29 @@ export default function Index() {
       justifyContent="flex-start"
       alignItems="center"
       background={theme.page.background}
+      paddingTop={theme.gutters.xl}
+      gap={theme.gutters.lg}
     >
       <Div
-        width="100%"
+        background="white"
         display="flex"
-        flexDirection="row"
+        flexDirection="column"
         alignItems="center"
-        justifyContent="flex-start"
-        background={theme.navbar.background}
-        height={theme.navbar.height}
+        gap="8px"
+        padding="8px"
       >
-        <Div
-          display="grid"
-          gridTemplateColumns="1fr auto"
-          gridTemplateRows="1fr"
-          columnGap={theme.gutters.lg}
-          padding={theme.gutters.lg}
+        <H1
+          color={theme.colors.brand}
+          fontSize="72px"
+          margin={0}
         >
-          <Div
-            display="flex"
-            flexDirection="row"
-            alignItems="center"
-            justifyContent="center"
-            width="100%"
-            position="relative"
-          >
-            <H1
-              position="relative"
-              color={theme.colors.brand}
-              fontSize="32px"
-              margin={0}
-              background="white"
-              padding="0.25em"
-            >
-              Know/Check
-            </H1>
-          </Div>
-          <Div
-            display="flex"
-            flexDirection="column"
-            alignItems="flex-start"
-            justifyContent="center"
-            width="100%"
-            height="100%"
-          >
-            <H2 color={"white"} textAlign="center" margin={0} padding={0}>
-              Know your stuff.
-            </H2>
-            <H2 color={"white"} textAlign="center" margin={0} padding={0}>
-              Check your mastery.
-            </H2>
-          </Div>
-        </Div>
+          Know/Check
+        </H1>
+        <H2 fontSize="18px" color="black" margin={0} padding={0}>
+          Know Your Stuff. Check Your Mastery.
+        </H2>
       </Div>
+
       <Div
         flex={1}
         width={theme.page.width}
@@ -235,9 +204,11 @@ export default function Index() {
         flexDirection="column"
         alignItems="center"
         justifyContent="flex-start"
-        marginTop={theme.gutters.xl}
         marginBottom={theme.gutters.xl}
       >
+        <H1 color={"white"} fontWeight="bold">
+          Featured Quizzes
+        </H1>
         <LoadingOverlay
           task={task}
           onDismiss={fetchData}
@@ -276,27 +247,38 @@ export default function Index() {
                   navigate(`/quiz/${subject.id}/register`);
                 }}
               >
-                <H1
-                  background={theme.navbar.background}
-                  position="relative"
+                <Div
                   width="100%"
-                  margin={0}
-                  color={theme.navbar.text.primary}
-                  textAlign="center"
-                  fontSize={theme.pages.index.subjectListItem.name.fontSize}
+                  padding={theme.gutters.md}
+                  boxSizing="border-box"
+                  display="flex"
+                  flexDirection="column"
+                  gap={theme.gutters.md}
                 >
-                  {subject.name}
-                </H1>
-                <H2
-                  position="relative"
-                  width="100%"
-                  color="black"
-                  margin={0}
-                  textAlign="center"
-                  fontSize={theme.pages.index.subjectListItem.blurb.fontSize}
-                >
-                  {subject.blurb}
-                </H2>
+                  <H1
+                    background={theme.card.background}
+                    position="relative"
+                    margin={0}
+                    color={theme.colors.semantic.primary}
+                    textAlign="left"
+                    alignSelf="flex-start"
+                    fontSize={theme.pages.index.subjectListItem.name.fontSize}
+                  >
+                    {subject.name}
+                  </H1>
+                  <H2
+                    fontWeight="normal"
+                    alignSelf="flex-start"
+                    position="relative"
+                    width="100%"
+                    color="black"
+                    margin={0}
+                    textAlign="left"
+                    fontSize={theme.pages.index.subjectListItem.blurb.fontSize}
+                  >
+                    {subject.blurb}
+                  </H2>
+                </Div>
               </HoverCard>
             </Div>
           ))}
