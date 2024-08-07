@@ -144,12 +144,10 @@ function SublayoutMainQuiz({ instanceId }: { instanceId: string }) {
           display: showOutOfQuestionsMessage ? "none" : "flex",
         }}
       >
-        {currentQuestion ? (
+        {currentQuestion && (
           <Div fontWeight="bold" fontSize="18px" textAlign="center">
             {currentQuestion}
           </Div>
-        ) : (
-          <Div height="48px"></Div>
         )}
       </LoadingOverlay>
       <LoadingOverlay task={loadingTaskSubmitAnswer}>
@@ -165,7 +163,7 @@ function SublayoutMainQuiz({ instanceId }: { instanceId: string }) {
             css={css`
               font-size: 1em;
               line-height: 1.5em;
-              min-height: 6em;
+              min-height: 4.5em;
               height: ${(answerLineCount + 1) * 1.5}em;
               width: 100%;
               display: ${showOutOfQuestionsMessage ||
@@ -188,12 +186,11 @@ function SublayoutMainQuiz({ instanceId }: { instanceId: string }) {
           ></textarea>
           <Div
             whiteSpace="pre-wrap"
-            minHeight="6em"
             display={
               loadingTaskSubmitAnswer.state === "success" ? "block" : "none"
             }
             background="lightgray"
-            width="1005"
+            width="100%"
           >
             {answer}
           </Div>
@@ -347,17 +344,15 @@ export default function Live({ subjectId, instanceId }: LiveProps) {
         display: "flex",
         flexDirection: "column",
         width: "100%",
-        height: "100%",
         alignItems: "center",
         justifyContent: "center",
       }}
     >
       <Div
-        minHeight="48px"
         style={{
           maxHeight: dedentTrim`
           calc(
-            100vh - ( 2 * ${theme.navbar.height} ) - ( 2* ${theme.gutters.lg} )
+            100vh - ( 2 * ${theme.navbar.height} ) - ( 2 * ${theme.gutters.lg} )
           )`.replace(/\n/g, ""),
         }}
         {...theme.pages.quiz.panel}
@@ -366,9 +361,6 @@ export default function Live({ subjectId, instanceId }: LiveProps) {
           task={loadInstanceDataTask}
           loadingOverlayProps={{
             borderRadius: theme.pages.quiz.panel.borderRadius,
-          }}
-          contentProps={{
-            overflowY: "auto",
           }}
         >
           {loadInstanceDataTask.state === "success" && (
@@ -389,7 +381,7 @@ export default function Live({ subjectId, instanceId }: LiveProps) {
               </H1>
             </>
           )}
-          <AccessCodeBarrier  state={accessCodeBarrierState}>
+          <AccessCodeBarrier state={accessCodeBarrierState} overflowY="auto">
             <SublayoutMainQuiz instanceId={instanceId!} />
           </AccessCodeBarrier>
         </LoadingOverlay>

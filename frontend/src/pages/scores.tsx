@@ -129,7 +129,7 @@ export default function Scores() {
           style={{
             maxHeight: dedentTrim`
           calc(
-            100vh - ( 2 * ${theme.navbar.height} ) - ( 2* ${theme.gutters.lg} )
+            100vh - ( 2 * ${theme.navbar.height} ) - ( 2 * ${theme.gutters.lg} )
           )`.replace(/\n/g, ""),
           }}
         >

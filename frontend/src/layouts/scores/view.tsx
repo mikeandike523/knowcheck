@@ -53,7 +53,7 @@ export default function SublayoutView({
             </H1>
           </>
         )}
-        <AccessCodeBarrier  state={accessCodeBarrierState}>
+        <AccessCodeBarrier  state={accessCodeBarrierState} overflowY="auto">
           This is placeholder user interface for /scores/[Subject Id]/view/[Instance Id]<br/>
           Subject Id: {subjectId}, Instance Id: {instanceId}
         </AccessCodeBarrier>
