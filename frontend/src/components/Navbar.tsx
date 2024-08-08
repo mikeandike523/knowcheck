@@ -83,7 +83,7 @@ export default function Navbar({
             alignItems="center"
             justifyContent="center"
             onClick={() => {
-              navigate(`/scores/${subjectId}/view/${instanceId}`);
+              navigate(`/quiz/${subjectId}/scores/${instanceId}`);
             }}
             type="button"
             fontSize="16px"
@@ -91,22 +91,6 @@ export default function Navbar({
             borderRadius="12px"
           >
             Scores
-          </SemanticButton>
-          <SemanticButton
-            color="primary"
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            justifyContent="center"
-            onClick={() => {
-              navigate(`/scores/${subjectId}/print/${instanceId}`);
-            }}
-            type="button"
-            fontSize="16px"
-            padding="12px"
-            borderRadius="12px"
-          >
-            Certificate
           </SemanticButton>
         </HStack>
       )}

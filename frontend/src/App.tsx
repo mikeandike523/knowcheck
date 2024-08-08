@@ -4,7 +4,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import PagesIndex from "@/pages/index";
 import PagesQuiz from "@/pages/quiz";
-import PagesScores from "@/pages/scores";
 import PageNotFound from "./page-not-found";
 
 const App: React.FC = () => {
@@ -12,7 +11,6 @@ const App: React.FC = () => {
     <BrowserRouter>
       <Routes>
         {/*  */}
-        <Route path="/scores/:subjectId/:action?/:instanceId?" Component={PagesScores} />
         <Route
           path="/quiz/:subjectId/:action?/:instanceId?"
           Component={PagesQuiz}

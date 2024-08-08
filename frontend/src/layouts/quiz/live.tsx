@@ -345,6 +345,7 @@ export default function Live({ subjectId, instanceId }: LiveProps) {
             100vh - ( 2 * ${theme.navbar.height} ) - ( 2 * ${theme.gutters.lg} )
           )`.replace(/\n/g, ""),
         }}
+        width={theme.page.width}
         {...theme.pages.quiz.panel}
       >
         <LoadingOverlay

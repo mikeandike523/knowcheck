@@ -7,7 +7,8 @@ import theme from "@/themes/main";
 
 import LayoutQuizInvalidAction from "@/layouts/quiz/invalid-action";
 import LayoutQuizLive from "@/layouts/quiz/live";
-import LayoutQuizRegister from "@/layouts/quiz/register";
+import LayoutQuizRegister from "@/layouts/quiz/register"
+import LayoutQuizScores from "@/layouts/quiz/scores"
 
 function SwitchQuizAction({
   action,
@@ -46,6 +47,12 @@ function SwitchQuizAction({
       return (
         <Fragment key="ActionLayout">
           <LayoutQuizLive subjectId={subjectId} instanceId={instanceId} />
+        </Fragment>
+      );
+    case "scores":
+      return (
+        <Fragment key="ActionLayout">
+          <LayoutQuizScores subjectId={subjectId!} instanceId={instanceId!} />
         </Fragment>
       );
     default:
