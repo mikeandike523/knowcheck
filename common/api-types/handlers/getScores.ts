@@ -17,7 +17,7 @@ export type TArgs = TSchema
  * 
  * and cached using `useMemo` or maybe an obejct in `useRef`
  */
-export type ResponsePreview = Pick<QuizQuestionReponse,   "questionText" | "answer" | "gptScore" >
+export type ResponsePreview = Pick<QuizQuestionReponse,   "questionText" | "gptScore" >
 
 /**
  * An object that will be assembled from looping through the documents returned by Firestore query

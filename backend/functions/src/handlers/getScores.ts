@@ -37,7 +37,6 @@ export default function createHandlerGetScores(getDB: () => Firestore) {
       const data = response.data();
       previews[id] = lodash.pick(data, [
         "questionText",
-        "answer",
         "gptScore",
       ]) as ResponsePreview;
     }
