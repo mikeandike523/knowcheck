@@ -6,6 +6,10 @@ import useAccessCodeBarrierState from "@/hooks/useAccessCodeBarrierState";
 import { useAPIData } from "@/lib/rpc-client";
 import theme from "@/themes/main";
 import dedentTrim from "@/utils/dedentTrim";
+import {
+  TArgs as TArgsGetScores,
+  TReturn as TReturnGetScores,
+} from "@/common/api-types/handlers/getScores";
 
 export interface LiveProps {
   subjectId: string;
@@ -23,7 +27,34 @@ function SublayoutViewScores({
   instanceId: string;
   subjectId: string;
 }) {
-  return <Div width="100%" padding={theme.gutters.lg}>under construction</Div>
+  const loadScoresTask = useAPIData<TArgsGetScores, TReturnGetScores>(
+    "getScores",
+    {
+      instanceId,
+    },
+    []
+  ).task;
+  const scores = loadScoresTask.data;
+  return (
+    <LoadingOverlay
+      task={loadScoresTask}
+      contentProps={{
+        width: "100%",
+        padding: theme.gutters.lg,
+      }}
+    >
+      <pre>
+        <code
+          style={{
+            width: "100%",
+            whiteSpace: "pre-wrap",
+          }}
+        >
+          {JSON.stringify(scores, null, 2)}
+        </code>
+      </pre>
+    </LoadingOverlay>
+  );
 }
 
 export default function Scores({ subjectId, instanceId }: LiveProps) {

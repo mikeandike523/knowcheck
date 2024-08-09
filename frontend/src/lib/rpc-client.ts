@@ -36,45 +36,44 @@ export type SerializableObject =
 export function useRPCRoute<
   TArgs extends SerializableObject,
   TReturn extends SerializableObject,
->(route: string,getToken?: ()=>string|undefined) {
+>(route: string, getToken?: () => string | undefined) {
   const sf = new SmartFetch(appConfig().RPC_URL).route(route);
   return async function route(args: TArgs): Promise<TReturn> {
     try {
-      if(getToken){
-        const token = getToken()
-        if(token){
+      if (getToken) {
+        const token = getToken();
+        if (token) {
           return await sf.bearer(getToken()).post(args);
         }
       }
       return await sf.post(args);
     } catch (e) {
       if (e instanceof FetchError) {
-        if(e.data){
-          if(RPCError.isLike(e.data)){
-            throw RPCError.wrap(e.data,e.statusCode);
-          }else{
+        if (e.data) {
+          if (RPCError.isLike(e.data)) {
+            throw RPCError.wrap(e.data, e.statusCode);
+          } else {
             throw new RPCError({
               status: 400,
               userFacingMessage: "Something went wrong in your browser.",
-              logMessage: e.text??"Unknown client error",
+              logMessage: e.text ?? "Unknown client error",
               cause: e,
             });
           }
-        }else{
+        } else {
           throw new RPCError({
             status: e.statusCode,
             userFacingMessage: "Something went wrong in your browser.",
-            logMessage: e.text??"Unknown client error",
-            cause: e
+            logMessage: e.text ?? "Unknown client error",
+            cause: e,
           });
         }
-      } 
-      else {
+      } else {
         throw new RPCError({
           status: 400,
           userFacingMessage: "Something went wrong in your browser.",
           logMessage: "Client error",
-          cause: e
+          cause: e,
         });
       }
     }
@@ -97,7 +96,9 @@ export function useAPIData<
   TReturn extends SerializableObject,
 >(route: string, args: TArgs, additionalDeps: DependencyList = []) {
   const task = useLoadingTask<TReturn>();
-  const rpcRoute = useRPCRoute<TArgs, TReturn>(route);
+  const rpcRoute = useRPCRoute<TArgs, TReturn>(route, () => {
+    return sessionStorage.getItem("__session") ?? undefined;
+  });
   async function fetchData() {
     task.setLoading();
     rpcRoute(args)

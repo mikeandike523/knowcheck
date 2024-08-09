@@ -8,7 +8,6 @@
  * As well as a list of supporting information unique to the question at hand
  */
 
-
 import initializeAndGetDB from "./utils/firebase/initializeAndGetDB";
 
 import createRoute from "./lib/createRoute";
@@ -19,10 +18,11 @@ import createHandlerListSubjects from "./src/handlers/listSubjects";
 import createHandlerQuiz from "./src/handlers/quiz";
 import createHandlerRegisterForQuiz from "./src/handlers/registerForQuiz";
 import createHandlerToken from "./src/handlers/token";
+import createHandlerGetScores from "./src/handlers/getScores";
 
-const getDB = ()=>{
-  return initializeAndGetDB(undefined,true)
-}
+const getDB = () => {
+  return initializeAndGetDB(undefined, true);
+};
 
 export const listSubjects = createRoute(
   "/listSubjects",
@@ -41,17 +41,13 @@ export const getQuizInstanceData = createRoute(
   createHandlerGetQuizInstanceData(getDB)
 );
 
-export const auth = createRoute(
-  "/auth",
-  createHandlerAuth(getDB)
-)
+export const auth = createRoute("/auth", createHandlerAuth(getDB));
 
-export const token = createRoute(
-  "/token",
-  createHandlerToken(getDB)
-)
+export const token = createRoute("/token", createHandlerToken(getDB));
 
-export const quiz = createRoute(
-  "/quiz",
-  createHandlerQuiz(getDB)
-)
+export const quiz = createRoute("/quiz", createHandlerQuiz(getDB));
+
+export const getScores = createRoute(
+  "/getScores",
+  createHandlerGetScores(getDB)
+);
