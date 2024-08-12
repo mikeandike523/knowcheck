@@ -173,7 +173,7 @@ function SublayoutMainQuiz({ instanceId }: { instanceId: string }) {
             !currentQuestion
           ) && (
             <SemanticButton
-            key="submitButton"
+              key="submitButton"
               color="primary"
               padding="0.5em"
               onClick={() => {
@@ -330,7 +330,7 @@ export default function Live({ subjectId, instanceId }: LiveProps) {
             100vh - ( 2 * ${theme.navbar.height} ) - ( 2 * ${theme.gutters.lg} )
           )`.replace(/\n/g, ""),
         }}
-        width={theme.page.width}
+        width={accessCodeBarrierState.authenticated ? theme.page.width : "auto"}
         overflowY="auto"
         {...theme.pages.quiz.panel}
       >
@@ -342,15 +342,14 @@ export default function Live({ subjectId, instanceId }: LiveProps) {
           contentProps={{
             position: "relative",
             overflowY: "auto",
-            height: "auto"
+            height: "auto",
           }}
         >
           {loadInstanceDataTask.state === "success" && (
             <H1
               zIndex={1}
               top={0}
-              // position="sticky"
-              position="relative"
+              position="sticky"
               textAlign="center"
               fontSize="24px"
               margin={0}

@@ -54,7 +54,7 @@ export default function AccessCodeBarrier({
         "/register/"
       : "";
   const loginForm = (
-    <Div width="100%" boxSizing="border-box">
+    <Div  boxSizing="border-box">
       {state.loginTask.state === "success" ? (
         <Fragment key="AccessCodeForm">
           <Div background="lightgreen">{state.successMessage}</Div>
@@ -62,7 +62,7 @@ export default function AccessCodeBarrier({
       ) : (
         <Fragment key="AccessCodeForm">
           <VStack
-            width="100%"
+      
             textAlign="center"
             gap={theme.gutters.lg}
             padding={theme.gutters.lg}
@@ -109,8 +109,10 @@ export default function AccessCodeBarrier({
   return (
     <LoadingOverlay
       task={state.loginTask}
-      width="100%"
-      contentProps={rest}
+      contentProps={{
+        width:"auto",
+        ...rest
+      }}
       onDismiss={() => {
         state.reset();
       }}

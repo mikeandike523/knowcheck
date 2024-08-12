@@ -41,7 +41,20 @@ function SublayoutViewScores({ instanceId }: { instanceId: string }) {
         gap: theme.gutters.lg,
       }}
     >
-      {scores && (
+      {scores && Object.keys(scores).length === 0 && (
+        <Div
+          width="100%"
+          textAlign="center"
+          fontSize="24px"
+          fontStyle="italic"
+          padding={theme.gutters.lg}
+        >
+          No scores yet.
+          <br />
+          Press the "Quiz" button in the navbar to start answering questions.
+        </Div>
+      )}
+      {scores && Object.keys(scores).length > 0 && (
         <VStack
           width="100%"
           boxSizing="border-box"
@@ -98,7 +111,7 @@ function SublayoutViewScores({ instanceId }: { instanceId: string }) {
             </Div>
           </Div>
 
-          {Object.entries(scores).map(([questionId, score],index) => {
+          {Object.entries(scores).map(([questionId, score], index) => {
             return (
               <Div
                 key={questionId}
@@ -106,8 +119,12 @@ function SublayoutViewScores({ instanceId }: { instanceId: string }) {
                 flexDirection="row"
                 alignItems="stretch"
                 border="2px solid black"
-                borderTop={index === 0? "0px solid black" : "1px solid black"}
-                borderBottom={index === Object.entries(scores).length - 1? "2px solid black" : "1px solid black"}
+                borderTop={index === 0 ? "0px solid black" : "1px solid black"}
+                borderBottom={
+                  index === Object.entries(scores).length - 1
+                    ? "2px solid black"
+                    : "1px solid black"
+                }
                 gap={theme.gutters.md}
                 boxSizing="border-box"
                 width="100%"
@@ -190,7 +207,7 @@ export default function Scores({ subjectId, instanceId }: LiveProps) {
             100vh - ( 2 * ${theme.navbar.height} ) - ( 2 * ${theme.gutters.lg} )
           )`.replace(/\n/g, ""),
         }}
-        width={theme.page.width}
+        width={accessCodeBarrierState.authenticated ? theme.page.width : "auto"}
         overflowY="auto"
         {...theme.pages.quiz.panel}
       >
