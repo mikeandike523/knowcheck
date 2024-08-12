@@ -76,6 +76,7 @@ export default function LoadingOverlay<TData>({
       position={position}
       width={width}
       height={height}
+      minHeight={task.state === "loading" ? "48px" : undefined}
       {...rest}
     >
       <Div

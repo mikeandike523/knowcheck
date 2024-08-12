@@ -174,8 +174,10 @@ export default function Index() {
       justifyContent="flex-start"
       alignItems="center"
       background={theme.page.background}
+      paddingBottom={theme.gutters.xl}
       paddingTop={theme.gutters.xl}
       gap={theme.gutters.lg}
+      boxSizing="border-box"
     >
       <Div
         background="white"
@@ -185,11 +187,7 @@ export default function Index() {
         gap="8px"
         padding="8px"
       >
-        <H1
-          color={theme.colors.brand}
-          fontSize="72px"
-          margin={0}
-        >
+        <H1 color={theme.colors.brand} fontSize="72px" margin={0}>
           Know/Check
         </H1>
         <H2 fontSize="18px" color="black" margin={0} padding={0}>
@@ -204,7 +202,6 @@ export default function Index() {
         flexDirection="column"
         alignItems="center"
         justifyContent="flex-start"
-        marginBottom={theme.gutters.xl}
       >
         <H1 color={"white"} fontWeight="bold">
           Featured Quizzes

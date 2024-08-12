@@ -30,6 +30,9 @@ export interface InputWithValidationProps
   css?: SerializedStyles | undefined;
   validateOnChange?: boolean;
   validateOnChangeDebounceMillis?: number | undefined;
+  fontSize?: string;
+  height?: string;
+  padding?: string;
 }
 
 export interface InputWithValidationConfig<TData> {
@@ -152,25 +155,52 @@ export default function InputWithValidation({
   const { stylePropRest, nonStylePropsRest } = styleEngine(rest);
 
   const baseCss = css`
+    position: relative;
+    padding: ${rest.padding ?? "4px"};
     margin: 0;
-    padding: 0;
     width: 100%;
+    height: ${rest.height ?? "32px"};
     display: block;
-    background: white;
     box-sizing: border-box;
-    max-width: 100%;
-    border: ${validationState === "error"
-      ? "1px solid red"
-      : "1px solid black"};
-    transition: all 0.25s ease;
+    border: none;
+    font-size: ${rest.fontSize ?? "16px"};
+    outline: none;
   `;
+
   const computedCss = css`
     ${priorCss};
     ${baseCss};
     ${stylesToCssString(stylePropRest)};
   `;
+
+  const containerCss = css`
+    transition: all 0.25s ease;
+    position: relative;
+
+    &::after {
+      z-index: 10;
+      content: "";
+      position: absolute;
+      left: ${rest.padding ?? 0};
+      right: ${rest.padding ?? 0};
+      bottom: 4px;
+      height: 2px;
+      background-color: ${validationState === "invalid" ? "red" : "black"};
+      transition: background-color 0.25s ease;
+    }
+
+    &:focus-within::after {
+      background-color: blue; /* Changes to blue when focused */
+    }
+  `;
   return (
-    <Div width="100%" margin={0} padding={0} boxSizing="border-box">
+    <Div
+      width="100%"
+      margin={0}
+      padding={0}
+      boxSizing="border-box"
+      css={containerCss}
+    >
       <input
         placeholder={placeholder}
         value={domValue}

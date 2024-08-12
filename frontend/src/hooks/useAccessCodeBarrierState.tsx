@@ -54,7 +54,7 @@ export default function useAccessCodeBarrierState({
           });
           console.info("Existing token is still valid, proceeding with quiz..");
           setSuccessMessage("Already logged in!");
-          loginTask.setSuccess(null);
+        loginTask.setSuccess(null);
         }
       } else {
         loginTask.setLoading();
@@ -65,7 +65,7 @@ export default function useAccessCodeBarrierState({
         });
         sessionStorage.setItem("__session", __session);
         setSuccessMessage("Login successful!");
-        loginTask.setSuccess(null);
+      loginTask.setSuccess(null);
       }
     } catch (e) {
       loginTask.setError(e);

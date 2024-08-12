@@ -7,18 +7,22 @@ import { z } from "zod";
 import InputWithValidation, {
   useInputWithValidationState,
 } from "./InputWithValidation";
-import LoadingOverlay from "./LoadingOverlay";
+import LoadingOverlay, { LoadingOverlayProps } from "./LoadingOverlay";
 import SemanticButton from "./SemanticButton";
 import VStack from "@/fwk/components/VStack";
 import theme from "@/themes/main";
+import HStack from "@/fwk/components/HStack";
 
+export type LoginLoadingOverlayProps = Omit<LoadingOverlayProps<null>, "task">;
 export interface AccessCodeBarrierProps extends DivProps {
   state: AccessCodeBarrierState;
+  loadingOverlayProps?: LoginLoadingOverlayProps;
 }
 
 export default function AccessCodeBarrier({
   state,
   children,
+  loadingOverlayProps = {},
   ...rest
 }: AccessCodeBarrierProps) {
   const accessCodeInputState = useInputWithValidationState({
@@ -70,23 +74,33 @@ export default function AccessCodeBarrier({
               at:
             </Div>
             <a href={registerLink}>{registerLink}</a>
-            <InputWithValidation
-              type="password"
-              inputState={accessCodeInputState}
-              placeholder="Access Code"
-            />
-            <SemanticButton
-              color="primary"
-              padding="0.5em"
-              onClick={() => {
-                const validationResult = accessCodeInputState.validate();
-                if (validationResult.valid) {
-                  state.login(validationResult.data!);
-                }
-              }}
-            >
-              Submit
-            </SemanticButton>
+            <HStack gap={theme.gutters.sm}>
+              <Div width="10em">
+                <InputWithValidation
+                  type="password"
+                  inputState={accessCodeInputState}
+                  placeholder="Access Code"
+                  fontSize="16px"
+                  padding="4px"
+                  height="32px"
+                />
+              </Div>
+
+              <SemanticButton
+                color="primary"
+                padding="4px"
+                fontSize="16px"
+                height="32px"
+                onClick={() => {
+                  const validationResult = accessCodeInputState.validate();
+                  if (validationResult.valid) {
+                    state.login(validationResult.data!);
+                  }
+                }}
+              >
+                Submit
+              </SemanticButton>
+            </HStack>
           </VStack>
         </Fragment>
       )}
@@ -100,6 +114,7 @@ export default function AccessCodeBarrier({
       onDismiss={() => {
         state.reset();
       }}
+      {...loadingOverlayProps}
     >
       {state.authenticated ? (
         <Fragment key="LoginFormOrContent">{children}</Fragment>

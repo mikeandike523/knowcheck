@@ -1,5 +1,5 @@
 import { css } from "@emotion/react";
-import { KeyboardEvent, useEffect, useState } from "react";
+import { Fragment, KeyboardEvent, useEffect, useState } from "react";
 
 import { TReturn as TReturnLoadNextQuestion } from "@/common/api-types/handlers/quizActions/loadNextQuestion";
 import { TReturn as TReturnSubmitAnswer } from "@/common/api-types/handlers/quizActions/submitAnswer";
@@ -105,9 +105,9 @@ function SublayoutMainQuiz({ instanceId }: { instanceId: string }) {
   return (
     <VStack
       width="100%"
+      boxSizing="border-box"
       gap={theme.gutters.lg}
       padding={theme.gutters.lg}
-      boxSizing="border-box"
     >
       {showOutOfQuestionsMessage && (
         <Div
@@ -139,67 +139,52 @@ function SublayoutMainQuiz({ instanceId }: { instanceId: string }) {
         )}
       </LoadingOverlay>
       <LoadingOverlay task={loadingTaskSubmitAnswer}>
-        <VStack
-          width="100%"
-          gap={theme.gutters.lg}
-          padding={theme.gutters.lg}
-          boxSizing="border-box"
-        >
-          <textarea
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            css={css`
-              font-size: 1em;
-              line-height: 1.5em;
-              min-height: 4.5em;
-              height: ${(answerLineCount + 1) * 1.5}em;
-              width: 100%;
-              display: ${showOutOfQuestionsMessage ||
-              loadingTaskSubmitAnswer.state === "success"
-                ? "none"
-                : "block"};
-            `}
-            disabled={
-              loadingTaskLoadNextQuestion.state === "loading" ||
-              loadingTaskSubmitAnswer.state === "loading"
-            }
-            placeholder={
-              loadingTaskLoadNextQuestion.state === "loading"
-                ? "Loading..."
-                : loadingTaskSubmitAnswer.state === "loading"
-                  ? "Processing..."
-                  : "Write a short answer..."
-            }
-            onKeyDown={handleKeyDown}
-          ></textarea>
-          <Div
-            whiteSpace="pre-wrap"
-            display={
-              loadingTaskSubmitAnswer.state === "success" ? "block" : "none"
-            }
-            background="lightgray"
-            width="100%"
-          >
-            {answer}
-          </Div>
-          <SemanticButton
-            color="primary"
-            padding="0.5em"
-            display={
-              showOutOfQuestionsMessage ||
-              loadingTaskSubmitAnswer.state === "success" ||
-              !currentQuestion
-                ? "none"
-                : "block"
-            }
-            onClick={() => {
-              submitAnswer();
-            }}
-          >
-            Submit
-          </SemanticButton>
+        <VStack width="100%" boxSizing="border-box" gap={theme.gutters.lg}>
+          {loadingTaskLoadNextQuestion.state === "success" &&
+            loadingTaskSubmitAnswer.state !== "success" &&
+            !showOutOfQuestionsMessage && (
+              <textarea
+                key="answer-input"
+                value={answer}
+                onChange={(e) => setAnswer(e.target.value)}
+                css={css`
+                  font-size: 1em;
+                  line-height: 1.5em;
+                  min-height: 4.5em;
+                  height: ${(answerLineCount + 1) * 1.5}em;
+                  width: 100%;
+                `}
+                onKeyDown={handleKeyDown}
+              ></textarea>
+            )}
           {loadingTaskSubmitAnswer.state === "success" && (
-            <>
+            <Div
+              key="submittedAsnwer"
+              whiteSpace="pre-wrap"
+              background="lightgray"
+              width="100%"
+            >
+              {answer}
+            </Div>
+          )}
+          {!(
+            showOutOfQuestionsMessage ||
+            loadingTaskSubmitAnswer.state === "success" ||
+            !currentQuestion
+          ) && (
+            <SemanticButton
+            key="submitButton"
+              color="primary"
+              padding="0.5em"
+              onClick={() => {
+                submitAnswer();
+              }}
+            >
+              Submit
+            </SemanticButton>
+          )}
+          {loadingTaskSubmitAnswer.state === "success" && (
+            <Fragment key="GPTFeedback">
               <HStack
                 width="100%"
                 gap={theme.gutters.lg}
@@ -299,7 +284,7 @@ function SublayoutMainQuiz({ instanceId }: { instanceId: string }) {
               >
                 Next Question
               </SemanticButton>
-            </>
+            </Fragment>
           )}
         </VStack>
       </LoadingOverlay>
@@ -346,6 +331,7 @@ export default function Live({ subjectId, instanceId }: LiveProps) {
           )`.replace(/\n/g, ""),
         }}
         width={theme.page.width}
+        overflowY="auto"
         {...theme.pages.quiz.panel}
       >
         <LoadingOverlay
@@ -353,26 +339,41 @@ export default function Live({ subjectId, instanceId }: LiveProps) {
           loadingOverlayProps={{
             borderRadius: theme.pages.quiz.panel.borderRadius,
           }}
+          contentProps={{
+            position: "relative",
+            overflowY: "auto",
+            height: "auto"
+          }}
         >
           {loadInstanceDataTask.state === "success" && (
-            <>
-              <H1
-                textAlign="center"
-                fontSize="24px"
-                margin={0}
-                padding={theme.gutters.md}
-                width="100%"
-                background={theme.navbar.background}
-                borderTopLeftRadius={theme.pages.quiz.panel.borderRadius}
-                borderTopRightRadius={theme.pages.quiz.panel.borderRadius}
-                boxSizing="border-box"
-                color="white"
-              >
-                {loadInstanceDataTask.data?.quizName}
-              </H1>
-            </>
+            <H1
+              zIndex={1}
+              top={0}
+              // position="sticky"
+              position="relative"
+              textAlign="center"
+              fontSize="24px"
+              margin={0}
+              padding={theme.gutters.md}
+              width="100%"
+              background={theme.navbar.background}
+              borderTopLeftRadius={theme.pages.quiz.panel.borderRadius}
+              borderTopRightRadius={theme.pages.quiz.panel.borderRadius}
+              boxSizing="border-box"
+              color="white"
+            >
+              {loadInstanceDataTask.data?.quizName}
+            </H1>
           )}
-          <AccessCodeBarrier state={accessCodeBarrierState} overflowY="auto">
+          <AccessCodeBarrier
+            state={accessCodeBarrierState}
+            loadingOverlayProps={{
+              loadingOverlayProps: {
+                borderBottomLeftRadius: theme.pages.quiz.panel.borderRadius,
+                borderBottomRightRadius: theme.pages.quiz.panel.borderRadius,
+              },
+            }}
+          >
             <SublayoutMainQuiz instanceId={instanceId!} />
           </AccessCodeBarrier>
         </LoadingOverlay>

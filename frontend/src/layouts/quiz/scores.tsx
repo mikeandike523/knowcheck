@@ -11,6 +11,7 @@ import {
   TReturn as TReturnGetScores,
 } from "@/common/api-types/handlers/getScores";
 import SemanticButton from "@/components/SemanticButton";
+import VStack from "@/fwk/components/VStack";
 
 export interface LiveProps {
   subjectId: string;
@@ -21,13 +22,7 @@ type InstanceData = {
   quizName: string;
 };
 
-function SublayoutViewScores({
-  instanceId,
-  subjectId,
-}: {
-  instanceId: string;
-  subjectId: string;
-}) {
+function SublayoutViewScores({ instanceId }: { instanceId: string }) {
   const loadScoresTask = useAPIData<TArgsGetScores, TReturnGetScores>(
     "getScores",
     {
@@ -41,56 +36,118 @@ function SublayoutViewScores({
       task={loadScoresTask}
       contentProps={{
         width: "100%",
-        padding: theme.gutters.lg,
         display: "flex",
         flexDirection: "column",
         gap: theme.gutters.lg,
-        boxSizing: "border-box",
       }}
     >
-      {scores &&
-        Object.entries(scores).map(([questionId, score]) => {
-          return (
+      {scores && (
+        <VStack
+          width="100%"
+          boxSizing="border-box"
+          position="relative"
+          padding={theme.gutters.lg}
+        >
+          <Div
+            width="100%"
+            background={theme.pages.quiz.panel.background}
+            position="sticky"
+            top={`calc( 24px + ${theme.gutters.lg} + ${theme.gutters.md} - 1px )`}
+          >
             <Div
-              key={questionId}
               display="flex"
               flexDirection="row"
               alignItems="stretch"
               border="2px solid black"
+              borderTop="2px solid black"
+              borderBottom="2px solid black"
               gap={theme.gutters.md}
               boxSizing="border-box"
+              width="100%"
+              background={theme.colors.semantic.primary}
+              color={"white"}
             >
               <Div
                 borderRight="2px solid black"
-                fontSize="48px"
+                fontSize="24px"
                 width="96px"
-                aspectRatio={1}
                 textAlign="center"
                 lineHeight="2em"
               >
-                {score.gptScore}
+                Score
               </Div>
               <Div
                 flex={1}
                 maxHeight="96px"
-                padding={theme.gutters.md}
-                overflowY="auto"
                 whiteSpace="pre-wrap"
-                fontSize="18px"
-              >
-                {score.questionText}
-              </Div>
-              <SemanticButton
-                borderLeft="2px solid black"
                 fontSize="24px"
-                color="light"
-                padding="0.5em"
+                lineHeight="2em"
+                textAlign="center"
+              >
+                Question Text
+              </Div>
+              <Div
+                borderLeft="2px solid black"
+                width="5em"
+                textAlign="center"
+                lineHeight="2em"
+                fontSize="24px"
               >
                 Details
-              </SemanticButton>
+              </Div>
             </Div>
-          );
-        })}
+          </Div>
+
+          {Object.entries(scores).map(([questionId, score],index) => {
+            return (
+              <Div
+                key={questionId}
+                display="flex"
+                flexDirection="row"
+                alignItems="stretch"
+                border="2px solid black"
+                borderTop={index === 0? "0px solid black" : "1px solid black"}
+                borderBottom={index === Object.entries(scores).length - 1? "2px solid black" : "1px solid black"}
+                gap={theme.gutters.md}
+                boxSizing="border-box"
+                width="100%"
+              >
+                <Div
+                  borderRight="2px solid black"
+                  fontSize="48px"
+                  width="96px"
+                  aspectRatio={1}
+                  textAlign="center"
+                  lineHeight="2em"
+                >
+                  {score.gptScore}
+                </Div>
+                <Div
+                  flex={1}
+                  maxHeight="96px"
+                  padding={theme.gutters.md}
+                  overflowY="auto"
+                  whiteSpace="pre-wrap"
+                  fontSize="18px"
+                >
+                  {score.questionText}
+                </Div>
+                <Div fontSize="24px" width="5em" borderLeft="2px solid black">
+                  <SemanticButton
+                    color="light"
+                    fontSize="24px"
+                    height="100%"
+                    width="100%"
+                    lineHeight="2em"
+                  >
+                    Details
+                  </SemanticButton>
+                </Div>
+              </Div>
+            );
+          })}
+        </VStack>
+      )}
     </LoadingOverlay>
   );
 }
@@ -134,6 +191,7 @@ export default function Scores({ subjectId, instanceId }: LiveProps) {
           )`.replace(/\n/g, ""),
         }}
         width={theme.page.width}
+        overflowY="auto"
         {...theme.pages.quiz.panel}
       >
         <LoadingOverlay
@@ -141,30 +199,40 @@ export default function Scores({ subjectId, instanceId }: LiveProps) {
           loadingOverlayProps={{
             borderRadius: theme.pages.quiz.panel.borderRadius,
           }}
+          contentProps={{
+            position: "relative",
+            height: "100%",
+          }}
         >
           {loadInstanceDataTask.state === "success" && (
-            <>
-              <H1
-                textAlign="center"
-                fontSize="24px"
-                margin={0}
-                padding={theme.gutters.md}
-                width="100%"
-                background={theme.navbar.background}
-                borderTopLeftRadius={theme.pages.quiz.panel.borderRadius}
-                borderTopRightRadius={theme.pages.quiz.panel.borderRadius}
-                boxSizing="border-box"
-                color="white"
-              >
-                {loadInstanceDataTask.data?.quizName}
-              </H1>
-            </>
+            <H1
+              zIndex={1}
+              top={0}
+              position="sticky"
+              textAlign="center"
+              fontSize="24px"
+              margin={0}
+              padding={theme.gutters.md}
+              width="100%"
+              background={theme.navbar.background}
+              borderTopLeftRadius={theme.pages.quiz.panel.borderRadius}
+              borderTopRightRadius={theme.pages.quiz.panel.borderRadius}
+              boxSizing="border-box"
+              color="white"
+            >
+              {loadInstanceDataTask.data?.quizName}
+            </H1>
           )}
-          <AccessCodeBarrier state={accessCodeBarrierState} overflowY="auto">
-            <SublayoutViewScores
-              instanceId={instanceId!}
-              subjectId={subjectId!}
-            />
+          <AccessCodeBarrier
+            state={accessCodeBarrierState}
+            loadingOverlayProps={{
+              loadingOverlayProps: {
+                borderBottomLeftRadius: theme.pages.quiz.panel.borderRadius,
+                borderBottomRightRadius: theme.pages.quiz.panel.borderRadius,
+              },
+            }}
+          >
+            <SublayoutViewScores instanceId={instanceId!} />
           </AccessCodeBarrier>
         </LoadingOverlay>
       </Div>
