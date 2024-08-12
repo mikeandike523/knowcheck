@@ -10,6 +10,7 @@ import {
   TArgs as TArgsGetScores,
   TReturn as TReturnGetScores,
 } from "@/common/api-types/handlers/getScores";
+import SemanticButton from "@/components/SemanticButton";
 
 export interface LiveProps {
   subjectId: string;
@@ -41,18 +42,55 @@ function SublayoutViewScores({
       contentProps={{
         width: "100%",
         padding: theme.gutters.lg,
+        display: "flex",
+        flexDirection: "column",
+        gap: theme.gutters.lg,
+        boxSizing: "border-box",
       }}
     >
-      <pre>
-        <code
-          style={{
-            width: "100%",
-            whiteSpace: "pre-wrap",
-          }}
-        >
-          {JSON.stringify(scores, null, 2)}
-        </code>
-      </pre>
+      {scores &&
+        Object.entries(scores).map(([questionId, score]) => {
+          return (
+            <Div
+              key={questionId}
+              display="flex"
+              flexDirection="row"
+              alignItems="stretch"
+              border="2px solid black"
+              gap={theme.gutters.md}
+              boxSizing="border-box"
+            >
+              <Div
+                borderRight="2px solid black"
+                fontSize="48px"
+                width="96px"
+                aspectRatio={1}
+                textAlign="center"
+                lineHeight="2em"
+              >
+                {score.gptScore}
+              </Div>
+              <Div
+                flex={1}
+                maxHeight="96px"
+                padding={theme.gutters.md}
+                overflowY="auto"
+                whiteSpace="pre-wrap"
+                fontSize="18px"
+              >
+                {score.questionText}
+              </Div>
+              <SemanticButton
+                borderLeft="2px solid black"
+                fontSize="24px"
+                color="light"
+                padding="0.5em"
+              >
+                Details
+              </SemanticButton>
+            </Div>
+          );
+        })}
     </LoadingOverlay>
   );
 }
