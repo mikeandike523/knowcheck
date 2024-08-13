@@ -13,14 +13,14 @@ import protect from "../lib/protect";
 import { ResponseData } from "../models/Response";
 
 export default function createHandlerGetScores(getDB: () => Firestore) {
-  return async function (
+  return async function getScores(
     args: TArgs,
     cookieEngine: CookieEngine
   ): Promise<TReturn> {
     const db = getDB();
     const parsedArgs = parseObjectSchema<TArgs>(args, schemaTArgs);
     const instanceId = parsedArgs.instanceId;
-    const claims = await protect({
+    await protect({
       instanceId: parsedArgs.instanceId,
       db,
       cookieEngine,

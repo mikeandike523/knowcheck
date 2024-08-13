@@ -19,6 +19,7 @@ import createHandlerQuiz from "./src/handlers/quiz";
 import createHandlerRegisterForQuiz from "./src/handlers/registerForQuiz";
 import createHandlerToken from "./src/handlers/token";
 import createHandlerGetScores from "./src/handlers/getScores";
+import createHandlerGetDetailedScore from "./src/handlers/getDetailedScore"
 
 const getDB = () => {
   return initializeAndGetDB(undefined, true);
@@ -50,4 +51,9 @@ export const quiz = createRoute("/quiz", createHandlerQuiz(getDB));
 export const getScores = createRoute(
   "/getScores",
   createHandlerGetScores(getDB)
+);
+
+export const getDetailedScore = createRoute(
+  "/getDetailedScore",
+  createHandlerGetDetailedScore(getDB)
 );
