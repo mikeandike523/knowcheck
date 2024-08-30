@@ -2,7 +2,7 @@ import { css } from "@emotion/react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { Div, DivProps, H1, H2, Span } from "@/fwk/html";
+import { A, Button, Div, DivProps, H1, H2, Span } from "@/fwk/html";
 import theme from "@/themes/main";
 
 import LoadingOverlay from "@/components/LoadingOverlay";
@@ -12,6 +12,8 @@ import { SubjectListingItem } from "@/common/api-types";
 import SemanticButton from "@/components/SemanticButton";
 import DynamicSVG from "svg-designer/lib/react/DynamicSVG";
 import SVGBuilder from "svg-designer/lib/SVGBuilder";
+import HStack from "@/fwk/components/HStack";
+import VStack from "@/fwk/components/VStack";
 
 interface HoverCardProps extends DivProps {
   onClick?: () => void;
@@ -196,7 +198,6 @@ export default function Index() {
       </Div>
 
       <Div
-        flex={1}
         width={theme.page.width}
         display="flex"
         flexDirection="column"
@@ -212,7 +213,9 @@ export default function Index() {
           contentProps={{
             display: "grid",
             height: "auto",
-
+            flexGrow: 1,
+            minHeight: 0,
+            overflow: "auto",
             css: css`
               grid-auto-flow: column;
               align-items: stretch;
@@ -281,6 +284,32 @@ export default function Index() {
           ))}
         </LoadingOverlay>
       </Div>
+      <VStack width="100%" gap={theme.gutters.md}>
+        <Div fontSize="24px">Want to make your own quizzes?</Div>
+        <HStack width="100%" gap={theme.gutters.xl} justifyContent="center">
+          <HStack flex={1} justifyContent="flex-end">
+            <SemanticButton
+              fontSize="24px"
+              padding="0.25em"
+              color="success"
+            >
+              Sign In
+            </SemanticButton>
+          </HStack>
+          <Div whiteSpace="nowrap" fontSize="24px">
+            or
+          </Div>
+          <HStack flex={1} justifyContent="flex-start">
+            <SemanticButton
+              fontSize="24px"
+              padding="0.25em"
+              color="success"
+            >
+              Sign Up
+            </SemanticButton>
+          </HStack>
+        </HStack>
+      </VStack>
     </Div>
   );
 }
