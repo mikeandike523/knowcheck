@@ -285,18 +285,21 @@ export default function Index() {
         </LoadingOverlay>
       </Div>
       <VStack width="100%" gap={theme.gutters.md}>
-        <Div fontSize="24px">Want to make your own quizzes?</Div>
+        <Div fontSize="24px"  color="white">Want to make your own quizzes?</Div>
         <HStack width="100%" gap={theme.gutters.xl} justifyContent="center">
           <HStack flex={1} justifyContent="flex-end">
             <SemanticButton
               fontSize="24px"
               padding="0.25em"
               color="success"
+              onClick={()=>{
+                navigate("/sign-in")
+              }}
             >
               Sign In
             </SemanticButton>
           </HStack>
-          <Div whiteSpace="nowrap" fontSize="24px">
+          <Div whiteSpace="nowrap" fontSize="24px"  color="white">
             or
           </Div>
           <HStack flex={1} justifyContent="flex-start">
@@ -304,6 +307,9 @@ export default function Index() {
               fontSize="24px"
               padding="0.25em"
               color="success"
+              onClick={()=>{
+                navigate("/sign-up")
+              }}
             >
               Sign Up
             </SemanticButton>

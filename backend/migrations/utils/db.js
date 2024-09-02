@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import initializeAndGetDB from '../../../utils/firebase/initializeAndGetDB.js'
+import initialize from '../../../utils/firebase/initialize.js'
 
 // Determine environment
 const NODE_ENV = process.env.NODE_ENV || 'development';
@@ -15,6 +15,6 @@ const serviceAccount = JSON.parse(
   fs.readFileSync(path.join(__dirname,"..", '..', 'service-account-key.json'))
 );
 
-const db = initializeAndGetDB(NODE_ENV==="production"?serviceAccount:undefined,false,true)
+const db = initialize(NODE_ENV==="production"?serviceAccount:undefined,false,true).db
 
 export default db

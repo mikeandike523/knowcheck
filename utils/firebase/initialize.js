@@ -1,14 +1,20 @@
 import admin from "firebase-admin";
 
 /**
+ * @typedef {object} FirebaseResources
+ * 
+ * @property {import("firebase-admin/firestore").Firestore} db - A Firestore instance
+ */
+
+/**
  *
  * @param {object} [serviceAccount=undefined] -
  * An optional javascript object with service account credentials
  * Used often to power things such as automatic database migrations from the command line
  *
- * @returns {import("firebase-admin/firestore").Firestore} - A Firestore instance
+ * @returns {FirebaseResources} - A collection of Firestore powered application resources
  */
-export default function initializeAndGetDB(
+export default function initialize(
   serviceAccount = undefined,
   plainInitialize = false,
   forceUseDatabaseEmulator = false
@@ -41,5 +47,5 @@ export default function initializeAndGetDB(
   globalThis.firebaseAdminInitialized = true;
   globalThis.firestoreDB = db;
 
-  return db;
+  return {db}
 }

@@ -2,7 +2,7 @@ import fs from "fs"
 import path from "path"
 import repl from 'repl'
 
-import initializeAndGetDB from "../../utils/firebase/initializeAndGetDB.js"
+import initialize from "../../utils/firebase/initialize.js"
 import ColorDebug from "../../utils/ColorDebug.js"
 
 const __filename = import.meta.url
@@ -12,18 +12,18 @@ const __dirname = path.dirname(__filename);
 
 const db =
   process.env.NODE_ENV === "production"
-    ? initializeAndGetDB(
+    ? initialize(
         JSON.parse(
           fs.readFileSync(
             path.resolve(__dirname, "../service-account-key.json")
           )
         )
-      )
-    : initializeAndGetDB(
+      ).db
+    : initialize(
         undefined,
         false,
         true
-    )
+    ).db
 
 ColorDebug.ansi().info(
     "Database Setttings:\n" + JSON.stringify(db._settings, null, 2)

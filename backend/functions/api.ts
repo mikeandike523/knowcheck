@@ -8,7 +8,7 @@
  * As well as a list of supporting information unique to the question at hand
  */
 
-import initializeAndGetDB from "./utils/firebase/initializeAndGetDB";
+import initialize from "./utils/firebase/initialize";
 
 import createRoute from "./lib/createRoute";
 import createHandlerAuth from "./src/handlers/auth";
@@ -22,7 +22,7 @@ import createHandlerGetScores from "./src/handlers/getScores";
 import createHandlerGetDetailedScore from "./src/handlers/getDetailedScore"
 
 const getDB = () => {
-  return initializeAndGetDB(undefined, true);
+  return initialize(undefined, true).db;
 };
 
 export const listSubjects = createRoute(

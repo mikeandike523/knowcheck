@@ -4,6 +4,7 @@ import HStack from "@/fwk/components/HStack";
 import theme from "@/themes/main";
 import { DivProps, H1 } from "@/fwk/html";
 import { useNavigate } from "react-router-dom";
+import VStack from "@/fwk/components/VStack";
 
 export interface NavbarProps extends DivProps {
   layoutMode?: "overlay" | "push";
@@ -24,33 +25,29 @@ export default function Navbar({
       left={0}
       width="100%"
       background={theme.navbar.background}
-      gap={theme.gutters.lg}
       height={theme.navbar.height}
     >
-      <H1
-        marginLeft={theme.gutters.lg}
+      <VStack
         position="relative"
         color={theme.colors.brand}
-        fontSize="32px"
         margin={0}
         background="white"
-        padding="0.25em"
+        alignSelf="stretch"
+        justifyContent="center"
+        paddingLeft="8px"
+        paddingRight="8px"
       >
-        Know/Check
-      </H1>
+        <H1 fontSize="28px">Know / Check</H1>
+      </VStack>
       <SemanticButton
         color="primary"
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
         onClick={() => {
           navigate("/");
         }}
         type="button"
         fontSize="16px"
         padding="12px"
-        borderRadius="12px"
+        alignSelf="stretch"
       >
         Home
       </SemanticButton>
