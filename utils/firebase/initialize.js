@@ -3,7 +3,8 @@ import admin from "firebase-admin";
 /**
  * @typedef {object} FirebaseResources
  * 
- * @property {import("firebase-admin/firestore").Firestore} db - A Firestore instance
+ * @property {import("firebase-admin/firestore").Firestore} db
+ * @property {import("firebase-admin/auth").Auth} auth
  */
 
 /**
@@ -35,6 +36,8 @@ export default function initialize(
     )
   }
 
+  const auth = admin.auth();
+
   const db = admin.firestore();
 
   if (process.env.FUNCTIONS_EMULATOR === "true" || forceUseDatabaseEmulator) {
@@ -47,5 +50,5 @@ export default function initialize(
   globalThis.firebaseAdminInitialized = true;
   globalThis.firestoreDB = db;
 
-  return {db}
+  return {db,auth}
 }

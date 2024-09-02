@@ -1,19 +1,22 @@
 import { css } from "@emotion/react";
 import { useEffect, useRef, useState } from "react";
+import { FaSignInAlt } from "react-icons/fa";
+import { FaUserPlus } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 
-import { A, Button, Div, DivProps, H1, H2, Span } from "@/fwk/html";
+import { Div, DivProps, H1, H2, Span } from "@/fwk/html";
 import theme from "@/themes/main";
 
 import LoadingOverlay from "@/components/LoadingOverlay";
 import { useAPIData } from "@/lib/rpc-client";
 
 import { SubjectListingItem } from "@/common/api-types";
+import { NavbarIconButton } from "@/components/Navbar";
 import SemanticButton from "@/components/SemanticButton";
-import DynamicSVG from "svg-designer/lib/react/DynamicSVG";
-import SVGBuilder from "svg-designer/lib/SVGBuilder";
 import HStack from "@/fwk/components/HStack";
 import VStack from "@/fwk/components/VStack";
+import DynamicSVG from "svg-designer/lib/react/DynamicSVG";
+import SVGBuilder from "svg-designer/lib/SVGBuilder";
 
 interface HoverCardProps extends DivProps {
   onClick?: () => void;
@@ -97,7 +100,7 @@ function HoverCard({ children, ...rest }: HoverCardProps) {
               width="64px"
               aspectRatio={1}
               fontSize="24px"
-              color="success"
+              color="primary"
             >
               <Span>Go!</Span>
             </SemanticButton>
@@ -173,7 +176,7 @@ export default function Index() {
       height="100%"
       display="flex"
       flexDirection="column"
-      justifyContent="flex-start"
+      justifyContent="center"
       alignItems="center"
       background={theme.page.background}
       paddingBottom={theme.gutters.xl}
@@ -197,6 +200,8 @@ export default function Index() {
         </H2>
       </Div>
 
+      <Div width="100%" height={theme.gutters.lg}></Div>
+
       <Div
         width={theme.page.width}
         display="flex"
@@ -204,7 +209,7 @@ export default function Index() {
         alignItems="center"
         justifyContent="flex-start"
       >
-        <H1 color={"white"} fontWeight="bold">
+        <H1 color={"white"} fontWeight="bold" margin={0} padding={0}>
           Featured Quizzes
         </H1>
         <LoadingOverlay
@@ -249,24 +254,38 @@ export default function Index() {
               >
                 <Div
                   width="100%"
-                  padding={theme.gutters.md}
                   boxSizing="border-box"
                   display="flex"
                   flexDirection="column"
                   gap={theme.gutters.md}
                 >
                   <H1
+                    boxSizing="border-box"
+                    width="100%"
                     background={theme.card.background}
                     position="relative"
                     margin={0}
-                    color={theme.colors.semantic.primary}
+                    color={"black"}
                     textAlign="left"
                     alignSelf="flex-start"
                     fontSize={theme.pages.index.subjectListItem.name.fontSize}
+                    padding={theme.gutters.md}
+                    css={css`
+                      &:before {
+                        content: "";
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        bottom: 0;
+                        right: 0;
+                        background: rgba(0, 0, 0, 0.25);
+                      }
+                    `}
                   >
                     {subject.name}
                   </H1>
                   <H2
+                    padding={theme.gutters.md}
                     fontWeight="normal"
                     alignSelf="flex-start"
                     position="relative"
@@ -284,35 +303,34 @@ export default function Index() {
           ))}
         </LoadingOverlay>
       </Div>
+
+      <Div width="100%" height={theme.gutters.lg}></Div>
+
       <VStack width="100%" gap={theme.gutters.md}>
-        <Div fontSize="24px"  color="white">Want to make your own quizzes?</Div>
+        <Div fontSize="24px" color="black">
+          Want to make your own quizzes?
+        </Div>
         <HStack width="100%" gap={theme.gutters.xl} justifyContent="center">
           <HStack flex={1} justifyContent="flex-end">
-            <SemanticButton
-              fontSize="24px"
-              padding="0.25em"
-              color="success"
-              onClick={()=>{
-                navigate("/sign-in")
+            <NavbarIconButton
+              icon={<FaSignInAlt />}
+              label="Sign In"
+              onClick={() => {
+                navigate("/sign-in");
               }}
-            >
-              Sign In
-            </SemanticButton>
+            />
           </HStack>
-          <Div whiteSpace="nowrap" fontSize="24px"  color="white">
+          <Div whiteSpace="nowrap" fontSize="24px" color="black">
             or
           </Div>
           <HStack flex={1} justifyContent="flex-start">
-            <SemanticButton
-              fontSize="24px"
-              padding="0.25em"
-              color="success"
-              onClick={()=>{
-                navigate("/sign-up")
+            <NavbarIconButton
+              icon={<FaUserPlus />}
+              label="Sign Up"
+              onClick={() => {
+                navigate("/sign-up");
               }}
-            >
-              Sign Up
-            </SemanticButton>
+            />
           </HStack>
         </HStack>
       </VStack>
