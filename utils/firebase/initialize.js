@@ -2,7 +2,7 @@ import admin from "firebase-admin";
 
 /**
  * @typedef {object} FirebaseResources
- * 
+ *
  * @property {import("firebase-admin/firestore").Firestore} db
  * @property {import("firebase-admin/auth").Auth} auth
  */
@@ -21,8 +21,11 @@ export default function initialize(
   forceUseDatabaseEmulator = false
 ) {
   if (globalThis.firebaseAdminInitialized) {
-    if (globalThis.firestoreDB) {
-      return globalThis.firestoreDB;
+    if (globalThis.firestoreDB && globalThis.auth) {
+      return {
+        db: globalThis.firestoreDB,
+        auth: globalThis.auth,
+      };
     }
   }
 
@@ -33,7 +36,7 @@ export default function initialize(
       serviceAccount
         ? { credential: admin.credential.cert(serviceAccount) }
         : {}
-    )
+    );
   }
 
   const auth = admin.auth();
@@ -49,6 +52,7 @@ export default function initialize(
 
   globalThis.firebaseAdminInitialized = true;
   globalThis.firestoreDB = db;
+  globalThis.auth = auth;
 
-  return {db,auth}
+  return { db, auth };
 }
