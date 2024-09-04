@@ -301,6 +301,19 @@ export default function Index() {
               </HoverCard>
             </Div>
           ))}
+          {task.state === "success" && subjects.length === 0 && (
+            <>
+              <Div
+                fontStyle="italic"
+                width="100%"
+                textAlign="center"
+                fontSize="18px"
+                color="white"
+              >
+                No featured quizzes.
+              </Div>
+            </>
+          )}
         </LoadingOverlay>
       </Div>
 

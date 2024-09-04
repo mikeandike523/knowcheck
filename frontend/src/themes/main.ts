@@ -89,6 +89,9 @@ export const theme = {
     background: "hsla(200, 20%, 67%, 1)",
   },
   navbar: {
+    button: {
+      highlightBackground: "teal"
+    },
     height: "64px",
     background: "hsla(213, 16%, 57%, 1)",
     text: {

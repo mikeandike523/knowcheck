@@ -1,5 +1,4 @@
-import { FaHouse,FaUserPlus } from "react-icons/fa6";
-import {FaSignInAlt} from "react-icons/fa"
+import { FaHouse, FaPencil, FaCheckDouble, FaUserPlus } from "react-icons/fa6";
 import SemanticButton from "./SemanticButton";
 import HStack from "@/fwk/components/HStack";
 import theme from "@/themes/main";
@@ -7,15 +6,18 @@ import { Div, DivProps, H1 } from "@/fwk/html";
 import { useNavigate } from "react-router-dom";
 import VStack from "@/fwk/components/VStack";
 import { ReactElement } from "react";
+import { useParams } from "react-router-dom";
+import { FaSignInAlt } from "react-icons/fa";
 
 export interface NavbarProps extends DivProps {
   layoutMode?: "overlay" | "push";
   instanceId?: string | undefined;
   subjectId?: string | undefined;
+  pageName?: string | undefined;
 }
 
 interface NavbarIconButtonProps extends DivProps {
-  icon: ReactElement
+  icon: ReactElement;
   label: string;
   onClick: () => void;
 }
@@ -51,28 +53,23 @@ export function NavbarIconButton({
         <Div textAlign="center" fontSize="24px">
           {icon}
         </Div>
-        <VStack
-          position="absolute"
-          width="100%"
-          left={0}
-          bottom={0}
-        >
-          <Div 
-          
-          fontSize="16px"
-          whiteSpace="nowrap"
-          >{label}</Div>
+        <VStack position="absolute" width="100%" left={0} bottom={0}>
+          <Div fontSize="16px" whiteSpace="nowrap">
+            {label}
+          </Div>
         </VStack>
       </SemanticButton>
     </Div>
-  )
+  );
 }
 
 export default function Navbar({
   layoutMode = "overlay",
   instanceId,
   subjectId,
+  pageName,
 }: NavbarProps) {
+  const { action } = useParams();
   const navigate = useNavigate();
   return (
     <HStack
@@ -96,59 +93,67 @@ export default function Navbar({
         <H1 fontSize="28px">Know / Check</H1>
       </VStack>
 
-      <NavbarIconButton label="Home" icon={<FaHouse/>} onClick={()=>{
-        navigate("/")
-      }}/>
-
-      <NavbarIconButton label="Sign In" icon={<FaSignInAlt/>} onClick={()=>{
-        navigate("/sign-in")
-      }}/>
-
-      <NavbarIconButton label="Sign Up" icon={<FaUserPlus/>} onClick={()=>{
-        navigate("/sign-up")
-      }}/>
-
-
-
-      {subjectId && instanceId && (
-        <HStack
-          marginLeft="auto"
-          marginRight={theme.gutters.lg}
-          gap={theme.gutters.lg}
-        >
-          <SemanticButton
-            color="primary"
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            justifyContent="center"
+      {subjectId && instanceId ? (
+        <>
+          <NavbarIconButton
+            background={
+              action === "live"
+                ? theme.navbar.button.highlightBackground
+                : "none"
+            }
+            label="Quiz"
+            icon={<FaPencil />}
             onClick={() => {
               navigate(`/quiz/${subjectId}/live/${instanceId}`);
             }}
-            type="button"
-            fontSize="16px"
-            padding="12px"
-            borderRadius="12px"
-          >
-            Quiz
-          </SemanticButton>
-          <SemanticButton
-            color="primary"
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            justifyContent="center"
+          />
+          <NavbarIconButton
+            background={
+              action === "scores"
+                ? theme.navbar.button.highlightBackground
+                : "none"
+            }
+            label="Scores"
+            icon={<FaCheckDouble />}
             onClick={() => {
               navigate(`/quiz/${subjectId}/scores/${instanceId}`);
             }}
-            type="button"
-            fontSize="16px"
-            padding="12px"
-            borderRadius="12px"
-          >
-            Scores
-          </SemanticButton>
-        </HStack>
+          />
+        </>
+      ) : (
+        <>
+          <NavbarIconButton
+            label="Home"
+            icon={<FaHouse />}
+            onClick={() => {
+              navigate("/");
+            }}
+          />
+          <NavbarIconButton
+            background={
+              pageName === "sign-in"
+                ? theme.navbar.button.highlightBackground
+                : "none"
+            }
+            label="Sign In"
+            icon={<FaSignInAlt />}
+            onClick={() => {
+              navigate("/sign-in");
+            }}
+          />
+          <NavbarIconButton
+            background={
+              pageName === "sign-up"
+                ? theme.navbar.button.highlightBackground
+                : "none"
+            }
+            label="Sign Up"
+            icon={<FaUserPlus />}
+            onClick={() => {
+              navigate("/sign-up");
+            }}
+          />
+        </>
       )}
     </HStack>
   );

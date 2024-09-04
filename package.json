@@ -11,7 +11,7 @@
     "frontend:build": "cd frontend && pnpm run build",
     "firebase:login-reauth": "cd backend && ./node_modules/.bin/firebase login --reauth",
     "firebase:deploy": "cd backend && ./node_modules/.bin/firebase deploy",
-    "eulators:export": "cd backend && ./node_modules/.bin/firebase emulators:export ./firebase-data"
+    "emulators:export": "cd backend && ./node_modules/.bin/firebase emulators:export ./firebase-data"
   },
   "dependencies": {
     "puppeteer": "^22.13.0",
