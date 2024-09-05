@@ -9,7 +9,7 @@ import SemanticButton from "@/components/SemanticButton";
 import VStack from "@/fwk/components/VStack";
 import { Div, Form, H1 } from "@/fwk/html";
 import { useLoadingTask } from "@/lib/loading";
-import { useRPCRoute } from "@/lib/rpc-client";
+import { useAPIData, useRPCRoute } from "@/lib/rpc-client";
 import theme from "@/themes/main";
 
 export interface RegisterProps {
@@ -66,6 +66,10 @@ export default function Register({ subjectId }: RegisterProps) {
       }
     }
   }
+  const task = useAPIData<{id: string},{
+    name: string,
+    blurb: string
+  }>("getSubjectConfig", { id:subjectId });
   return (
     <>
       <Navbar />
@@ -113,7 +117,7 @@ export default function Register({ subjectId }: RegisterProps) {
                 aspectRatio="auto"
                 onClick={register}
               >
-                Submit
+                Register
               </SemanticButton>
               {registerTask.state === "success" && (
                 <>

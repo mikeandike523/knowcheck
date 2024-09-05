@@ -129,30 +129,6 @@ export default function Navbar({
               navigate("/");
             }}
           />
-          <NavbarIconButton
-            background={
-              pageName === "sign-in"
-                ? theme.navbar.button.highlightBackground
-                : "none"
-            }
-            label="Sign In"
-            icon={<FaSignInAlt />}
-            onClick={() => {
-              navigate("/sign-in");
-            }}
-          />
-          <NavbarIconButton
-            background={
-              pageName === "sign-up"
-                ? theme.navbar.button.highlightBackground
-                : "none"
-            }
-            label="Sign Up"
-            icon={<FaUserPlus />}
-            onClick={() => {
-              navigate("/sign-up");
-            }}
-          />
         </>
       )}
     </HStack>
